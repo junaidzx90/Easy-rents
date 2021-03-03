@@ -1,0 +1,58 @@
+:root{
+    --ermain: orangered;
+}
+main#main {
+    background: #e2e2e2 !important;
+}
+div#eraddjob {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.additemform {
+    min-width: 70%;
+}
+
+.erform_items {
+    display: flex;
+    flex-direction: row;
+}
+.locations,.erkobinfo{
+    width: 48%;
+    padding: 10px;
+    overflow: hidden;
+}
+.input-group {
+    display: inline-block;
+    margin: 10px;
+    width: 98%;
+}
+.input-group input, .input-group select{
+    width: 100%;
+}
+
+input[name="addjob"]{
+    outline: none;
+    padding: 6px;
+    font-size: 19px;
+    height: 45px;
+    border-radius: 5px;
+    cursor: pointer;
+    background: var(--ermain);
+    border: ridge;
+    opacity: .7;
+    color: #fff;
+    display: inline;
+}
+input[type="submit"]:hover{
+    opacity: 1;
+    transition: .3s ease;
+}
+.er_sidebar {
+    min-width: 22%;
+    max-width: 22% !important;
+    background: #fff;
+    padding: 5px;
+    border-radius: 5px;
+    height: fit-content;
+}
