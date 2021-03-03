@@ -19,8 +19,13 @@ $jobs_args = array(
 $jobs = new WP_Query($jobs_args);
 if ( $jobs->have_posts() ) :
     while ( $jobs->have_posts() ) : $jobs->the_post();
-        echo the_title();
-        echo the_content();
+        echo '<h1>'.__(the_title(),'easy-rents').'</h1>';
+
+        $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+        echo $job_info[0]['location_1'];
+        echo $job_info[0]['location_2'];
+        echo $job_info[0]['location_3'];
+        
     endwhile;
 else :
     _e( 'Sorry, no job were found.', 'easy-rents' );

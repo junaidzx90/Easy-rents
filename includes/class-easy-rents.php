@@ -57,6 +57,9 @@ class Easy_Rents {
 	 */
 	protected $version;
 
+
+	protected $er_pre;
+
 	/**
 	 * Define the core functionality of the plugin.
 	 *
@@ -73,6 +76,7 @@ class Easy_Rents {
 			$this->version = '1.0.0';
 		}
 		$this->plugin_name = 'easy-rents';
+		$this->er_pre = 'er_';
 
 		$this->load_dependencies();
 		$this->set_locale();
@@ -176,7 +180,6 @@ class Easy_Rents {
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
 		$this->loader->add_action( 'init', $plugin_public, 'er_job_post' );
-		$this->loader->add_action( 'init', $plugin_public, 'test' );
 
 	}
 
@@ -199,6 +202,13 @@ class Easy_Rents {
 	 */
 	public function get_plugin_name() {
 		return $this->plugin_name;
+	}
+
+	/**
+	 * The customer unique invoice number
+	 */
+	public function get_invoice_id($userid) {
+		return $this->er_pre.$userid.rand(0,99).$userid.rand(99,9999);
 	}
 
 	/**

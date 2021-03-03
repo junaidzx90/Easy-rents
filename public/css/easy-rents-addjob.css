@@ -30,7 +30,27 @@ div#eraddjob {
 .input-group input, .input-group select{
     width: 100%;
 }
-
+label.eraddjobformwarning {
+    color: red;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+input[type='time'] {
+    height: 50px;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+}
+small.optional {
+    color: var(--ermain);
+}
+.datetimewrap {
+    display: flex;
+    justify-content: space-between;
+}
+input#loading_date, input#loading_time {
+    width: 48%;
+}
 input[name="addjob"]{
     outline: none;
     padding: 6px;
@@ -44,10 +64,12 @@ input[name="addjob"]{
     color: #fff;
     display: inline;
 }
+
 input[type="submit"]:hover{
     opacity: 1;
     transition: .3s ease;
 }
+
 .er_sidebar {
     min-width: 22%;
     max-width: 22% !important;

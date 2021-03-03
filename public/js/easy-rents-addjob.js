@@ -7,11 +7,11 @@
 
     // Add job form validation
     $('input[name="addjob"]').on('click', function (e) {
-        e.preventDefault();
-        $('.erform_items').find('.input-group').each(function (ind, elm) {
+        $('.erform_items').find('.required').each(function (ind, elm) {
             let inputdata = $(this).children('input,select').val();
 
             if (inputdata == "") {
+                e.preventDefault();
                 $(this).children('input,select').css('border', '1px solid red')
                 $('.eraddjobformwarning').text('Please Fill all fields');
             }

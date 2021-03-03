@@ -126,14 +126,8 @@ class Easy_Rents_Public {
 			'label'               => __( 'jobs', 'easy-rents' ),
 			'description'         => __( 'Job news and reviews', 'easy-rents' ),
 			'labels'              => $labels,
-			// Features this CPT supports in Post Editor
-			'supports'            => array( 'title', 'editor', 'author', 'comments' ),
-			// You can associate this CPT with a taxonomy or custom taxonomy. 
+			'supports'            => array( 'title', 'author', 'comments' ),
 			'taxonomies'          => array( 'jobs' ),
-			/* A hierarchical CPT is like Pages and can have
-			* Parent and child items. A non-hierarchical CPT
-			* is like Posts.
-			*/ 
 			'hierarchical'        => false,
 			'public'              => true,
 			'show_ui'             => true,
@@ -209,38 +203,25 @@ class Easy_Rents_Public {
 		
 		// For custom archive page
 		if ( is_post_type_archive('erjobs') ) {
-			$theme_files = array('er_jobs.php', 'public/partials/er_jobs.php');
+			$theme_files = array('er_jobs.php', '/partials/er_jobs.php');
 			$exists_in_theme = locate_template($theme_files, false);
 			if ( $exists_in_theme != '' ) {
 				return $exists_in_theme;
 			} else {
-				return  dirname( __FILE__ ) . 'public/partials/er_jobs.php';
+				return  dirname( __FILE__ ) . '/partials/er_jobs.php';
 			}
 		}
 
 			// For custom single post
 		if ( is_singular('erjobs') ) {
-			$theme_post = array('page-job.php', 'public/partials/page-job.php');
+			$theme_post = array('page-job.php', '/partials/page-job.php');
 			$exists_in_theme_pst = locate_template($theme_post, false);
 			if ( $exists_in_theme_pst != '' ) {
 				return $exists_in_theme_pst;
 			} else {
-				return  dirname( __FILE__ ) . 'public/partials/page-job.php';
+				return  dirname( __FILE__ ) . '/partials/page-job.php';
 			}
 		}
 		return $template;
 	}
-
-	function test(){
-		$location = array('loc1' => 'rajapur','loc2' => 'rayenda', 'loc3' => 'amragachia');
-		$locs = get_post_meta(2,'location');
-		$i=1;
-		foreach($locs as $loc){
-			foreach($loc as $place){
-				// echo $place;
-			}
-		}
-	}
-	
-
 }
