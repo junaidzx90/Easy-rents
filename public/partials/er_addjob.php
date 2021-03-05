@@ -9,7 +9,9 @@
  ?>
  <?php ob_start(); ?>
  <?php get_header(); ?>
+ <?php wp_enqueue_style( 'select2' ); ?>
  <?php wp_enqueue_style( 'er_addjob_style' ); ?>
+ <?php wp_enqueue_script( 'select2' ); ?>
  <?php wp_enqueue_script( 'er_addjob_script' ); ?>
  <?php 
     if(!current_user_can( 'administrator' )){
@@ -40,7 +42,7 @@ if(isset($_POST['addjob'])){
         $unload_location = sanitize_text_field( $_POST['unload_location'] );
         $loading_time = date('h: i a',strtotime(sanitize_text_field( $_POST['loading_time'] )));
         $loading_date = sanitize_text_field( $_POST['loading_date'] );
-        $truck_type = sanitize_text_field( $_POST['truck_type'] );
+        $truck_type = intval( $_POST['truck_type'] );
         $goods_type = sanitize_text_field( $_POST['goods_type'] );
         $goods_weight = sanitize_text_field( $_POST['goods_weight'] );
         $er_labore = intval( $_POST['er_labore'] );
@@ -56,7 +58,6 @@ if(isset($_POST['addjob'])){
             'location_3'        => $location_3,
             'unload_location'   => $unload_location,
             'loading_times'     => $loading_date .' | '. $loading_time,
-            'truck_type'        => $truck_type,
             'goods_type'        => $goods_type,
             'goods_weight'      => $goods_weight,
             'er_labore'         => $er_labore,
@@ -65,7 +66,7 @@ if(isset($_POST['addjob'])){
 
         // Create post object
         $job_post = array(
-            'post_type' => 'erjobs',
+            'post_type' => 'jobs',
             'post_status'   => 'publish',
             'post_title'    => wp_strip_all_tags( $invoice_nom ),
             'post_name'     => wp_strip_all_tags( $invoice_nom ),
@@ -75,11 +76,13 @@ if(isset($_POST['addjob'])){
                 'er_job_info'        => $job_info
             )
         );
-        if(wp_insert_post( $job_post )){
+        $post_id = wp_insert_post( $job_post );
+        $set_term = wp_set_post_terms( $post_id, $truck_type, 'truckstype');
+        
+        if(!is_wp_error( $set_term )){
             wp_safe_redirect( home_url('/profile') );
             exit;
         }
-
     }
 }
  ?>
@@ -95,22 +98,81 @@ if(isset($_POST['addjob'])){
                      <div class="locations">
                          <div class="input-group locationgroup required">
                              <label for="location_1">Write your location</label>
-                             <input required type="text" name="location_1" id="location_1" placeholder="Type location name">
+                             
+                             <select name="location_1" id="location_1">
+                                <option value="">Select Location</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                             </select>
                          </div>
 
                          <div class="input-group locationgroup">
                              <label for="location_2">More load location <small class="optional">( Optional )</small></label>
-                             <input type="text" name="location_2" id="location_2" placeholder="Type location name">
+                             
+                             <select name="location_2" id="location_2">
+                                <option value="">Select Location</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                             </select>
                          </div>
 
                          <div class="input-group locationgroup">
                              <label for="location_3">More load location <small class="optional">( Optional )</small></label>
-                             <input type="text" name="location_3" id="location_3" placeholder="Type location name">
+                             
+                             <select name="location_3" id="location_3">
+                                <option value="">Select Location</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                             </select>
                          </div>
 
                          <div class="input-group locationgroup required">
                              <label for="unload_location">Unload location</label>
-                             <input type="text" name="unload_location" id="unload_location" placeholder="Type location name">
+                             <select name="unload_location" id="unload_location">
+                                <option value="">Select Location</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                                <option value="one">one</option>
+                             </select>
                          </div>
 
                          <div class="input-group">
@@ -126,10 +188,21 @@ if(isset($_POST['addjob'])){
                          <div class="input-group required">
                              <label for="truck_type">Truck type</label>
                              <select required name="truck_type" id="truck_type">
-                                 <option value="">Select truck</option>
-                                 <option value="t1">Truck one</option>
-                                 <option value="t2">Truck two</option>
-                                 <option value="t3">Truck three</option>
+                                <option value="">Select truck</option>
+                             <?php
+                                $args = array(
+                                    'taxonomy'               => 'truckstype',
+                                    'orderby'                => 'name',
+                                    'order'                  => 'ASC',
+                                    'hide_empty'             => false,
+                                );
+                                $the_query = new WP_Term_Query($args);
+                                foreach($the_query->get_terms() as $term){ 
+                                    
+                                    echo '<option value="'.intval($term->term_id).'">'.ucfirst($term->name).'</option>';
+                                    
+                                }
+                                ?>
                              </select>
                          </div>
 

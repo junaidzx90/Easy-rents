@@ -160,9 +160,20 @@ class Easy_Rents {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'easy_rents_setup' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'er_page_settings_register' );
+		$this->loader->add_action( 'init', $plugin_admin, 'the_car_type_taxonomy' );
+		$this->loader->add_action( 'init', $plugin_admin, 'er_job_post' );
+
+		$this->loader->add_action('truckstype_add_form_fields', $plugin_admin, 'add_term_image');
+		$this->loader->add_action('created_truckstype', $plugin_admin,'save_term_image');
 		
+		$this->loader->add_action('truckstype_edit_form_fields', $plugin_admin,'edit_image_upload');
+		$this->loader->add_action('edited_truckstype', $plugin_admin,'update_image_upload');
+
+		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'load_media');
+		$this->loader->add_action( 'admin_footer', $plugin_admin, 'add_script' );
 
 	}
 
@@ -174,13 +185,10 @@ class Easy_Rents {
 	 * @access   private
 	 */
 	private function define_public_hooks() {
-
 		$plugin_public = new Easy_Rents_Public( $this->get_plugin_name(), $this->get_version() );
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'init', $plugin_public, 'er_job_post' );
-
 	}
 
 	/**

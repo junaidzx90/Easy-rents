@@ -79,6 +79,10 @@ class Easy_Rents_Public {
 		wp_register_style( 'er_profile_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-profile.css', array(), $this->version, 'all' );
 		// addnewjob style
 		wp_register_style( 'er_addjob_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-addjob.css', array(), $this->version, 'all' );
+		// addnewjob style
+		wp_register_style( 'er_jobs_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-jobs.css', array(), $this->version, 'all' );
+		// select2 style
+		wp_register_style( 'select2', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), $this->version, 'all' );
 
 	}
 
@@ -90,65 +94,21 @@ class Easy_Rents_Public {
 	public function enqueue_scripts() {
 
 		// Profile script
-		wp_register_script( 'er_profile_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-profile.js', array( 'jquery' ), $this->version, false );
+		wp_register_script( 'er_profile_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-profile.js', array( 'jquery' ), $this->version, true );
 		
 		// addjob script
-		wp_register_script( 'er_addjob_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-addjob.js', array( 'jquery' ), $this->version, false );
+		wp_register_script( 'er_addjob_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-addjob.js', array( 'jquery' ), $this->version, true );
+
+		// addjob script
+		wp_register_script( 'er_jobs_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-jobs.js', array( 'jquery' ), $this->version, true );
+
+		// select2 script
+		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.min.js', array( 'jquery' ), $this->version, true );
 
 	}
 
 	
-	/*
-	* Creating a function to create our CPT
-	*/
 	
-	function er_job_post() {
-	
-		// Set UI labels for Custom Post Type
-		$labels = array(
-			'name'                => _x( 'Jobs', 'Post Type General Name', 'easy-rents' ),
-			'singular_name'       => _x( 'Job', 'Post Type Singular Name', 'easy-rents' ),
-			'menu_name'           => __( 'Jobs', 'easy-rents' ),
-			'all_items'           => __( 'All Jobs', 'easy-rents' ),
-			'view_item'           => __( 'View Job', 'easy-rents' ),
-			'add_new_item'        => __( 'Add New Job', 'easy-rents' ),
-			'add_new'             => __( 'Add New', 'easy-rents' ),
-			'edit_item'           => __( 'Edit Job', 'easy-rents' ),
-			'update_item'         => __( 'Update Job', 'easy-rents' ),
-			'search_items'        => __( 'Search Job', 'easy-rents' ),
-			'not_found'           => __( 'Not Found', 'easy-rents' ),
-			'not_found_in_trash'  => __( 'Not found in Trash', 'easy-rents' ),
-		);
-		 
-		// Set other options for Custom Post Type
-		 
-		$args = array(
-			'label'               => __( 'jobs', 'easy-rents' ),
-			'description'         => __( 'Job news and reviews', 'easy-rents' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'author', 'comments' ),
-			'taxonomies'          => array( 'jobs' ),
-			'hierarchical'        => false,
-			'public'              => true,
-			'show_ui'             => true,
-			'show_in_menu'        => true,
-			'show_in_nav_menus'   => true,
-			'show_in_admin_bar'   => true,
-			'menu_position'       => 5,
-			'can_export'          => true,
-			'has_archive'         => true,
-			'exclude_from_search' => false,
-			'publicly_queryable'  => true,
-			'capability_type'     => 'post',
-			'show_in_rest' => true,
-	 
-		);
-		 
-		// Registering your Custom Post Type
-		register_post_type( 'erjobs', $args );
-	 
-	}
-
 
 	/**
 	 * Define template name
@@ -202,7 +162,7 @@ class Easy_Rents_Public {
 	function projects_template( $template ) {
 		
 		// For custom archive page
-		if ( is_post_type_archive('erjobs') ) {
+		if ( is_post_type_archive('jobs') ) {
 			$theme_files = array('er_jobs.php', '/partials/er_jobs.php');
 			$exists_in_theme = locate_template($theme_files, false);
 			if ( $exists_in_theme != '' ) {
@@ -213,7 +173,7 @@ class Easy_Rents_Public {
 		}
 
 			// For custom single post
-		if ( is_singular('erjobs') ) {
+		if ( is_singular('jobs') ) {
 			$theme_post = array('page-job.php', '/partials/page-job.php');
 			$exists_in_theme_pst = locate_template($theme_post, false);
 			if ( $exists_in_theme_pst != '' ) {

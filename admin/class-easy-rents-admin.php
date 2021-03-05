@@ -73,6 +73,8 @@ class Easy_Rents_Admin {
 
 		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/easy-rents-admin.js', array( 'jquery' ), $this->version, false );
 
+		wp_register_script( 'trucktype_media', plugin_dir_url( __FILE__ ) . 'js/media-uploader.js', array( 'jquery' ) );
+
 	}
 
 	// General settings
@@ -150,7 +152,7 @@ class Easy_Rents_Admin {
 		echo '</select><br><br>';
 	}
 
-	// Profile page calback
+	// Profile page callback
 	function er_profile_page_cb(){
 		echo '<select name="profile_page">';
 		if(get_option('profile_page') != ""){
@@ -175,5 +177,137 @@ class Easy_Rents_Admin {
 	//webclass general settings
 	function er_settings_cb(){
 		require_once plugin_dir_path( __FILE__ ).'partials/easy-rents-admin-display.php';
+	}
+
+	/*
+	* Creating a function to create our CPT
+	*/
+	
+	function er_job_post() {
+	
+		// Set UI labels for Custom Post Type
+		$labels = array(
+			'name'                => _x( 'Jobs', 'Post Type General Name', 'easy-rents' ),
+			'singular_name'       => _x( 'Job', 'Post Type Singular Name', 'easy-rents' ),
+			'menu_name'           => __( 'Jobs', 'easy-rents' ),
+			'all_items'           => __( 'All Jobs', 'easy-rents' ),
+			'view_item'           => __( 'View Job', 'easy-rents' ),
+			'add_new_item'        => __( 'Add New Job', 'easy-rents' ),
+			'add_new'             => __( 'Add New', 'easy-rents' ),
+			'edit_item'           => __( 'Edit Job', 'easy-rents' ),
+			'update_item'         => __( 'Update Job', 'easy-rents' ),
+			'search_items'        => __( 'Search Job', 'easy-rents' ),
+			'not_found'           => __( 'Not Found', 'easy-rents' ),
+			'not_found_in_trash'  => __( 'Not found in Trash', 'easy-rents' ),
+		);
+		 
+		// Set other options for Custom Post Type
+		 
+		$args = array(
+			'label'               => __( 'jobs', 'easy-rents' ),
+			'description'         => __( 'Job news and reviews', 'easy-rents' ),
+			'labels'              => $labels,
+			'supports'            => array( 'title', 'author', 'comments' ),
+			'taxonomies'          => array( 'jobs' ),
+			'hierarchical'        => false,
+			'public'              => true,
+			'show_ui'             => true,
+			'show_in_menu'        => true,
+			'show_in_nav_menus'   => true,
+			'show_in_admin_bar'   => true,
+			'menu_position'       => 5,
+			'can_export'          => true,
+			'has_archive'         => true,
+			'exclude_from_search' => false,
+			'publicly_queryable'  => true,
+			'capability_type'     => 'post',
+			'show_in_rest' => true,
+	 
+		);
+		 
+		// Registering your Custom Post Type
+		register_post_type( 'jobs', $args );
+	 
+	}
+
+	// Job car type taxonomy
+	function the_car_type_taxonomy() {
+		$labels = array(
+			'name' => _x( 'Trucks', 'trucks' ),
+			'singular_name' => _x( 'Truck', 'truck' ),
+			'search_items' =>  __( 'Search trucks' ),
+			'all_items' => __( 'All trucks' ),
+			'edit_item' => __( 'Edit Truck' ), 
+			'update_item' => __( 'Update Truck' ),
+			'add_new_item' => __( 'Add New Truck' ),
+			'new_item_name' => __( 'New Truck Name' ),
+			'menu_name' => __( 'Trucks' ),
+		);    
+		
+		// Now register the truck
+		register_taxonomy('truckstype',array('jobs'), array(
+			'hierarchical' => true,
+			'labels' => $labels,
+			'show_ui' => true,
+			'show_in_rest' => true,
+			'show_admin_column' => true,
+			'query_var' => true,
+			'rewrite' => array( 'slug' => 'truck' ),
+		));
+	}
+
+	// Add taxonomy field
+	function add_term_image($taxonomy){ ?>
+		<div class="form-field term-group">
+			<label for="">upload , image</label>
+			<input type="text" name="txt_upload_image" id="txt_upload_image" value="" style="width: 77%">
+			<input type="button" id="upload_image_btn" class="button" value="upload image" />
+		</div>
+	<?php 
+	}
+
+	// Edit taxonomy field
+	function edit_image_upload($term) { ?>
+		<div class="form-field term-group">
+			<label for="">upload , image</label>
+			<input type="text" name="txt_upload_image" id="txt_upload_image" value="<?php echo get_term_meta( $term->term_id, 'term_image', true ) ?>" style="width: 77%">
+			<input type="button" id="upload_image_btn" class="button" value="upload image" />
+		</div>
+	<?php 
+	}
+
+	// Save taxonomy
+	function save_term_image($term_id) {
+		if (isset($_POST['txt_upload_image']) && $_POST['txt_upload_image'] != ''){      
+			$group = sanitize_text_field($_POST['txt_upload_image']);
+			add_term_meta($term_id, 'term_image', $group);
+		} 
+	}
+
+	// update taxonomy
+	function update_image_upload($term_id) {
+		if (isset($_POST['txt_upload_image']) && $_POST['txt_upload_image'] != '' ){
+			$group = sanitize_text_field($_POST['txt_upload_image']);
+			update_term_meta($term_id, 'term_image', $group);
+		} 
+	}
+
+	/*
+	* Add script
+	* @since 1.0.0
+	*/
+	function load_media(){
+		wp_enqueue_media();
+	}
+	function add_script() {
+		if(isset($_GET['taxonomy']) && $_GET['taxonomy'] == 'truckstype'){
+			wp_enqueue_script('trucktype_media');
+			wp_localize_script( 'trucktype_media', 'meta_image',
+				array(
+					'title' => 'Upload an Image',
+					'button' => 'Use this Image',
+				)
+			);
+		}
 	}
 }

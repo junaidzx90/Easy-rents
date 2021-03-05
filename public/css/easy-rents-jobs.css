@@ -1,0 +1,87 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --ermain: orangered;
+}
+
+main#main {
+    background: #e2e2e2 !important;
+}
+
+div#er_jobs_section {
+    display: flex;
+    flex-direction: row;
+}
+
+.er_sidebar {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-width: 280px;
+    padding: 20px 5px;
+    background-color: #fff;
+}
+
+.er_jobs_content {
+    width: 100%;
+    margin-right: 20px;
+    padding-top: 10px;
+    margin-top: 5px;
+    border-top: 5px solid #ffffff;
+    border-top-style: ridge;
+}
+
+h4 {
+    margin: 5px 0px;
+    color: var(--ermain);
+}
+
+.er_jobItem {
+    margin: 5px;
+    width: 31.9%;
+    display: inline-block;
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    transition: .3s ease-in;
+    cursor: pointer;
+}
+
+.jobinfotexts {
+    padding-right: 30px;
+}
+._jobitem span{
+    font-size: 16px;
+}
+._jobitem span i {
+    width: 22px;
+    color: orangered;
+    font-size: 16px;
+}
+
+.laboriconcheck {
+    color: green !important;
+}
+
+.laboriconnone {
+    color: rgb(255, 56, 56) !important;
+}
+
+.er_jobItem:hover {
+    box-shadow: 1px 1px 5px 0px #828282;
+}
+
+.erjobitemimg {
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.erjobitemimg img {
+    width: 100%;
+}
