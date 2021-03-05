@@ -51,7 +51,15 @@ class Easy_Rents_Admin {
 
 		$this->plugin_name = $plugin_name;
 		$this->version = $version;
+
+		// ONLY MOVIE CUSTOM TYPE POSTS
+		add_filter('manage_jobs_posts_columns', array($this, 'wp_list_table_columnname'));
+
+		if($_GET['post_type'] == 'jobs'){
+			$this->jobs_list_table_css();
+		}
 	}
+	
 
 	/**
 	 * Register the stylesheets for the admin area.
@@ -73,7 +81,7 @@ class Easy_Rents_Admin {
 
 		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/easy-rents-admin.js', array( 'jquery' ), $this->version, false );
 
-		wp_register_script( 'trucktype_media', plugin_dir_url( __FILE__ ) . 'js/media-uploader.js', array( 'jquery' ) );
+		wp_register_script( 'trucktype_media', plugin_dir_url( __FILE__ ) . 'js/media-uploader.js', array( 'jquery' ), $this->version, true );
 
 	}
 
@@ -106,14 +114,16 @@ class Easy_Rents_Admin {
 		// Profile page
 		add_settings_field( 'profile_page', 'Profile page', array($this,'er_profile_page_cb'), 'er-settings', 'er_settings_section');
 		register_setting( 'er_settings_section', 'profile_page');
+
 	}
 
 	// All trips page calback
 	function er_trips_page_cb(){
 		echo '<select name="trips_page">';
 		if(get_option('trips_page') != ""){
+			$page = get_post( intval(get_option( 'trips_page' )) )->post_title;
 			echo '<option selected>';
-			echo	__(get_option('trips_page'),'easy-rents');
+			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
 			echo '<option selected> Select a page </option>';
@@ -122,7 +132,7 @@ class Easy_Rents_Admin {
 		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
 		if($posts){
 			foreach($posts as $post){
-				echo '<option value="'.sanitize_text_field( $post->post_title ).'">';
+				echo '<option value="'.sanitize_text_field( $post->ID ).'">';
 				echo __($post->post_title, 'easy-rents');
 				echo '</option>';
 			}
@@ -134,8 +144,9 @@ class Easy_Rents_Admin {
 	function er_add_trip_page_cb(){
 		echo '<select name="add_trip_page">';
 		if(get_option('add_trip_page') != ""){
+			$page = get_post( intval(get_option( 'add_trip_page' )) )->post_title;
 			echo '<option selected>';
-			echo	__(get_option('add_trip_page'),'easy-rents');
+			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
 			echo '<option selected> Select a page </option>';
@@ -144,7 +155,7 @@ class Easy_Rents_Admin {
 		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
 		if($posts){
 			foreach($posts as $post){
-				echo '<option value="'.sanitize_text_field( $post->post_title ).'">';
+				echo '<option value="'.sanitize_text_field( $post->ID ).'">';
 				echo __($post->post_title, 'easy-rents');
 				echo '</option>';
 			}
@@ -156,8 +167,9 @@ class Easy_Rents_Admin {
 	function er_profile_page_cb(){
 		echo '<select name="profile_page">';
 		if(get_option('profile_page') != ""){
+			$page = get_post( intval(get_option( 'profile_page' )) )->post_title;
 			echo '<option selected>';
-			echo	__(get_option('profile_page'),'easy-rents');
+			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
 			echo '<option selected> Select a page </option>';
@@ -166,7 +178,7 @@ class Easy_Rents_Admin {
 		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
 		if($posts){
 			foreach($posts as $post){
-				echo '<option value="'.sanitize_text_field( $post->post_title ).'">';
+				echo '<option value="'.sanitize_text_field( $post->ID ).'">';
 				echo __($post->post_title, 'easy-rents');
 				echo '</option>';
 			}
@@ -184,7 +196,6 @@ class Easy_Rents_Admin {
 	*/
 	
 	function er_job_post() {
-	
 		// Set UI labels for Custom Post Type
 		$labels = array(
 			'name'                => _x( 'Jobs', 'Post Type General Name', 'easy-rents' ),
@@ -232,6 +243,7 @@ class Easy_Rents_Admin {
 
 	// Job car type taxonomy
 	function the_car_type_taxonomy() {
+		
 		$labels = array(
 			'name' => _x( 'Trucks', 'trucks' ),
 			'singular_name' => _x( 'Truck', 'truck' ),
@@ -254,6 +266,41 @@ class Easy_Rents_Admin {
 			'query_var' => true,
 			'rewrite' => array( 'slug' => 'truck' ),
 		));
+	}
+
+	// Wp list table css for jobs post
+	function jobs_list_table_css(){ ?>
+		<style>
+			th#erpost_status {
+				width: 8%;
+			}
+			.status_circle{
+				display: inline-block;
+				border: none;
+				outline:none;
+				border-radius:50%;
+				padding:10px;
+				height:10px;
+				width:10px;
+			}
+		</style>
+	<?php
+	}
+	// CREATE WP LIST TABLE COLUMN FOR STATUS
+	function wp_list_table_columnname($defaults) {
+		$defaults['erpost_status'] = 'Status';
+		return $defaults;
+	}
+	function wp_list_table_column_view($column_name, $post_ID) {
+		if ($column_name == 'erpost_status') {
+			// show content of 'directors_name' column
+			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
+			if($postinfo[0]['job_status'] == 'running'){
+				echo '<span class="status_circle" style="background-color:#13d202"></span>';
+			}else{
+				echo '<span class="status_circle" style="background-color:gray"></span>';
+			}
+		}
 	}
 
 	// Add taxonomy field

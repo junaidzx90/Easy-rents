@@ -174,6 +174,8 @@ class Easy_Rents {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'load_media');
 		$this->loader->add_action( 'admin_footer', $plugin_admin, 'add_script' );
+		// Custom wplist table column
+		$this->loader->add_action('manage_jobs_posts_custom_column', $plugin_admin, 'wp_list_table_column_view',10,2);
 
 	}
 

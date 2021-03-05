@@ -14,6 +14,7 @@ main#main {
 div#er_jobs_section {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 }
 
 .er_sidebar {
@@ -22,6 +23,7 @@ div#er_jobs_section {
     min-width: 280px;
     padding: 20px 5px;
     background-color: #fff;
+    height: fit-content;
 }
 
 .er_jobs_content {
@@ -31,11 +33,6 @@ div#er_jobs_section {
     margin-top: 5px;
     border-top: 5px solid #ffffff;
     border-top-style: ridge;
-}
-
-h4 {
-    margin: 5px 0px;
-    color: var(--ermain);
 }
 
 .er_jobItem {
@@ -49,12 +46,10 @@ h4 {
     cursor: pointer;
 }
 
-.jobinfotexts {
-    padding-right: 30px;
-}
-._jobitem span{
+._jobitem span {
     font-size: 16px;
 }
+
 ._jobitem span i {
     width: 22px;
     color: orangered;
@@ -62,6 +57,10 @@ h4 {
 }
 
 .laboriconcheck {
+    color: green !important;
+}
+
+.green {
     color: green !important;
 }
 
@@ -84,4 +83,101 @@ h4 {
 
 .erjobitemimg img {
     width: 100%;
+}
+
+/* Single page */
+.single_page_job {
+    width: 65%;
+}
+.single_page_job {
+    width: 65%;
+    margin-top: 0px !important;
+    border-top: none !important;
+    border-style: none !important;
+}
+.single_page_job h1{
+    margin-top: 0px;
+}
+
+.locations ul,
+h4 {
+    list-style: none;
+    margin: 5px 0px;
+}
+
+.locations h4 {
+    border-bottom: 1px solid #bbbaba;
+}
+.otherinfo {
+    display: flex;
+    justify-content: space-between;
+}
+.jobinfoitem {
+    padding: 5px;
+    display: inline-block;
+    max-width: 33%;
+    overflow: hidden;
+}
+.er_jobimg {
+    margin-bottom: 10px;
+}
+.jobinfoitem h4 {
+    margin: 0px !important;
+}
+
+.erhr {
+    margin: 50px 0px;
+}
+
+.jobbottom {
+    display: flex;
+    justify-content: space-between;
+}
+
+.myinfo h3 {
+    margin: 0px;
+}
+
+button.jobapply,.bidbtn {
+    width: 200px;
+    height: 40px;
+    background: orangered;
+    outline: none;
+    border: none;
+    border-radius: 5px !important;
+    color: #fff;
+    font-size: 18px;
+    opacity: .8;
+    transition: .3s;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.bidbtn{
+    margin-top: 15px;
+}
+.bidbtn:hover,
+button.jobapply:hover {
+    opacity: 1;
+}
+h5.pricetitle {
+    color: var(--ermain);
+    margin-top: 0px;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    font-size: 18px;
+    border-bottom: 1px solid #ddd;
+}
+.single_job_pricebox ul {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+.single_job_pricebox ul li {
+    display: flex;
+    justify-content: space-between;
+}
+.bidelem {
+    margin: 0 auto;
 }

@@ -85,6 +85,9 @@ if(isset($_POST['addjob'])){
         }
     }
 }
+
+// Get Location addresses
+$entry_locations = get_option( 'er_locations' );
  ?>
 
  <h1>Request for truck</h1>
@@ -100,19 +103,16 @@ if(isset($_POST['addjob'])){
                              <label for="location_1">Write your location</label>
                              
                              <select name="location_1" id="location_1">
-                                <option value="">Select Location</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
+                                <?php
+                                if(!empty($entry_locations)){
+                                    echo '<option value="">Select a location</option>';
+                                    foreach($entry_locations as $addrname){
+                                        echo '<option value="'.sanitize_text_field( $addrname ).'">'.__($addrname,'easy-rents').'</option>';
+                                    }
+                                }else{
+                                    echo '<option value="">Select a location</option>';
+                                }
+                                ?>
                              </select>
                          </div>
 
@@ -120,19 +120,16 @@ if(isset($_POST['addjob'])){
                              <label for="location_2">More load location <small class="optional">( Optional )</small></label>
                              
                              <select name="location_2" id="location_2">
-                                <option value="">Select Location</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
+                                <?php
+                                if(!empty($entry_locations)){
+                                    echo '<option value="">Select a location</option>';
+                                    foreach($entry_locations as $addrname){
+                                        echo '<option value="'.sanitize_text_field( $addrname ).'">'.__($addrname,'easy-rents').'</option>';
+                                    }
+                                }else{
+                                    echo '<option value="">Select a location</option>';
+                                }
+                                ?>
                              </select>
                          </div>
 
@@ -140,38 +137,32 @@ if(isset($_POST['addjob'])){
                              <label for="location_3">More load location <small class="optional">( Optional )</small></label>
                              
                              <select name="location_3" id="location_3">
-                                <option value="">Select Location</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
+                                <?php
+                                if(!empty($entry_locations)){
+                                    echo '<option value="">Select a location</option>';
+                                    foreach($entry_locations as $addrname){
+                                        echo '<option value="'.sanitize_text_field( $addrname ).'">'.__($addrname,'easy-rents').'</option>';
+                                    }
+                                }else{
+                                    echo '<option value="">Select a location</option>';
+                                }
+                                ?>
                              </select>
                          </div>
 
                          <div class="input-group locationgroup required">
                              <label for="unload_location">Unload location</label>
                              <select name="unload_location" id="unload_location">
-                                <option value="">Select Location</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
-                                <option value="one">one</option>
+                                <?php
+                                if(!empty($entry_locations)){
+                                    echo '<option value="">Select a location</option>';
+                                    foreach($entry_locations as $addrname){
+                                        echo '<option value="'.sanitize_text_field( $addrname ).'">'.__($addrname,'easy-rents').'</option>';
+                                    }
+                                }else{
+                                    echo '<option value="">Select a location</option>';
+                                }
+                                ?>
                              </select>
                          </div>
 
@@ -189,7 +180,7 @@ if(isset($_POST['addjob'])){
                              <label for="truck_type">Truck type</label>
                              <select required name="truck_type" id="truck_type">
                                 <option value="">Select truck</option>
-                             <?php
+                                <?php
                                 $args = array(
                                     'taxonomy'               => 'truckstype',
                                     'orderby'                => 'name',
