@@ -5,28 +5,64 @@
 <?php
 // If have post start
 if(have_posts()){
+    global $wpdb,$current_user;
+    $post_id = get_post()->ID;
+    $msg = "";
+    $application = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_id} AND driver_id = {$current_user->ID}");
 ?>
 <section>
+    <?php
+    if(!empty($application)){
+        echo '<div class="warning">Your request currently pending!</div>';
+    }
+    ?>
     <div id="er_jobs_section">
         <?php
-        // Bid apply
+        // Job apply STEP 2
         if(isset($_POST['bidbtn'])){
+            if(!is_user_logged_in(  )){
+                wp_safe_redirect( home_url('/'));
+                exit;
+            }
+
             if(isset($_POST['myprice']) && !empty($_POST['myprice'])){
                 $myprice = sanitize_text_field( intval($_POST['myprice']) );
-                $saveprice = get_post_meta( get_post()->ID, 'erjob_price', true);
-                if(empty($saveprice)){
+                
+                try {
                     $commission = get_option('job_commission');
                     $totalprice =  $myprice + $myprice * $commission / 100;
 
-                    
+                    if(empty($application)){
 
-                    $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'trips_page', true ));
-                    wp_safe_redirect( home_url( '/'.$redirect_page ) );
+                        $apply = $wpdb->insert("{$wpdb->prefix}easy_rents_applications", 
+                                array("driver_id" => $current_user->ID,
+                                    "customer_id" => get_post()->post_author,
+                                    "post_id" => get_post()->ID,
+                                    "price" => $totalprice,
+                                    "status" => 0,
+                                ),
+                                array("%d", "%d", "%d","%f","%d"));
+
+                        if($apply){
+                            $msg = "<span class='success'>Your request has been published!<span>";
+                        }else{
+                            $msg = "Sorry You made some problems!";
+                        }
+                    }
+
+                    if ( is_wp_error( $application ) ) {
+                        throw new Exception( "Something problems" );
+                    }
+                }
+                
+                //catch exception
+                catch(Exception $e) {
+                    echo 'Message: ' .$e->getMessage();
                 }
             }
         }
 
-        // Job apply
+        // Job apply STEP 1
         if(isset($_POST['jobapply'])){
             $job_status = get_post_meta( get_post()->ID, 'er_job_info' );
             // Only active/ running job
@@ -63,6 +99,17 @@ if(have_posts()){
             }
         }else{ ?>
             <div class="er_jobs_content single_page_job">
+                <!-- Showing form information -->
+                <div class="msghandler">
+                    <div class="msgcontainer">
+                        <?php
+                            if(!empty($msg)){
+                                echo __($msg,'easy-rents');
+                            }
+                        ?>
+                    </div>
+                </div>
+
                 <h1><?php echo __('JOB Informations', 'easy-rents') ?></h1>
             <?php
                 $postinfo = get_post_meta( get_post()->ID, 'er_job_info' );
@@ -163,11 +210,25 @@ if(have_posts()){
                                 <h3>Myname <i class="fa fa-check-circle green" aria-hidden="true"></i></h3>
                                 <span class="mycar">TRUCK: T-54545</span>
                             </div>
-                            <div class="applybtn">
-                                <form action="" method="post">
-                                    <button class="jobapply" name="jobapply">Apply</button>
-                                </form>
-                            </div>
+                            
+                            <?php
+                            if(empty($application)){ ?>
+
+                                <div class="applybtn">
+                                    <form action="" method="post">
+                                        <button class="jobapply" name="jobapply">Apply</button>
+                                    </form>
+                                </div>
+
+                            <?php
+                            }else{ ?>
+                                <!-- Disabled btn for existing applications -->
+                                <div class="applybtn">
+                                    <button disabled class="jobapply disabledbtn">Apply</button>
+                                </div>
+                            
+                            <?php
+                            } ?>
                         </div>
 
                     <?php

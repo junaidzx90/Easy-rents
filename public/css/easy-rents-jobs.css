@@ -29,10 +29,6 @@ div#er_jobs_section {
 .er_jobs_content {
     width: 100%;
     margin-right: 20px;
-    padding-top: 10px;
-    margin-top: 5px;
-    border-top: 5px solid #ffffff;
-    border-top-style: ridge;
 }
 
 .er_jobItem {
@@ -86,6 +82,19 @@ div#er_jobs_section {
 }
 
 /* Single page */
+main#main {
+    padding-top: 10px;
+}
+.warning {
+    width: 100%;
+    background: wheat;
+    padding: 10px;
+    color: var(--ermain);
+    border-radius: 5px;
+    box-shadow: 0px 1px 9px -5px #2f2f2f;
+    margin-bottom: 25px;
+}
+
 .single_page_job {
     width: 65%;
 }
@@ -200,10 +209,15 @@ h5.pricetitle {
     border-radius: 5px;
     box-shadow: 5px 7px 17px -12px #000;
 }
+.bidelem table{
+    width: 100%;
+}
 .bidelem table td span {
     color: var(--ermain);
 }
-
+.bidelem table td {
+    text-align-last: justify;
+}
 td,
 th {
     border: 1px solid #dddddd;
@@ -213,4 +227,14 @@ th {
 
 tr:nth-child(even) {
     background-color: #dddddd;
+}
+.er_jobItem.disabled {
+    background: #ff00001a;
+    opacity: .5;
+}
+button.disabledbtn {
+    opacity: .2;
+}
+button.disabledbtn:hover{
+    opacity: .2;
 }

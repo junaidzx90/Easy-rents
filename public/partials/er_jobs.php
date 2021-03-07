@@ -16,7 +16,7 @@
     <div id="er_jobs_section">
         <div class="er_jobs_content">
             <?php
-            global $wp_query;
+            global $wp_query,$wpdb,$current_user;
             $jobs_args = array(
                 'post_type' => 'jobs',
                 'post_status' => 'publish',
@@ -28,8 +28,11 @@
                 while ( $jobs->have_posts() ) : $jobs->the_post();
                 $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
                     // Only active/ running job
-                    if($job_info[0]['job_status'] == 'running'){ ?>
-                        <div class="er_jobItem">
+                    if($job_info[0]['job_status'] == 'running'){
+                        $post_id = get_post()->ID;
+                        $myapplication = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_id} AND driver_id = {$current_user->ID}"); ?>
+
+                        <div class="er_jobItem <?php echo (!empty($myapplication)?'disabled':'') ?>">
                             <a href="<?php echo the_permalink(  ); ?>">
                                 <div class="er_jobimg">
                                     <?php
@@ -83,6 +86,7 @@
                                     </div>
                                 </div>
                             </a>
+
                         </div>
                     <?php   
                     }
