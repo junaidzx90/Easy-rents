@@ -100,15 +100,24 @@ class Easy_Rents_Public {
 		wp_register_script( 'er_addjob_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-addjob.js', array( 'jquery' ), $this->version, true );
 
 		// addjob script
-		wp_register_script( 'er_jobs_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-jobs.js', array( 'jquery' ), $this->version, true );
+		wp_register_script( 'er_jobs_script', plugin_dir_url( __FILE__ ) . 'js/easy-rents-jobs.js', array( 'jquery' ), microtime(), true );
 
 		// select2 script
 		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.min.js', array( 'jquery' ), $this->version, true );
 
 	}
 
-	
-	
+	/**
+	 * Get post slug by id
+	 */
+	function get_post_slug($post_id) {
+		global $wpdb;
+		if($slug = $wpdb->get_var("SELECT post_name FROM {$wpdb->prefix}posts WHERE ID = $post_id")) {
+			return $slug;
+		} else {
+			return '';
+		}
+	}
 
 	/**
 	 * Define template name

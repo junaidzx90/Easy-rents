@@ -89,13 +89,15 @@ div#er_jobs_section {
 .single_page_job {
     width: 65%;
 }
+
 .single_page_job {
     width: 65%;
     margin-top: 0px !important;
     border-top: none !important;
     border-style: none !important;
 }
-.single_page_job h1{
+
+.single_page_job h1 {
     margin-top: 0px;
 }
 
@@ -108,19 +110,23 @@ h4 {
 .locations h4 {
     border-bottom: 1px solid #bbbaba;
 }
+
 .otherinfo {
     display: flex;
     justify-content: space-between;
 }
+
 .jobinfoitem {
     padding: 5px;
     display: inline-block;
     max-width: 33%;
     overflow: hidden;
 }
+
 .er_jobimg {
     margin-bottom: 10px;
 }
+
 .jobinfoitem h4 {
     margin: 0px !important;
 }
@@ -138,7 +144,8 @@ h4 {
     margin: 0px;
 }
 
-button.jobapply,.bidbtn {
+button.jobapply,
+.bidbtn {
     width: 200px;
     height: 40px;
     background: orangered;
@@ -152,13 +159,16 @@ button.jobapply,.bidbtn {
     border-radius: 5px;
     cursor: pointer;
 }
-.bidbtn{
+
+.bidbtn {
     margin-top: 15px;
 }
+
 .bidbtn:hover,
 button.jobapply:hover {
     opacity: 1;
 }
+
 h5.pricetitle {
     color: var(--ermain);
     margin-top: 0px;
@@ -167,6 +177,7 @@ h5.pricetitle {
     font-size: 18px;
     border-bottom: 1px solid #ddd;
 }
+
 .single_job_pricebox ul {
     margin-top: 0px;
     margin-bottom: 0px;
@@ -178,6 +189,28 @@ h5.pricetitle {
     display: flex;
     justify-content: space-between;
 }
+
 .bidelem {
     margin: 0 auto;
+}
+
+.bidelem {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 5px 7px 17px -12px #000;
+}
+.bidelem table td span {
+    color: var(--ermain);
+}
+
+td,
+th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
 }

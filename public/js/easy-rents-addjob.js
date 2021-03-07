@@ -7,22 +7,18 @@
 
     $('#location_1').select2({
         placeholder: "Select a location",
-        allowClear: true,
         theme: "classic"
     });
     $('#location_2').select2({
         placeholder: "Select a location",
-        allowClear: true,
         theme: "classic"
     });
     $('#location_3').select2({
         placeholder: "Select a location",
-        allowClear: true,
         theme: "classic"
     });
     $('#unload_location').select2({
         placeholder: "Select a location",
-        allowClear: true,
         theme: "classic"
     });
 

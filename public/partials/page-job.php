@@ -1,3 +1,4 @@
+<?php ob_start(); ?>
 <?php get_header(); ?>
 <?php wp_enqueue_style( 'er_jobs_style' ); ?>
 <?php wp_enqueue_script( 'er_jobs_script' ); ?>
@@ -8,17 +9,59 @@ if(have_posts()){
 <section>
     <div id="er_jobs_section">
         <?php
-        if(isset($_POST['jobapply'])):
-            ?>
-            <div class="bidelem">
-                <h1><?php echo __('Write your budget', 'easy-rents') ?></h1>
-                <form action="" method="post">
-                    <input type="text" placeholder="Write your budget">
-                    <input type="submit" class="bidbtn" name="bidbtn" value="BID">
-                </form>
-            </div>
+        // Bid apply
+        if(isset($_POST['bidbtn'])){
+            if(isset($_POST['myprice']) && !empty($_POST['myprice'])){
+                $myprice = sanitize_text_field( intval($_POST['myprice']) );
+                $saveprice = get_post_meta( get_post()->ID, 'erjob_price', true);
+                if(empty($saveprice)){
+                    $commission = get_option('job_commission');
+                    $totalprice =  $myprice + $myprice * $commission / 100;
+
+                    
+
+                    $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'trips_page', true ));
+                    wp_safe_redirect( home_url( '/'.$redirect_page ) );
+                }
+            }
+        }
+
+        // Job apply
+        if(isset($_POST['jobapply'])){
+            $job_status = get_post_meta( get_post()->ID, 'er_job_info' );
+            // Only active/ running job
+            if($job_status[0]['job_status'] == 'running'){ ?>
+                <div class="bidelem">
+                    <table>
+                        <tbody>
+                        <tr>
+                            <th>Commission</th>
+                            <th>Commission Money</th>
+                            <th>Customer see</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="parcents"><?php echo get_option('job_commission'); ?></span>% = <span class="commrate">0</span>tk
+                        </td>
+                            <td>
+                               + <span class="myrate">0</span>tk
+                            </td>
+                            <td>= <span class="sumwithcomm">0</span>tk</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                    <h1><?php echo __('Write your budget', 'easy-rents') ?></h1>
+                    <form action="" method="post">
+                        <input type="number" name="myprice" id="myprice" placeholder="Write your budget">
+                        <input type="submit" class="bidbtn" name="bidbtn" value="BID">
+                    </form>
+                </div>
             <?php
-        else: ?>
+            }else{
+                print_r("This job ended");
+            }
+        }else{ ?>
             <div class="er_jobs_content single_page_job">
                 <h1><?php echo __('JOB Informations', 'easy-rents') ?></h1>
             <?php
@@ -132,36 +175,10 @@ if(have_posts()){
             ?>
             </div>
             <?php
-            endif;
+        }
         ?>
         <div class="er_sidebar single_job_pricebox">
-            <ul>
-                <h5 class="pricetitle">Submited</h5>
-                <li>
-                    <span class="price"><i class="fa fa-truck" aria-hidden="true"></i> 5000 tk</span>
-                    <span class="success_rate"><i class="fa fa-user-circle" aria-hidden="true"></i> 55%</span>
-                </li>
-                <li>
-                    <span class="price"><i class="fa fa-truck" aria-hidden="true"></i> 6060 tk</span>
-                    <span class="success_rate"><i class="fa fa-user-circle" aria-hidden="true"></i> 55%</span>
-                </li>
-                <li>
-                    <span class="price"><i class="fa fa-truck" aria-hidden="true"></i> 4000 tk</span>
-                    <span class="success_rate"><i class="fa fa-user-circle" aria-hidden="true"></i> 55%</span>
-                </li>
-                <li>
-                    <span class="price"><i class="fa fa-truck" aria-hidden="true"></i> 3400 tk</span>
-                    <span class="success_rate"><i class="fa fa-user-circle" aria-hidden="true"></i> 55%</span>
-                </li>
-                <li>
-                    <span class="price"><i class="fa fa-truck" aria-hidden="true"></i> 3000 tk</span>
-                    <span class="success_rate"><i class="fa fa-user-circle" aria-hidden="true"></i> 55%</span>
-                </li>
-                <li>
-                    <span class="price"><i class="fa fa-truck" aria-hidden="true"></i> 3300 tk</span>
-                    <span class="success_rate"><i class="fa fa-user-circle" aria-hidden="true"></i> 55%</span>
-                </li>
-            </ul>
+            <?php echo the_content(); ?>
         </div>
 
     </div>

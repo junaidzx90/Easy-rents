@@ -55,6 +55,7 @@ class Easy_Rents_Admin {
 		// ONLY MOVIE CUSTOM TYPE POSTS
 		add_filter('manage_jobs_posts_columns', array($this, 'wp_list_table_columnname'));
 
+		// Set custom column in job table
 		if($_GET['post_type'] == 'jobs'){
 			$this->jobs_list_table_css();
 		}
@@ -115,6 +116,10 @@ class Easy_Rents_Admin {
 		add_settings_field( 'profile_page', 'Profile page', array($this,'er_profile_page_cb'), 'er-settings', 'er_settings_section');
 		register_setting( 'er_settings_section', 'profile_page');
 
+		// Set commission %
+		add_settings_field( 'job_commission', 'Commissions', array($this,'er_job_commission_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'job_commission');
+
 	}
 
 	// All trips page calback
@@ -122,7 +127,7 @@ class Easy_Rents_Admin {
 		echo '<select name="trips_page">';
 		if(get_option('trips_page') != ""){
 			$page = get_post( intval(get_option( 'trips_page' )) )->post_title;
-			echo '<option selected>';
+			echo '<option value="'.intval(get_option('trips_page')).'" selected>';
 			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
@@ -132,7 +137,7 @@ class Easy_Rents_Admin {
 		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
 		if($posts){
 			foreach($posts as $post){
-				echo '<option value="'.sanitize_text_field( $post->ID ).'">';
+				echo '<option value="'.intval( $post->ID ).'">';
 				echo __($post->post_title, 'easy-rents');
 				echo '</option>';
 			}
@@ -145,7 +150,7 @@ class Easy_Rents_Admin {
 		echo '<select name="add_trip_page">';
 		if(get_option('add_trip_page') != ""){
 			$page = get_post( intval(get_option( 'add_trip_page' )) )->post_title;
-			echo '<option selected>';
+			echo '<option value="'.intval(get_option('trips_page')).'" selected>';
 			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
@@ -155,7 +160,7 @@ class Easy_Rents_Admin {
 		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
 		if($posts){
 			foreach($posts as $post){
-				echo '<option value="'.sanitize_text_field( $post->ID ).'">';
+				echo '<option value="'.intval( $post->ID).'">';
 				echo __($post->post_title, 'easy-rents');
 				echo '</option>';
 			}
@@ -168,7 +173,7 @@ class Easy_Rents_Admin {
 		echo '<select name="profile_page">';
 		if(get_option('profile_page') != ""){
 			$page = get_post( intval(get_option( 'profile_page' )) )->post_title;
-			echo '<option selected>';
+			echo '<option value="'.intval(get_option('trips_page')).'" selected>';
 			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
@@ -178,12 +183,18 @@ class Easy_Rents_Admin {
 		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
 		if($posts){
 			foreach($posts as $post){
-				echo '<option value="'.sanitize_text_field( $post->ID ).'">';
+				echo '<option value="'.intval($post->ID).'">';
 				echo __($post->post_title, 'easy-rents');
 				echo '</option>';
 			}
 		}
 		echo '</select><br>';
+	}
+
+	// Profile page callback
+	function er_job_commission_cb(){
+		$ommision = get_option('job_commission');
+		echo '<input style="width:55px" type="number" name="job_commission" value="'.__($ommision,'easy-rents').'" placeholder="0"> %';
 	}
 
 	//webclass general settings
@@ -288,10 +299,15 @@ class Easy_Rents_Admin {
 	}
 	// CREATE WP LIST TABLE COLUMN FOR STATUS
 	function wp_list_table_columnname($defaults) {
+		$defaults['erpricet_status'] = 'Price';
 		$defaults['erpost_status'] = 'Status';
 		return $defaults;
 	}
 	function wp_list_table_column_view($column_name, $post_ID) {
+		if ($column_name == 'erpricet_status') {
+			// show content of 'directors_name' column
+			echo '2400 tk';
+		}
 		if ($column_name == 'erpost_status') {
 			// show content of 'directors_name' column
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
@@ -306,7 +322,7 @@ class Easy_Rents_Admin {
 	// Add taxonomy field
 	function add_term_image($taxonomy){ ?>
 		<div class="form-field term-group">
-			<label for="">upload , image</label>
+			<label for="txt_upload_image">Upload , image</label>
 			<input type="text" name="txt_upload_image" id="txt_upload_image" value="" style="width: 77%">
 			<input type="button" id="upload_image_btn" class="button" value="upload image" />
 		</div>
