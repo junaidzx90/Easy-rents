@@ -17,10 +17,13 @@
         <div class="er_jobs_content">
             <?php
             global $wp_query,$wpdb,$current_user;
+            $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
             $jobs_args = array(
                 'post_type' => 'jobs',
                 'post_status' => 'publish',
                 'order'     => 'ASC',
+                'paged'     => $paged,
+                'posts_per_page'     => 12,
                 'order_by'     => 'date'
             );
             $jobs = new WP_Query($jobs_args);
@@ -28,6 +31,7 @@
                 while ( $jobs->have_posts() ) : $jobs->the_post();
                 $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
                     // Only active/ running job
+                    $nofound ="";
                     if($job_info[0]['job_status'] == 'running'){
                         $post_id = get_post()->ID;
                         $myapplication = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_id} AND driver_id = {$current_user->ID}"); ?>
@@ -88,9 +92,29 @@
                             </a>
 
                         </div>
-                    <?php   
+                    <?php  
+                    }else{
+                        $nofound = 'Sorry, no job were found.';
                     }
                 endwhile;
+                echo '<div class="pagination"> <div class="paginate">';
+                if($jobs->max_num_pages > 1){
+                    global $wp_query;
+ 
+                    $big = 999999999; // need an unlikely integer
+                    $translated = __( 'Page', 'easy-rents' ); // Supply translatable string
+                    
+                    echo paginate_links( array(
+                        'base' => str_replace( $big, '%#%', esc_url( get_pagenum_link( $big ) ) ),
+                        'format' => '?paged=%#%',
+                        'current' => max( 1, get_query_var('paged') ),
+                        'total' => $jobs->max_num_pages,
+                            'before_page_number' => '<span class="screen-reader-text">'.$translated.' </span>'
+                    ) );
+                }
+                echo '</div></div>';
+                wp_reset_postdata(  );
+                echo $nofound;
                 else :
                     _e( 'Sorry, no job were found.', 'easy-rents' );
             endif;

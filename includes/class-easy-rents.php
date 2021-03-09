@@ -191,6 +191,12 @@ class Easy_Rents {
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+
+		$this->loader->add_action( 'delete_post', $plugin_public, 'job_post_delete', 10 );
+		$this->loader->add_action( 'wp_trash_post', $plugin_public, 'job_post_delete', 10 );
+		
+		$this->loader->add_action("wp_ajax_remove_jobfromcart", $plugin_public, "remove_jobfromcart");
+		$this->loader->add_action("wp_ajax_nopriv_remove_jobfromcart", $plugin_public, "remove_jobfromcart");
 	}
 
 	/**

@@ -12,7 +12,9 @@ div#eraddjob {
 .additemform {
     min-width: 70%;
 }
-
+input.addjob {
+    margin-top: 30px;
+}
 .erform_items {
     display: flex;
     flex-direction: row;
@@ -74,7 +76,7 @@ small.optional {
 input#loading_date, input#loading_time {
     width: 48%;
 }
-input[name="addjob"]{
+input.addjob{
     outline: none;
     padding: 6px;
     font-size: 19px;
@@ -92,6 +94,7 @@ input[type="submit"]:hover{
     opacity: 1;
     transition: .3s ease;
 }
+
 
 .er_sidebar {
     min-width: 22%;

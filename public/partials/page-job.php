@@ -8,12 +8,16 @@ if(have_posts()){
     global $wpdb,$current_user;
     $post_id = get_post()->ID;
     $msg = "";
-    $application = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_id} AND driver_id = {$current_user->ID}");
+    $application = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = {$current_user->ID}");
 ?>
 <section>
     <?php
-    if(!empty($application)){
+    // Showing notify for job status
+    if($application == 1){
         echo '<div class="warning">Your request currently pending!</div>';
+    }
+    if($application == 2){
+        echo '<div class="warning working">You currently working!</div>';
     }
     ?>
     <div id="er_jobs_section">
@@ -32,19 +36,20 @@ if(have_posts()){
                     $commission = get_option('job_commission');
                     $totalprice =  $myprice + $myprice * $commission / 100;
 
-                    if(empty($application)){
+                    if(empty($application) || $application == ""){
 
                         $apply = $wpdb->insert("{$wpdb->prefix}easy_rents_applications", 
                                 array("driver_id" => $current_user->ID,
                                     "customer_id" => get_post()->post_author,
                                     "post_id" => get_post()->ID,
                                     "price" => $totalprice,
-                                    "status" => 0,
+                                    "status" => 1,
                                 ),
                                 array("%d", "%d", "%d","%f","%d"));
 
                         if($apply){
-                            $msg = "<span class='success'>Your request has been published!<span>";
+                            $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'trips_page', true ));
+						    wp_safe_redirect( home_url( '/'.$redirect_page.'/'.get_the_title(  ) ) );
                         }else{
                             $msg = "Sorry You made some problems!";
                         }
@@ -66,7 +71,7 @@ if(have_posts()){
         if(isset($_POST['jobapply'])){
             $job_status = get_post_meta( get_post()->ID, 'er_job_info' );
             // Only active/ running job
-            if($job_status[0]['job_status'] == 'running'){ ?>
+            if($job_status[0]['job_status'] == 'running' && !$application){ ?>
                 <div class="bidelem">
                     <table>
                         <tbody>
@@ -101,13 +106,11 @@ if(have_posts()){
             <div class="er_jobs_content single_page_job">
                 <!-- Showing form information -->
                 <div class="msghandler">
-                    <div class="msgcontainer">
-                        <?php
-                            if(!empty($msg)){
-                                echo __($msg,'easy-rents');
-                            }
-                        ?>
-                    </div>
+                    <?php
+                        if(!empty($msg)){
+                            echo '<div class="warning">'. __($msg,'easy-rents').'</div>';
+                        }
+                    ?>
                 </div>
 
                 <h1><?php echo __('JOB Informations', 'easy-rents') ?></h1>
@@ -164,6 +167,8 @@ if(have_posts()){
                                 <?php
                                 if(!empty($jobitem['er_labore'])){
                                     echo '<span>'.intval($jobitem['er_labore']).' Labores</span>';
+                                }else{
+                                    echo '<span>'.intval($jobitem['er_labore']).' Labores</span>';
                                 }
                                 ?>
                             </div>
@@ -206,13 +211,24 @@ if(have_posts()){
                         <hr class="erhr">
 
                         <div class="jobbottom">
-                            <div class="myinfo">
-                                <h3>Myname <i class="fa fa-check-circle green" aria-hidden="true"></i></h3>
-                                <span class="mycar">TRUCK: T-54545</span>
-                            </div>
-                            
+
                             <?php
-                            if(empty($application)){ ?>
+                            if(is_user_logged_in(  ) && current_user_can( 'administrator','driver','partner' )){
+                                ?>
+                                <div class="myinfo">
+                                    <h3>Myname <i class="fa fa-check-circle green" aria-hidden="true"></i></h3>
+                                    <span class="mycar">TRUCK: T-54545</span>
+                                </div>
+                                <?php
+                            }else{
+                                ?>
+                                <div class="myinfo">
+                                    <h3><a href="#">Sign Up</a></h3>
+                                </div>
+                                <?php
+                            }
+
+                            if($application == "" && is_user_logged_in(  )){ ?>
 
                                 <div class="applybtn">
                                     <form action="" method="post">
@@ -221,13 +237,37 @@ if(have_posts()){
                                 </div>
 
                             <?php
-                            }else{ ?>
-                                <!-- Disabled btn for existing applications -->
-                                <div class="applybtn">
-                                    <button disabled class="jobapply disabledbtn">Apply</button>
-                                </div>
-                            
-                            <?php
+                            }else{
+                                // checking for job status
+                                if($application == 1){
+                                    if($jobitem['job_status'] == 'running'){
+                                    ?>
+                                        <!-- Disabled btn for existing applications -->
+                                        <div class="applybtn">
+                                            <button disabled class="jobapply disabledbtn">Pending</button>
+                                        </div>
+                                    <?php
+                                    }
+                                }else{
+                                    if($application == 2){
+                                        if($jobitem['job_status'] == 'inprogress'){
+                                        ?>
+                                            <!-- Disabled btn for existing applications -->
+                                            <div class="applybtn">
+                                                <button disabled class="jobapply disabledbtn">You working</button>
+                                            </div>
+                                        <?php
+                                        }
+                                    }else{
+                                        // This for logged out users
+                                        ?>
+                                            <!-- Disabled btn for existing applications -->
+                                            <div class="applybtn">
+                                                <button disabled class="jobapply disabledbtn">Apply</button>
+                                            </div>
+                                        <?php
+                                    }
+                                }
                             } ?>
                         </div>
 

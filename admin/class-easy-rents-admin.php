@@ -116,6 +116,18 @@ class Easy_Rents_Admin {
 		add_settings_field( 'profile_page', 'Profile page', array($this,'er_profile_page_cb'), 'er-settings', 'er_settings_section');
 		register_setting( 'er_settings_section', 'profile_page');
 
+		// Profile trips
+		add_settings_field( 'profile_trips', 'Profile Trips', array($this,'er_profile_trips_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'profile_trips');
+
+		// Profile payment
+		add_settings_field( 'profile_payment', 'Payments', array($this,'er_profile_payment_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'profile_payment');
+
+		// Profile settings
+		add_settings_field( 'erprofile_settings', 'Settings', array($this,'er_profile_settings_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'erprofile_settings');
+
 		// Set commission %
 		add_settings_field( 'job_commission', 'Commissions', array($this,'er_job_commission_cb'), 'er-settings', 'er_settings_section');
 		register_setting( 'er_settings_section', 'job_commission');
@@ -150,7 +162,7 @@ class Easy_Rents_Admin {
 		echo '<select name="add_trip_page">';
 		if(get_option('add_trip_page') != ""){
 			$page = get_post( intval(get_option( 'add_trip_page' )) )->post_title;
-			echo '<option value="'.intval(get_option('trips_page')).'" selected>';
+			echo '<option value="'.intval(get_option('add_trip_page')).'" selected>';
 			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
@@ -173,7 +185,76 @@ class Easy_Rents_Admin {
 		echo '<select name="profile_page">';
 		if(get_option('profile_page') != ""){
 			$page = get_post( intval(get_option( 'profile_page' )) )->post_title;
-			echo '<option value="'.intval(get_option('trips_page')).'" selected>';
+			echo '<option value="'.intval(get_option('profile_page')).'" selected>';
+			echo	__($page,'easy-rents');
+			echo '</option>';
+		}else{
+			echo '<option selected> Select a page </option>';
+		}
+
+		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		if($posts){
+			foreach($posts as $post){
+				echo '<option value="'.intval($post->ID).'">';
+				echo __($post->post_title, 'easy-rents');
+				echo '</option>';
+			}
+		}
+		echo '</select><br>';
+	}
+
+	// Profile trips page callback
+	function er_profile_trips_cb(){
+		echo '<select name="profile_trips">';
+		if(get_option('profile_trips') != ""){
+			$page = get_post( intval(get_option( 'profile_trips' )) )->post_title;
+			echo '<option value="'.intval(get_option('profile_trips')).'" selected>';
+			echo	__($page,'easy-rents');
+			echo '</option>';
+		}else{
+			echo '<option selected> Select a page </option>';
+		}
+
+		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		if($posts){
+			foreach($posts as $post){
+				echo '<option value="'.intval($post->ID).'">';
+				echo __($post->post_title, 'easy-rents');
+				echo '</option>';
+			}
+		}
+		echo '</select><br>';
+	}
+
+	// Profile payment callback
+	function er_profile_payment_cb(){
+		echo '<select name="profile_payment">';
+		if(get_option('profile_payment') != ""){
+			$page = get_post( intval(get_option( 'profile_payment' )) )->post_title;
+			echo '<option value="'.intval(get_option('profile_payment')).'" selected>';
+			echo	__($page,'easy-rents');
+			echo '</option>';
+		}else{
+			echo '<option selected> Select a page </option>';
+		}
+
+		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		if($posts){
+			foreach($posts as $post){
+				echo '<option value="'.intval($post->ID).'">';
+				echo __($post->post_title, 'easy-rents');
+				echo '</option>';
+			}
+		}
+		echo '</select><br>';
+	}
+
+	// Profile settings
+	function er_profile_settings_cb(){
+		echo '<select name="erprofile_settings">';
+		if(get_option('erprofile_settings') != ""){
+			$page = get_post( intval(get_option( 'erprofile_settings' )) )->post_title;
+			echo '<option value="'.intval(get_option('erprofile_settings')).'" selected>';
 			echo	__($page,'easy-rents');
 			echo '</option>';
 		}else{
@@ -312,8 +393,12 @@ class Easy_Rents_Admin {
 			// show content of 'directors_name' column
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
 			if($postinfo[0]['job_status'] == 'running'){
+				echo '<span class="status_circle" style="background-color:#0280d2"></span>';
+			}
+			if($postinfo[0]['job_status'] == 'inprogress'){
 				echo '<span class="status_circle" style="background-color:#13d202"></span>';
-			}else{
+			}
+			if($postinfo[0]['job_status'] == 'ends'){
 				echo '<span class="status_circle" style="background-color:gray"></span>';
 			}
 		}
@@ -373,4 +458,5 @@ class Easy_Rents_Admin {
 			);
 		}
 	}
+	
 }

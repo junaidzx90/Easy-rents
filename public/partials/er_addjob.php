@@ -20,7 +20,8 @@
  ?>
  <?php 
 //  Get form data to upload database
-if(isset($_POST['addjob'])){
+
+if(isset($_POST['addjob']) && isset($_POST['jobform']) && $_POST['jobform'] != ""){
     if ( empty($_POST) || ! wp_verify_nonce( $_POST['er_addjob_nonce'], 'er_addjob_nonce_val') ){
         print 'Verification failed. Try again.';
         exit;
@@ -47,8 +48,8 @@ if(isset($_POST['addjob'])){
         $goods_weight = sanitize_text_field( $_POST['goods_weight'] );
         $er_labore = intval( $_POST['er_labore'] );
 
-        // wp_insert_post( $postarr:array, $wp_error:boolean, $fire_after_hooks:boolean )
         $invoice = new Easy_Rents();
+
         global $current_user;
         $invoice_nom = $invoice->get_invoice_id($current_user->ID);
 
@@ -72,17 +73,17 @@ if(isset($_POST['addjob'])){
             'post_name'     => wp_strip_all_tags( $invoice_nom ),
             'post_content'  => '',
             'post_author'   => $current_user->ID,
-            'meta_input'        => array(
-                'er_job_info'        => $job_info
+            'meta_input'    => array(
+                'er_job_info'  => $job_info
             )
         );
+        
         $post_id = wp_insert_post( $job_post );
         $set_term = wp_set_post_terms( $post_id, $truck_type, 'truckstype');
-        
-        if(!is_wp_error( $set_term )){
-            wp_safe_redirect( home_url('/profile') );
-            exit;
-        }
+
+        $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'trips_page', true ));
+        wp_safe_redirect( home_url('/'.$redirect_page) );
+        exit;
     }
 }
 
@@ -220,8 +221,8 @@ $entry_locations = get_option( 'er_locations' );
                          </div>
                         <?php wp_nonce_field( 'er_addjob_nonce_val', 'er_addjob_nonce' ); ?>
                          <div class="input-group">
-                            <label class="eraddjobformwarning">Publish job</label>
-                            <input type="submit" name="addjob" value="Place">
+                            <input type="hidden" id="jobform" value="<?php echo rand(); ?>" name="jobform">
+                            <input type="submit" name="addjob" class="addjob" value="Place">
                         </div>
 
                      </div>

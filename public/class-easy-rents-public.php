@@ -56,7 +56,6 @@ class Easy_Rents_Public {
 
 		// easy rents add filters
 		$this->er_add_fileters();
-		
 	}
 
 	// easy rents add filters
@@ -66,6 +65,16 @@ class Easy_Rents_Public {
 		add_filter( 'template_include', array($this,'wp_page_attributes' ));
 		// webclass archive page include for projects
 		add_filter('template_include', array($this,'projects_template'));
+
+		// Profile page
+		add_shortcode( 'er_profile', array($this, 'er_profile_page') );
+		// Profile page
+		add_shortcode( 'er_profile_trips', array($this, 'er_profile_trips') );
+		// Profile page
+		add_shortcode( 'er_payment', array($this, 'er_payment_page') );
+		// Profile page
+		add_shortcode( 'er_profile_settings', array($this, 'er_profile_settings') );
+
 	}
 
 	/**
@@ -119,13 +128,19 @@ class Easy_Rents_Public {
 		}
 	}
 
+	// delete post
+	function job_post_delete($post_id){
+		global $wpdb,$wp_query;
+		delete_post_meta( $post_id, 'er_job_info' );
+		$wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id");
+	}
+
 	/**
 	 * Define template name
 	 */
 	function webclass_templates ($templates) {
 		$templates['er_jobs.php'] = 'All jobs';
 		$templates['er_addjob.php'] = 'Add job';
-		$templates['er_profile.php'] = 'Profile';
 		
 		return $templates;
 	}
@@ -148,15 +163,6 @@ class Easy_Rents_Public {
 				$template = $theme_file;
 			} else {
 				$template = ER_PATH . 'public/partials/er_addjob.php';
-			}
-		}
-		
-		if(  get_page_template_slug() === 'er_profile.php' ) {
-
-			if ( $theme_file = locate_template( array( 'er_profile.php' ) ) ) {
-				$template = $theme_file;
-			} else {
-				$template = ER_PATH . 'public/partials/er_profile.php';
 			}
 		}
 
@@ -193,4 +199,45 @@ class Easy_Rents_Public {
 		}
 		return $template;
 	}
+
+	// Profile page
+	function er_profile_page( $atts ){
+		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_dashboard.php');
+	}
+
+	// Remove from cart
+	function remove_jobfromcart(){
+		check_ajax_referer('er_profile', 'security');
+		if(isset($_POST['post_id']) && isset($_POST['customer_id'])){
+			$post_id = $_POST['post_id'];
+			$customer_id = $_POST['customer_id'];
+			global $current_user,$wpdb;
+			
+			if($post_id != "" && $customer_id != ""){
+				if(is_user_logged_in(  ) && current_user_can( 'administrator','driver','partner' )){
+					if($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = $current_user->ID AND customer_id = $customer_id")){
+					    $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true ));
+						echo home_url( '/'.$redirect_page );
+						die;
+					}
+				}
+			}
+		}
+	}
+
+	// er_profile_trips
+	function er_profile_trips( $atts ){
+		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_mytrips.php');
+	}
+
+	// er_payment_page
+	function er_payment_page( $atts ){
+		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_payment.php');
+	}
+
+	// er_profile_settings
+	function er_profile_settings( $atts ){
+		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_profile_settings.php');
+	}
+
 }

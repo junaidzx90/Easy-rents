@@ -94,7 +94,10 @@ main#main {
     box-shadow: 0px 1px 9px -5px #2f2f2f;
     margin-bottom: 25px;
 }
-
+.warning.working {
+    background: #b1eac5;
+    color: green;
+}
 .single_page_job {
     width: 65%;
 }
@@ -168,7 +171,10 @@ button.jobapply,
     border-radius: 5px;
     cursor: pointer;
 }
-
+.pagination {
+    display: flex;
+    justify-content: center;
+}
 .bidbtn {
     margin-top: 15px;
 }
@@ -237,4 +243,8 @@ button.disabledbtn {
 }
 button.disabledbtn:hover{
     opacity: .2;
+    cursor: default;
+}
+.myinfo h3 a{
+    text-decoration: underline;
 }
