@@ -24,7 +24,7 @@ function er_transform(elem,target) {
 
 	$('.removejob').on('click', function (e) {
 		if (confirm("Are you sure! You really want to remove?")) {
-			let btn = $('.removejob');
+			let btn = $(this);
 			e.preventDefault();
 			let customer_id = $(this).parent().children('input[name="erc"]').val();
 			let post_id = $(this).parent().children('input[name="erp"]').val();;

@@ -74,6 +74,8 @@ class Easy_Rents_Public {
 		add_shortcode( 'er_payment', array($this, 'er_payment_page') );
 		// Profile page
 		add_shortcode( 'er_profile_settings', array($this, 'er_profile_settings') );
+		// er_login_register
+		add_shortcode( 'er_access_form', array($this, 'er_login_register') );
 
 	}
 
@@ -92,6 +94,9 @@ class Easy_Rents_Public {
 		wp_register_style( 'er_jobs_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-jobs.css', array(), $this->version, 'all' );
 		// select2 style
 		wp_register_style( 'select2', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), $this->version, 'all' );
+
+		// er_login_register
+		wp_register_style( 'er_login_register', plugin_dir_url( __FILE__ ) . 'css/er_login_register.css', array(), $this->version, 'all' );
 
 	}
 
@@ -113,6 +118,9 @@ class Easy_Rents_Public {
 
 		// select2 script
 		wp_register_script( 'select2', plugin_dir_url( __FILE__ ) . 'js/select2.min.js', array( 'jquery' ), $this->version, true );
+
+		// er_login_register
+		wp_register_script( 'er_login_register', plugin_dir_url( __FILE__ ) . 'js/er_login_register.js', array( 'jquery' ), $this->version, true );
 
 	}
 
@@ -238,6 +246,11 @@ class Easy_Rents_Public {
 	// er_profile_settings
 	function er_profile_settings( $atts ){
 		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_profile_settings.php');
+	}
+
+	// er_register / login page
+	function er_login_register( $atts ){
+		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_login_register.php');
 	}
 
 }
