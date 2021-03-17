@@ -208,11 +208,7 @@ class Easy_Rents_Public {
 		return $template;
 	}
 
-	// Profile page
-	function er_profile_page( $atts ){
-		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_dashboard.php');
-	}
-
+	
 	// Remove from cart
 	function remove_jobfromcart(){
 		check_ajax_referer('er_profile', 'security');
@@ -222,9 +218,9 @@ class Easy_Rents_Public {
 			global $current_user,$wpdb;
 			
 			if($post_id != "" && $customer_id != ""){
-				if(is_user_logged_in(  ) && current_user_can( 'administrator','driver','partner' )){
+				if(is_user_logged_in(  ) && $this->er_role_check( ['driver'] )){
 					if($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = $current_user->ID AND customer_id = $customer_id")){
-					    $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true ));
+					    $redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
 						echo home_url( '/'.$redirect_page );
 						die;
 					}
@@ -233,24 +229,117 @@ class Easy_Rents_Public {
 		}
 	}
 
+	// Cancel Request
+	function ignorerequest(){
+		check_ajax_referer('er_profile', 'security');
+		if(isset($_POST['post_id']) && isset($_POST['driver_id'])){
+			$post_id = $_POST['post_id'];
+			$driver_id = $_POST['driver_id'];
+			global $current_user,$wpdb;
+			
+			if($post_id != "" && $driver_id != ""){
+				if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
+					if($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = $driver_id AND customer_id = $current_user->ID")){
+					    $redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
+						echo home_url( '/'.$redirect_page );
+						die;
+					}
+				}
+			}
+		}
+	}
+
+	// Accept Request
+	function acceptrequest(){
+		check_ajax_referer('er_profile', 'security');
+		if(isset($_POST['post_id']) && isset($_POST['driver_id'])){
+			$post_id = $_POST['post_id'];
+			$driver_id = $_POST['driver_id'];
+			global $current_user,$wpdb;
+
+			if($post_id != "" && $driver_id != ""){
+				if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
+					$redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
+					if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2  WHERE driver_id = $driver_id AND customer_id = $current_user->ID")){
+						$job_info = get_post_meta( $post_id, 'er_job_info' );
+						$job_info[0]['job_status'] = 'inprogress';
+
+						if(update_post_meta( $post_id, 'er_job_info', $job_info[0] )){
+							$wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE  driver_id = $driver_id AND status = 1");
+							
+							$driverinfo = get_user_by("id", $current_user->ID )->user_email;
+							if(!empty($driverinfo)){
+								$subject = home_url()." Approval status";
+								$message = "Hi ".$driverinfo->user_nicename.",\r\n\nYour request has been approved!\r\n\n <a href='".esc_url(home_url( '/'.$redirect_page ))."'>See your job status</a>";
+								mail($driverinfo, $subject, $message);
+							}
+							
+							die;
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Webclass multiple role check
+	 */
+	function er_role_check($roles = array()){
+		global $current_user;
+		$allowed_user = $roles;
+		if(array_intersect($allowed_user, $current_user->roles)){
+			// return true
+			return true;
+		}else{
+			return false;
+		}
+	}
+
+	// Profile page
+	function er_profile_page( $atts ){
+		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_dashboard.php');
+		}else{
+			echo 'Please Login to see';
+		}
+	}
+
+
 	// er_profile_trips
 	function er_profile_trips( $atts ){
-		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_mytrips.php');
+		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_mytrips.php');
+		}else{
+			echo 'Please Login to see';
+		}
 	}
 
 	// er_payment_page
 	function er_payment_page( $atts ){
-		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_payment.php');
+		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_payment.php');
+		}else{
+			echo 'Please Login to see';
+		}
 	}
 
 	// er_profile_settings
 	function er_profile_settings( $atts ){
-		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_profile_settings.php');
+		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_profile_settings.php');
+		}else{
+			echo 'Please Login to see';
+		}
 	}
 
 	// er_register / login page
 	function er_login_register( $atts ){
-		require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_login_register.php');
+		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_login_register.php');
+		}else{
+			echo 'Please Login to see';
+		}
 	}
 
 }

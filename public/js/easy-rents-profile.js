@@ -38,7 +38,63 @@ function er_transform(elem,target) {
 					security: er_profile_ajax.security,
 				},
 				beforeSend: function () {
-					btn.text('Removing');
+					btn.text('Removing..');
+				},
+				success: function (response) {
+					location.reload();
+				}
+			});
+		} else {
+			return false;
+		}
+	});
+
+	// Cancel request
+	$('.ignorerequest').on('click', function (e) {
+		if (confirm("Are you sure! You really want to cancel?")) {
+			let btn = $(this);
+			e.preventDefault();
+			let driver_id = $(this).parent().children('input[name="erd"]').val();
+			let post_id = $(this).parent().children('input[name="erp"]').val();;
+			$.ajax({
+				type: "POST",
+				url: er_profile_ajax.ajax_url,
+				data: {
+					action: 'ignorerequest',
+					driver_id: driver_id,
+					post_id: post_id,
+					security: er_profile_ajax.security,
+				},
+				beforeSend: function () {
+					btn.text('Ignoring..');
+				},
+				success: function (response) {
+					location.reload();
+				}
+			});
+		} else {
+			return false;
+		}
+	});
+
+	// Accept Request
+	$('.acceptrequest').on('click', function (e) {
+		if (confirm("Are you sure?")) {
+			let btn = $(this);
+			e.preventDefault();
+			let driver_id = $(this).parent().children('input[name="erd"]').val();
+			let post_id = $(this).parent().children('input[name="erp"]').val();;
+			$.ajax({
+				type: "POST",
+				url: er_profile_ajax.ajax_url,
+				data: {
+					action: 'acceptrequest',
+					driver_id: driver_id,
+					post_id: post_id,
+					security: er_profile_ajax.security,
+				},
+				beforeSend: function () {
+					btn.text('Accepting..');
 				},
 				success: function (response) {
 					location.reload();

@@ -11,20 +11,11 @@ if(have_posts()){
     $application = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = {$current_user->ID}");
 ?>
 <section>
-    <?php
-    // Showing notify for job status
-    if($application == 1){
-        echo '<div class="warning">Your request currently pending!</div>';
-    }
-    if($application == 2){
-        echo '<div class="warning working">You currently working!</div>';
-    }
-    ?>
     <div id="er_jobs_section">
         <?php
         // Job apply STEP 2
         if(isset($_POST['bidbtn'])){
-            if(!is_user_logged_in(  )){
+            if(!is_user_logged_in(  ) && !Easy_Rents_Public::er_role_check( ['partner','driver'] )){
                 wp_safe_redirect( home_url('/'));
                 exit;
             }
@@ -69,6 +60,11 @@ if(have_posts()){
 
         // Job apply STEP 1
         if(isset($_POST['jobapply'])){
+            if(!is_user_logged_in(  ) && !Easy_Rents_Public::er_role_check( ['partner','driver'] )){
+                wp_safe_redirect( home_url('/'));
+                exit;
+            }
+
             $job_status = get_post_meta( get_post()->ID, 'er_job_info' );
             // Only active/ running job
             if($job_status[0]['job_status'] == 'running' && !$application){ ?>
@@ -104,6 +100,15 @@ if(have_posts()){
             }
         }else{ ?>
             <div class="er_jobs_content single_page_job">
+            <?php
+                // Showing notify for job status
+                if($application == 1){
+                    echo '<div class="warning">Your request currently pending!</div>';
+                }
+                if($application == 2){
+                    echo '<div class="warning working">You currently working!</div>';
+                }
+            ?>
                 <!-- Showing form information -->
                 <div class="msghandler">
                     <?php
@@ -213,22 +218,26 @@ if(have_posts()){
                         <div class="jobbottom">
 
                             <?php
-                            if(is_user_logged_in(  ) && current_user_can( 'administrator','driver','partner' )){
+                            if(is_user_logged_in(  ) && Easy_Rents_Public::er_role_check( ['driver','partner'] )){
                                 ?>
                                 <div class="myinfo">
-                                    <h3>Myname <i class="fa fa-check-circle green" aria-hidden="true"></i></h3>
+                                    <h3><?php echo __($current_user->user_nicename,'easy-rents'); ?> <i class="fa fa-check-circle green" aria-hidden="true"></i></h3>
                                     <span class="mycar">TRUCK: T-54545</span>
                                 </div>
                                 <?php
                             }else{
-                                ?>
-                                <div class="myinfo">
-                                    <h3><a href="#">Sign Up</a></h3>
-                                </div>
-                                <?php
+                                if(is_user_logged_in(  )){
+                                    echo __($current_user->user_nicename,'easy-rents');
+                                }else{
+                                    ?>
+                                    <div class="myinfo">
+                                        <h3><a href="<?php echo esc_url( home_url('/login') ) ?>">Login</a></h3>
+                                    </div>
+                                    <?php
+                                }
                             }
 
-                            if($application == "" && is_user_logged_in(  )){ ?>
+                            if($application == "" && is_user_logged_in(  ) && Easy_Rents_Public::er_role_check( ['driver','partner'] )){ ?>
 
                                 <div class="applybtn">
                                     <form action="" method="post">

@@ -32,6 +32,7 @@ div#er_jobs_section {
 }
 
 .er_jobItem {
+    position: relative;
     margin: 5px;
     width: 31.9%;
     display: inline-block;
@@ -41,7 +42,13 @@ div#er_jobs_section {
     transition: .3s ease-in;
     cursor: pointer;
 }
-
+span.erjobstatus {
+    position: absolute;
+    right: 0;
+    padding: 5px;
+    background: #fff;
+    border-radius: 0px 0px 0px 5px;
+}
 ._jobitem span {
     font-size: 16px;
 }

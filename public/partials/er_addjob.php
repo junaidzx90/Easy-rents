@@ -14,7 +14,8 @@
  <?php wp_enqueue_script( 'select2' ); ?>
  <?php wp_enqueue_script( 'er_addjob_script' ); ?>
  <?php 
-    if(!current_user_can( 'administrator' )){
+    if(!Easy_Rents_Public::er_role_check( ['Customer'] )){
+        echo 'Please Login To See';
         return;
     }
  ?>
@@ -22,6 +23,9 @@
 //  Get form data to upload database
 
 if(isset($_POST['addjob']) && isset($_POST['jobform']) && $_POST['jobform'] != ""){
+    if(!is_user_logged_in(  ) && !Easy_Rents_Public::er_role_check( ['Customer'] )){
+        return;
+    }
     if ( empty($_POST) || ! wp_verify_nonce( $_POST['er_addjob_nonce'], 'er_addjob_nonce_val') ){
         print 'Verification failed. Try again.';
         exit;

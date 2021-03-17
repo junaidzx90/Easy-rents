@@ -386,9 +386,17 @@ class Easy_Rents_Admin {
 	}
 	function wp_list_table_column_view($column_name, $post_ID) {
 		if ($column_name == 'erpricet_status') {
-			// show content of 'directors_name' column
-			echo '2400 tk';
+			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
+			if($postinfo[0]['job_status'] == 'inprogress'){
+				global $wpdb;
+				$job_price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
+				// show content of 'directors_name' column
+				echo $job_price.' tk';
+			}else{
+				echo 'NA';
+			}
 		}
+
 		if ($column_name == 'erpost_status') {
 			// show content of 'directors_name' column
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
@@ -398,7 +406,7 @@ class Easy_Rents_Admin {
 			if($postinfo[0]['job_status'] == 'inprogress'){
 				echo '<span class="status_circle" style="background-color:#13d202"></span>';
 			}
-			if($postinfo[0]['job_status'] == 'ends'){
+			else{
 				echo '<span class="status_circle" style="background-color:gray"></span>';
 			}
 		}

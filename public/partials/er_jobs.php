@@ -29,14 +29,22 @@
             $jobs = new WP_Query($jobs_args);
             if ( $jobs->have_posts() ) :
                 while ( $jobs->have_posts() ) : $jobs->the_post();
-                $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
                     // Only active/ running job
                     $nofound ="";
                     if($job_info[0]['job_status'] == 'running'){
                         $post_id = get_post()->ID;
                         $myapplication = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_id} AND driver_id = {$current_user->ID}"); ?>
 
-                        <div class="er_jobItem <?php echo (!empty($myapplication)?'disabled':'') ?>">
+                        <div class="er_jobItem">
+                            <span class="erjobstatus"><?php 
+                            if(!empty($myapplication)){
+                                echo __('Pending','easy-rents');
+                            }
+                            if(get_post()->post_author == $current_user->ID){
+                                echo __('My Job','easy-rents');
+                            } 
+                            ?></span>
                             <a href="<?php echo the_permalink(  ); ?>">
                                 <div class="er_jobimg">
                                     <?php

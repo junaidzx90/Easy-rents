@@ -215,6 +215,18 @@ button.cancel {
     background: #e2e2e2 !important;
     color: #23282d !important;
 }
+.pendingjobid {
+    margin: 5px 0px;
+}
+.pendingjobid .price {
+    float: right;
+    margin-right: 25px;
+}
+.pendingjobid .price {
+    float: right;
+    margin-right: 25px;
+    color: #f28282;
+}
 
 @media screen and (max-width: 900px) and (min-width: 400px) {
     body {
