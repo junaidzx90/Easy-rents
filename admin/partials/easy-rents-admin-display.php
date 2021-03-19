@@ -11,16 +11,15 @@
  * @package    Easy_Rents
  * @subpackage Easy_Rents/admin/partials
  */
-?>
-<?php $admin_this = new Easy_Rents( ); ?>
-<?php 
+
+$admin_this = new Easy_Rents( );
 wp_enqueue_style( $admin_this->get_plugin_name() );
 wp_enqueue_script( $admin_this->get_plugin_name() );
 ?>
 <?php
 // Getting page identifyer
 echo '<h1>ER Settings </h1> <hr>';
-echo '<form action="options.php" method="post">';
+echo '<form action="options.php" method="post" id="er_settings">';
 settings_fields( 'er_settings_section' );
 do_settings_fields( 'er-settings', 'er_settings_section' );
 submit_button();

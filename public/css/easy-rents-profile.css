@@ -72,9 +72,8 @@ main .helper span {
     width: 240px;
     position: fixed;
     top: 0;
-    padding-top: 32px;
     left: 0;
-    z-index: 5;
+    z-index: 9999;
     outline: none;
 }
 
@@ -227,7 +226,31 @@ button.cancel {
     margin-right: 25px;
     color: #f28282;
 }
-
+.requestforfinished,.finishedjobreq {
+    color: #65bc7b;
+    float: right;
+    background: #e7e6e6;
+    padding: 0px 14px;
+}
+.finishedjobreq{
+    color: #f28282;
+}
+.username {
+    text-transform: capitalize;
+}
+span.notification {
+    background: #65bc7b;
+    color: white !important;
+    margin-left: 8px;
+    width: 18px;
+    height: 18px;
+    display: inline-block;
+    text-align: center;
+    line-height: 14px;
+    font-size: 14px;
+    border-radius: 50%;
+    padding: 2px;
+}
 @media screen and (max-width: 900px) and (min-width: 400px) {
     body {
         padding-left: 90px;

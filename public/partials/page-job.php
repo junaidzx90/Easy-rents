@@ -9,6 +9,8 @@ if(have_posts()){
     $post_id = get_post()->ID;
     $msg = "";
     $application = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = {$current_user->ID}");
+
+    $exists = $wpdb->get_var("SELECT post_id FROM {$wpdb->prefix}easy_rents_applications WHERE status > 2");
 ?>
 <section>
     <div id="er_jobs_section">
@@ -25,15 +27,17 @@ if(have_posts()){
                 
                 try {
                     $commission = get_option('job_commission');
-                    $totalprice =  $myprice + $myprice * $commission / 100;
+                    $totalprice =  $myprice * $commission / 100 + $myprice;
 
-                    if(empty($application) || $application == ""){
+                    if(empty($application) && !$exists || $application == ""){
 
                         $apply = $wpdb->insert("{$wpdb->prefix}easy_rents_applications", 
                                 array("driver_id" => $current_user->ID,
                                     "customer_id" => get_post()->post_author,
                                     "post_id" => get_post()->ID,
                                     "price" => $totalprice,
+                                    "net_price" => $myprice,
+                                    "commrate" => $commission,
                                     "status" => 1,
                                 ),
                                 array("%d", "%d", "%d","%f","%d"));
@@ -237,18 +241,39 @@ if(have_posts()){
                                 }
                             }
 
-                            if($application == "" && is_user_logged_in(  ) && Easy_Rents_Public::er_role_check( ['driver','partner'] )){ ?>
+                            // Apply btn
+                            if($application == "" && is_user_logged_in(  ) && Easy_Rents_Public::er_role_check( ['driver'] )){
+                                $myexiststrip = $wpdb->get_var("SELECT post_id FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = $current_user->ID AND status = 4 OR status = 2");
 
-                                <div class="applybtn">
-                                    <form action="" method="post">
-                                        <button class="jobapply" name="jobapply">Apply</button>
-                                    </form>
-                                </div>
-
-                            <?php
+                                if($myexiststrip){
+                                    ?>
+                                    <div class="applybtn">
+                                        <span class="jobapply" name="jobapply">Cannot apply for a new job while in another job</span>
+                                    </div>
+                                    <?php
+                                }else{
+                                    $paymentstatus = $wpdb->get_results("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = $current_user->ID AND payment = '' OR payment = 0");
+                                    
+                                    if(count($paymentstatus) > 0){
+                                        ?>
+                                        <div class="applybtn">
+                                            <span class="jobapply" name="jobapply">You can't apply for job before paying <a href="<?php echo esc_url(home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_payment', true )))) ?>">Payments!</a></span>
+                                        </div>
+                                        <?php
+                                    }else{
+                                        ?>
+                                        <div class="applybtn">
+                                            <form action="" method="post">
+                                                <button class="jobapply" name="jobapply">Apply</button>
+                                            </form>
+                                        </div>
+                                        <?php
+                                    }
+                                    
+                                }
                             }else{
                                 // checking for job status
-                                if($application == 1){
+                                if($application == 1 && Easy_Rents_Public::er_role_check( ['driver'] )){
                                     if($jobitem['job_status'] == 'running'){
                                     ?>
                                         <!-- Disabled btn for existing applications -->
@@ -258,7 +283,7 @@ if(have_posts()){
                                     <?php
                                     }
                                 }else{
-                                    if($application == 2){
+                                    if($application == 2 && Easy_Rents_Public::er_role_check( ['driver'] )){
                                         if($jobitem['job_status'] == 'inprogress'){
                                         ?>
                                             <!-- Disabled btn for existing applications -->
@@ -268,13 +293,23 @@ if(have_posts()){
                                         <?php
                                         }
                                     }else{
-                                        // This for logged out users
-                                        ?>
-                                            <!-- Disabled btn for existing applications -->
-                                            <div class="applybtn">
-                                                <button disabled class="jobapply disabledbtn">Apply</button>
-                                            </div>
-                                        <?php
+                                        if(Easy_Rents_Public::er_role_check( ['Customer'] )){
+                                            // This for logged out users
+                                            ?>
+                                                <!-- Disabled btn for existing applications -->
+                                                <div class="applybtn">
+                                                    <button disabled class="jobapply disabledbtn">☕</button>
+                                                </div>
+                                            <?php
+                                        }else{
+                                            // This for logged out users
+                                            ?>
+                                                <!-- Disabled btn for existing applications -->
+                                                <div class="applybtn">
+                                                    <button disabled class="jobapply disabledbtn">Apply</button>
+                                                </div>
+                                            <?php
+                                        }
                                     }
                                 }
                             } ?>

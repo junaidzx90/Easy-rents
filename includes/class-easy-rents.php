@@ -160,6 +160,10 @@ class Easy_Rents {
 
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
+		// disable wp backend
+		$this->loader->add_action( 'init', $plugin_admin, 'disable_backend_access' );
+		// Redirect after login
+		$this->loader->add_action( 'login_redirect', $plugin_admin, 'er_login_redirects', 10, 3 );
 		
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'easy_rents_setup' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'er_page_settings_register' );
@@ -177,6 +181,9 @@ class Easy_Rents {
 		// Custom wplist table column
 		$this->loader->add_action('manage_jobs_posts_custom_column', $plugin_admin, 'wp_list_table_column_view',10,2);
 
+		// Send sms to driver for payment
+		$this->loader->add_action("wp_ajax_send_sms_forpayment", $plugin_admin, "send_sms_forpayment");
+		$this->loader->add_action("wp_ajax_nopriv_send_sms_forpayment", $plugin_admin, "send_sms_forpayment");
 	}
 
 	/**
@@ -194,6 +201,8 @@ class Easy_Rents {
 
 		$this->loader->add_action( 'delete_post', $plugin_public, 'job_post_delete', 10 );
 		$this->loader->add_action( 'wp_trash_post', $plugin_public, 'job_post_delete', 10 );
+		// Adminbar showing
+		$this->loader->add_action( 'init', $plugin_public, 'er_admin_bar_showing', 10 );
 
 		// Removemyreq
 		$this->loader->add_action("wp_ajax_remove_jobfromcart", $plugin_public, "remove_jobfromcart");
@@ -206,6 +215,13 @@ class Easy_Rents {
 		// acceptrequest
 		$this->loader->add_action("wp_ajax_acceptrequest", $plugin_public, "acceptrequest");
 		$this->loader->add_action("wp_ajax_nopriv_acceptrequest", $plugin_public, "acceptrequest");
+
+		// request for finished
+		$this->loader->add_action("wp_ajax_requestforfinishedjob", $plugin_public, "requestforfinishedjob");
+		$this->loader->add_action("wp_ajax_nopriv_requestforfinishedjob", $plugin_public, "requestforfinishedjob");
+		// finished confirm
+		$this->loader->add_action("wp_ajax_finishedconfirmed", $plugin_public, "finishedconfirmed");
+		$this->loader->add_action("wp_ajax_nopriv_finishedconfirmed", $plugin_public, "finishedconfirmed");
 	}
 
 	/**

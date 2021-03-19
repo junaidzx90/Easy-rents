@@ -1,4 +1,5 @@
 <?php
+$page = 'dashboard';
 /**
     * @link example.com
     * @since 1.0.0
@@ -19,39 +20,15 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 <section>
     <div id="er_profileMain">
 
-        <nav class="ermenu" tabindex="0">
-            <div class="smartphone-ermenu-trigger"></div>
-            <header class="avatar">
-                <img style="width: 100px" src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" />
-                <h2>John D. <i class="fa fa-check-circle verified" aria-hidden="true"></i></h2>
-            </header>
-            <ul>
-                <li tabindex="0" class="listitem eractive">
-                    <i class="fa fa-handshake-o" aria-hidden="true"></i>
-                    <a href="<?php echo home_url($this->get_post_slug(get_option( 'profile_page', true ))) ?>"> <span class="eractivecolor">Dashboard</span> </a>
-                </li>
-
-                <li tabindex="0" class="listitem">
-                    <i class="fa fa-tasks" aria-hidden="true"></i>
-                    <a href="<?php echo home_url($this->get_post_slug(get_option( 'profile_trips', true ))) ?>"> <span>My Trips</span></a>
-                </li>
-
-                <li tabindex="0" class="listitem">
-                    <i class="fa fa-institution" aria-hidden="true"></i>
-                    <a href="<?php echo home_url($this->get_post_slug(get_option( 'profile_payment', true ))) ?>"><span>Payments</span></a>
-                </li>
-
-                <li tabindex="0" class="listitem">
-                    <i class="fa fa-user-secret" aria-hidden="true"></i>
-                    <a href="<?php echo home_url($this->get_post_slug(get_option( 'erprofile_settings', true ))) ?>"><span>Settings</span></a>
-                </li>
-            </ul>
-        </nav>
+        <!-- Sidebar -->
+        <?php require_once(ER_PATH.'public/partials/profile_sidebar.php') ?>
 
         <main>
             <div class="tabs">
                 <button class="pending erbtnactive" onclick="er_transform('pending',this)">Pending</button>
                 <button class="running" onclick="er_transform('running',this)">Running</button>
+
+                <a href="<?php echo wp_logout_url(); ?>">Log Out</a>
             </div>
 
             <div id="pending" class="tabelem">
@@ -74,7 +51,11 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 
                             if ( $pendingJobs->have_posts() ){
                                 while ( $pendingJobs->have_posts() ){
-                                    $pendingJobs->the_post(); ?>
+                                    $pendingJobs->the_post(); 
+                                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+                                    // Only active/ running job
+                                    if($job_info[0]['job_status'] == 'running'){
+                                    ?>
                                     
                                     <div class="jobitem">
                                         <table>
@@ -94,7 +75,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                         <?php echo __($pjob->price,'easy-rents'); ?>tk
                                                     </td>
                                                     <td>
-                                                    <?php echo __(date('M-j-Y g:i A', strtotime($pjob->create_at)),'easy-rents'); ?>
+                                                    <?php echo Easy_Rents_Public::time_elapsed_string($pjob->create_at, true); ?>
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -108,7 +89,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                             <?php
                                                             if($pjob->status = 1){
                                                             ?>
-                                                                <button class="acceptrequest" name="acceptrequest">Accept</button>
+                                                                <button data-id="<?php echo intval($pjob->ID) ?>" class="acceptrequest" name="acceptrequest">Accept</button>
                                                             <?php
                                                             }
                                                             ?>
@@ -120,6 +101,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                         </table>
                                     </div>
                                     <?php
+                                    }
                                 }
                             }
                         }
@@ -165,6 +147,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                         <th><strong>Load Location</strong></th>
                                                         <th><strong>Unload Location</strong></th>
                                                         <th><strong>Load Time</strong></th>
+                                                        <th><strong>Price</strong></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -180,6 +163,9 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                         <td>
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i> 
                                                             <?php echo __($job_info[0]['loading_times'],'easy-rents'); ?>
+                                                        </td>
+                                                        <td>
+                                                            <?php echo __($myapplication->price,'easy-rents'); ?>tk
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -226,7 +212,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
             <?php
                 if(Easy_Rents_Public::er_role_check( ['driver'] )){
                     // Checking for pending requ
-                    $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 2"); 
+                    $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 2 OR status = 4"); 
                 
                     // My pending requests loop
                     if($acceptedapplications){
@@ -258,6 +244,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                     <th><strong>Load Location</strong></th>
                                                     <th><strong>Unload Location</strong></th>
                                                     <th><strong>Load Time</strong></th>
+                                                    <th><strong>Price</strong></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -274,6 +261,9 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                         <i class="fa fa-clock-o" aria-hidden="true"></i> 
                                                         <?php echo __($job_info[0]['loading_times'],'easy-rents'); ?>
                                                     </td>
+                                                    <td>
+                                                        <?php echo __($application->price,'easy-rents'); ?>tk
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <div class="job_actions">
@@ -285,11 +275,18 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                             <?php
                                                             if($application->status == 2){
                                                                 ?>
-                                                                <button class="finished" name="finishedjob">Finished</button>
+                                                                <button data-id="<?php echo intval($application->ID) ?>" class="finishedjob" name="finishedjob">Finished</button>
                                                                 <?php
                                                             }
                                                             ?>
                                                             <button class="cancel cancelrunningjob" name="cancelrunningjob">Cancel</button>
+                                                            <?php
+                                                                if($application->status == 4){
+                                                                ?>
+                                                                   <span class="finishedjobreq">Request Pending</span>
+                                                                <?php
+                                                                }
+                                                            ?>
                                                         </form>
                                                     </div>
                                                 </tr>
@@ -315,7 +312,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 
                 if(Easy_Rents_Public::er_role_check( ['Customer'] )){
                     // Checking for pending requ
-                    $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE customer_id = {$current_user->ID} AND status = 2");
+                    $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE customer_id = {$current_user->ID} AND status = 2 OR status = 4");
                 
                     // My pending requests loop
                     if($acceptedapplications){
@@ -339,7 +336,6 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                     // Only active/ running job
                                     if($job_info[0]['job_status'] == 'inprogress'){
                                         ?>
-                                        
                                         <div class="jobitem">
                                             <table>
                                                 <thead>
@@ -358,7 +354,8 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                             <?php echo __($application->price,'easy-rents'); ?>tk
                                                         </td>
                                                         <td>
-                                                        <?php echo __(date('M-j-Y g:i A', strtotime($application->create_at)),'easy-rents'); ?>
+                                                        <?php 
+                                                        echo Easy_Rents_Public::time_elapsed_string($application->create_at, true);?>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -370,13 +367,21 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 
                                                                 <input type="hidden" value="<?php echo intval($application->driver_id); ?>" name="erd">
                                                                 <?php
-                                                                if($application->status == 3){
+                                                                if($application->status == 4){
                                                                 ?>
-                                                                    <button class="finished" name="finishedconfirm">Finished</button>
+                                                                    <button data-id="<?php echo intval($application->ID) ?>" class="finishedconfirm" name="finishedconfirm">Finished</button>
                                                                 <?php
                                                                 }
                                                                 ?>
                                                             </form>
+                                                            <?php
+                                                                if($application->status == 4){
+                                                                ?>
+                                                                   <span class="requestforfinished">Request for finished</span>
+                                                                <?php
+                                                                }
+                                                            ?>
+                                                            
                                                         </div>
                                                     </tr>
                                                 </tbody>

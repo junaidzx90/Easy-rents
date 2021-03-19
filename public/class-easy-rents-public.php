@@ -79,6 +79,14 @@ class Easy_Rents_Public {
 
 	}
 
+	//Disabled adminbar
+	function er_admin_bar_showing(){
+		global $current_user;
+		if (!current_user_can('administrator') && !is_admin()) {
+			show_admin_bar(false);
+		}
+	}
+
 	/**
 	 * Register the stylesheets for the public-facing side of the site.
 	 *
@@ -141,6 +149,36 @@ class Easy_Rents_Public {
 		global $wpdb,$wp_query;
 		delete_post_meta( $post_id, 'er_job_info' );
 		$wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id");
+	}
+
+	// Thanks for this SCRIPT https://stackoverflow.com/a/18602474
+	function time_elapsed_string($datetime, $full = false) {
+		$now = new DateTime;
+		$ago = new DateTime($datetime);
+		$diff = $now->diff($ago);
+	
+		$diff->w = floor($diff->d / 7);
+		$diff->d -= $diff->w * 7;
+	
+		$string = array(
+			'y' => 'year',
+			'm' => 'month',
+			'w' => 'week',
+			'd' => 'day',
+			'h' => 'hour',
+			'i' => 'min',
+			's' => 'sec',
+		);
+		foreach ($string as $k => &$v) {
+			if ($diff->$k) {
+				$v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+			} else {
+				unset($string[$k]);
+			}
+		}
+	
+		if (!$full) $string = array_slice($string, 0, 1);
+		return $string ? implode(', ', $string) . ' ago' : 'just now';
 	}
 
 	/**
@@ -229,7 +267,7 @@ class Easy_Rents_Public {
 		}
 	}
 
-	// Cancel Request
+	// Ignore Request
 	function ignorerequest(){
 		check_ajax_referer('er_profile', 'security');
 		if(isset($_POST['post_id']) && isset($_POST['driver_id'])){
@@ -252,26 +290,31 @@ class Easy_Rents_Public {
 	// Accept Request
 	function acceptrequest(){
 		check_ajax_referer('er_profile', 'security');
-		if(isset($_POST['post_id']) && isset($_POST['driver_id'])){
+		if(isset($_POST['post_id']) && isset($_POST['driver_id']) && isset($_POST['offer_id'])){
 			$post_id = $_POST['post_id'];
 			$driver_id = $_POST['driver_id'];
+			$offer_id = $_POST['offer_id'];
 			global $current_user,$wpdb;
 
 			if($post_id != "" && $driver_id != ""){
 				if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
 					$redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
-					if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2  WHERE driver_id = $driver_id AND customer_id = $current_user->ID")){
+					if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2  WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")){
 						$job_info = get_post_meta( $post_id, 'er_job_info' );
 						$job_info[0]['job_status'] = 'inprogress';
 
 						if(update_post_meta( $post_id, 'er_job_info', $job_info[0] )){
-							$wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE  driver_id = $driver_id AND status = 1");
+							$wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE  driver_id = $driver_id AND ID = $offer_id AND status = 1");
 							
-							$driverinfo = get_user_by("id", $current_user->ID )->user_email;
-							if(!empty($driverinfo)){
-								$subject = home_url()." Approval status";
-								$message = "Hi ".$driverinfo->user_nicename.",\r\n\nYour request has been approved!\r\n\n <a href='".esc_url(home_url( '/'.$redirect_page ))."'>See your job status</a>";
-								mail($driverinfo, $subject, $message);
+							if(get_user_meta($driver_id, 'user_phone_number', true )){
+								$to = get_user_meta($driver_id, 'user_phone_number', true );
+								$dname = get_user_by("id",$driver_id)->user_nicename;
+								$message = str_replace('%s',$dname,get_option('acceptjobmsg'));
+	
+								if(Easy_Rents_Admin::message_to_user($to, $message)){
+									echo " ";
+									wp_die();
+								}
 							}
 							
 							die;
@@ -279,6 +322,57 @@ class Easy_Rents_Public {
 					}
 				}
 			}
+		}
+	}
+
+	// Request for finished
+	function requestforfinishedjob(){
+		if(isset($_POST['post_id']) && isset($_POST['customer_id']) && isset($_POST['offer_id'])){
+			$post_id = $_POST['post_id'];
+			$customer_id = $_POST['customer_id'];
+			$offer_id = $_POST['offer_id'];
+			global $current_user,$wpdb;
+
+			if(is_user_logged_in(  ) && $this->er_role_check( ['driver'] )){
+				if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 4  WHERE driver_id = $current_user->ID AND customer_id = $customer_id AND ID = $offer_id")){
+					echo " ";
+					wp_die();
+				}
+			}
+			die;
+		}
+	}
+	// Request confirmed
+	function finishedconfirmed(){
+		if(isset($_POST['post_id']) && isset($_POST['driver_id']) && isset($_POST['offer_id'])){
+			$post_id = $_POST['post_id'];
+			$driver_id = $_POST['driver_id'];
+			$offer_id = $_POST['offer_id'];
+			global $current_user,$wpdb;
+
+			if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
+				if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 3  WHERE customer_id = $current_user->ID AND driver_id = $driver_id AND ID = $offer_id")){
+					$job_info = get_post_meta( $post_id, 'er_job_info' );
+					$job_info[0]['job_status'] = 'ends';
+
+					if(update_post_meta( $post_id, 'er_job_info', $job_info[0] )){
+						// SENT SMS TO DRIVER
+						if(get_user_meta($driver_id, 'user_phone_number', true )){
+							$to = get_user_meta($driver_id, 'user_phone_number', true );
+							$dname = get_user_by("id",$driver_id)->user_nicename;
+							$message = str_replace('%s',$dname,get_option('jobconfirmationmsg'));
+
+							if(Easy_Rents_Admin::message_to_user($to, $message)){
+								echo " ";
+								wp_die();
+							}
+						}
+						echo " ";
+						wp_die();
+					}
+				}
+			}
+			die;
 		}
 	}
 	

@@ -13,7 +13,7 @@
  * @package           Easy_Rents
  *
  * @wordpress-plugin
- * Plugin Name:       Easy rents
+ * Plugin Name:       Easy Rents
  * Plugin URI:        example.com/easy-rents
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
  * Version:           1.0.0

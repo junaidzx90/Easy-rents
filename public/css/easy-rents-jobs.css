@@ -52,7 +52,10 @@ span.erjobstatus {
 ._jobitem span {
     font-size: 16px;
 }
-
+span.jobapply a {
+    color: red;
+    text-decoration: underline;
+}
 ._jobitem span i {
     width: 22px;
     color: orangered;

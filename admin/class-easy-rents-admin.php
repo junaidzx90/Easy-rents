@@ -71,6 +71,8 @@ class Easy_Rents_Admin {
 
 		wp_register_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/easy-rents-admin.css', array(), $this->version, 'all' );
 
+		wp_enqueue_style( 'er_bubble_notify', plugin_dir_url( __FILE__ ) . 'css/er_bubble_notify.css', array(), $this->version, 'all' );
+
 	}
 
 	/**
@@ -89,24 +91,62 @@ class Easy_Rents_Admin {
 	// General settings
 	function easy_rents_setup(){
 		if(is_admin(  )){
+			global $wpdb,$wp_query;
+			$billpay = $wpdb->query("SELECT COUNT(payment) FROM {$wpdb->prefix}easy_rents_applications WHERE payment = 1");
+			$bubble = sprintf(
+				' <span class="paymentstatus"><span class="count">%d</span></span>',
+				42 //bubble contents
+			);
+
 			add_menu_page( //Main menu register
 				"ER Settings", //page_title
-				"ER Settings", //menu title
+				"ER Settings".$bubble, //menu title
 				"manage_options", //capability
 				"er-settings", //menu_slug
 				array($this,"er_settings_cb"), //callback function
 				"",
 				65
 			);
+			add_submenu_page( "er-settings", "Settings", "Settings", "manage_options", "er-settings", array($this,"er_settings_cb")
+			);
+			
+			add_submenu_page( 'er-settings', 'Payment', 'Payment'.$bubble, 'manage_options', 'payment', array($this,'er_payment_confirm'));
+		}
+	}
+
+	// Message to user
+	function message_to_user($toval,$messageval){
+		if(get_option( 'er_smstoken' )){
+			$to = '+88'.$toval;
+			$token = get_option( 'er_smstoken' );
+			$message = $messageval;
+
+			$url = "http://api.greenweb.com.bd/api.php?json";
+
+			$data= array(
+				'to'=>"$to",
+				'message'=>"$message",
+				'token'=>"$token"
+			); // Add parameters in key value
+			$ch = curl_init(); // Initialize cURL
+			curl_setopt($ch, CURLOPT_URL,$url);
+			curl_setopt($ch, CURLOPT_ENCODING, '');
+			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+			if(curl_exec($ch)){
+				//Result
+				return $smsresult;
+			}else{
+				//Error Display
+				return curl_error($ch);
+			}
 		}
 	}
 
 	// Register settings
 	function er_page_settings_register(){
 		add_settings_section( 'er_settings_section', 'Easy Rents Settings', '', 'er-settings' );
-		// All trips page
-		add_settings_field( 'trips_page', 'Trips page', array($this,'er_trips_page_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'trips_page');
 
 		// Add new trip page
 		add_settings_field( 'add_trip_page', 'Add trip page', array($this,'er_add_trip_page_cb'), 'er-settings', 'er_settings_section');
@@ -129,32 +169,52 @@ class Easy_Rents_Admin {
 		register_setting( 'er_settings_section', 'erprofile_settings');
 
 		// Set commission %
-		add_settings_field( 'job_commission', 'Commissions', array($this,'er_job_commission_cb'), 'er-settings', 'er_settings_section');
+		add_settings_field( 'job_commission', 'Commissions Percents', array($this,'er_job_commission_cb'), 'er-settings', 'er_settings_section');
 		register_setting( 'er_settings_section', 'job_commission');
 
+		// Set sms token
+		add_settings_field( 'er_smstoken', 'Token Number', array($this,'er_smstoken_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'er_smstoken');
+
+		// Set finished job confirmation
+		add_settings_field( 'jobconfirmationmsg', 'Trip Confirmation Message', array($this,'er_jobconfirmation_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'jobconfirmationmsg');
+
+		// Set accept job msg
+		add_settings_field( 'acceptjobmsg', 'Trip Accept Message', array($this,'er_acceptjobmsg_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'acceptjobmsg');
+
+		// Payment request message
+		add_settings_field( 'paymentrequestmsg', 'Payment Request Message', array($this,'er_paymentrequestmsg_cb'), 'er-settings', 'er_settings_section');
+		register_setting( 'er_settings_section', 'paymentrequestmsg');
 	}
 
-	// All trips page calback
-	function er_trips_page_cb(){
-		echo '<select name="trips_page">';
-		if(get_option('trips_page') != ""){
-			$page = get_post( intval(get_option( 'trips_page' )) )->post_title;
-			echo '<option value="'.intval(get_option('trips_page')).'" selected>';
-			echo	__($page,'easy-rents');
-			echo '</option>';
-		}else{
-			echo '<option selected> Select a page </option>';
+	//Disabled wp backend access
+	function disable_backend_access(){
+		global $current_user;
+		$redirect = home_url( '/' );
+		if( is_admin() && !defined('DOING_AJAX') && ( !current_user_can('administrator'))){
+			wp_redirect(home_url());
+			exit;
 		}
+	}
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
-		if($posts){
-			foreach($posts as $post){
-				echo '<option value="'.intval( $post->ID ).'">';
-				echo __($post->post_title, 'easy-rents');
-				echo '</option>';
+	/**
+	 * After login redirect user
+	 */
+	function er_login_redirects( $url, $request, $user ) {
+		 //is there a user to check?
+		 if ( isset( $user->roles ) && is_array( $user->roles ) ) {
+			//check for admins
+			if ( in_array( 'administrator', $user->roles ) ) {
+				// redirect them to the default place
+				return admin_url();
+			} else {
+				return home_url('/'.Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true )));
 			}
+		} else {
+			return admin_url();
 		}
-		echo '</select><br><br>';
 	}
 
 	// Add new trip page calback
@@ -177,7 +237,7 @@ class Easy_Rents_Admin {
 				echo '</option>';
 			}
 		}
-		echo '</select><br><br>';
+		echo '</select><br>';
 	}
 
 	// Profile page callback
@@ -275,12 +335,32 @@ class Easy_Rents_Admin {
 	// Profile page callback
 	function er_job_commission_cb(){
 		$ommision = get_option('job_commission');
-		echo '<input style="width:55px" type="number" name="job_commission" value="'.__($ommision,'easy-rents').'" placeholder="0"> %';
+		echo '<input style="width:55px" type="number" name="job_commission" value="'.__($ommision,'easy-rents').'" placeholder="0"><br><h3>SMS <hr></h3>';
+	}
+	// er_smstoken_cb
+	function er_smstoken_cb(){
+		echo '<input type="password" value="'.get_option( 'er_smstoken' ).'" name="er_smstoken" placeholder="Add Token Number"><br>';
+	}
+	// er_jobconfirmation_cb
+	function er_jobconfirmation_cb(){
+		echo '<textarea name="jobconfirmationmsg" type="text" placeholder="Trip Confirmation Message" cols="50" rows="2">'.get_option('jobconfirmationmsg').'</textarea><br>';
+	}
+	// er_acceptjobmsg_cb
+	function er_acceptjobmsg_cb(){
+		echo '<textarea name="acceptjobmsg" type="text" placeholder="Trip Accept Message" cols="50" rows="2">'.get_option('acceptjobmsg').'</textarea><br>';
+	}
+	// er_paymentrequestmsg_cb
+	function er_paymentrequestmsg_cb(){
+		echo '<textarea name="paymentrequestmsg" type="text" placeholder="Payment Request Message" cols="50" rows="2">'.get_option('paymentrequestmsg').'</textarea>';
 	}
 
 	//webclass general settings
 	function er_settings_cb(){
 		require_once plugin_dir_path( __FILE__ ).'partials/easy-rents-admin-display.php';
+	}
+	//webclass general settings
+	function er_payment_confirm(){
+		require_once plugin_dir_path( __FILE__ ).'partials/er_payment_confirm.php';
 	}
 
 	/*
@@ -310,7 +390,7 @@ class Easy_Rents_Admin {
 			'label'               => __( 'jobs', 'easy-rents' ),
 			'description'         => __( 'Job news and reviews', 'easy-rents' ),
 			'labels'              => $labels,
-			'supports'            => array( 'title', 'author', 'comments' ),
+			'supports'            => array( 'title', 'author' ),
 			'taxonomies'          => array( 'jobs' ),
 			'hierarchical'        => false,
 			'public'              => true,
@@ -381,19 +461,64 @@ class Easy_Rents_Admin {
 	// CREATE WP LIST TABLE COLUMN FOR STATUS
 	function wp_list_table_columnname($defaults) {
 		$defaults['erpricet_status'] = 'Price';
+		$defaults['erdriver_status'] = 'Driver/Payment';
 		$defaults['erpost_status'] = 'Status';
 		return $defaults;
 	}
 	function wp_list_table_column_view($column_name, $post_ID) {
 		if ($column_name == 'erpricet_status') {
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
-			if($postinfo[0]['job_status'] == 'inprogress'){
+			if($postinfo[0]['job_status'] == 'inprogress' || $postinfo[0]['job_status'] == 'ends'){
 				global $wpdb;
-				$job_price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
-				// show content of 'directors_name' column
-				echo $job_price.' tk';
+				$job_price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+				if($job_price){
+					// show content of 'directors_name' column
+					echo $job_price.' tk';
+				}else{
+					print_r('N/A');
+				}
 			}else{
-				echo 'NA';
+				print_r('N/A');
+			}
+		}
+
+		if ($column_name == 'erdriver_status') {
+			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
+			if($postinfo[0]['job_status'] == 'inprogress' || $postinfo[0]['job_status'] == 'ends'){
+				global $wpdb;
+				$driver_id = $wpdb->get_var("SELECT driver_id FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
+				if(!$driver_id){
+					print_r('N/A');
+				}
+
+				$drivername = get_user_by( 'id', $driver_id )->user_nicename;
+				echo '<span class="drivername">'.$drivername.'</sapan>';
+				
+				$price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+				$netprice = $wpdb->get_var("SELECT net_price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+
+				if($netprice > 0){
+					$paybill = $price-$netprice;
+				}else{
+					$commission = $wpdb->get_var("SELECT commrate FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+					$comm = 100 + $commission;
+					$commbill =  $price/$comm * $commission;
+					$paybill = round($commbill);
+				}
+
+				if($postinfo[0]['job_status'] == 'ends'){
+					echo '<span style="color:#0073aa" class="payment"><br>Commision ('.$paybill.' tk)';
+					$payment = $wpdb->get_var("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+					if($payment == true){
+						echo '<span title="Paid"> ☑<span>';
+					}else{
+						echo '<span title="Unpaid"> ❗<span>';
+					}
+				}
+				
+				echo '</sapan>';
+			}else{
+				print_r('N/A');
 			}
 		}
 
@@ -401,13 +526,13 @@ class Easy_Rents_Admin {
 			// show content of 'directors_name' column
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
 			if($postinfo[0]['job_status'] == 'running'){
-				echo '<span class="status_circle" style="background-color:#0280d2"></span>';
+				echo '<span title="Publish" class="status_circle" style="background-color:#0280d2"></span>';
 			}
 			if($postinfo[0]['job_status'] == 'inprogress'){
-				echo '<span class="status_circle" style="background-color:#13d202"></span>';
+				echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
 			}
-			else{
-				echo '<span class="status_circle" style="background-color:gray"></span>';
+			if($postinfo[0]['job_status'] == 'ends'){
+				echo '<span title="End" class="status_circle" style="background-color:gray"></span>';
 			}
 		}
 	}
@@ -464,6 +589,26 @@ class Easy_Rents_Admin {
 					'button' => 'Use this Image',
 				)
 			);
+		}
+	}
+
+	// Send sms to driver for payment
+	function send_sms_forpayment(){
+		if(isset($_POST['driver_id']) && isset($_POST['amount'])){
+			$driver_id = intval($_POST['driver_id']);
+			$amount = intval($_POST['amount']);
+			
+			if(get_user_meta($driver_id, 'user_phone_number', true )){
+				$to = get_user_meta($driver_id, 'user_phone_number', true );
+				$dname = get_user_by("id",$driver_id)->user_nicename;
+				$message = str_replace('%s',$dname, get_option('paymentrequestmsg'));
+
+				if($this->message_to_user($to, $message)){
+					echo "Sent Successfull";
+					wp_die();
+				}
+			}
+			die;
 		}
 	}
 	
