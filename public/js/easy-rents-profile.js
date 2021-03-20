@@ -167,4 +167,21 @@ function er_transform(elem,target) {
 		}
 	});
 
+	// Prepare payment method
+	$('#selectpaymethod').on("change", function () {
+		let method = $(this).val();
+		$('.paymentform').children().each(function () {
+			$(this).hide();
+		});
+		if ($(this).val() != "") {
+			$('#' + method).show();
+		}
+		$('.backbtn').on("click", function () {
+			$('.paymentform').children().each(function () {
+				$(this).hide();
+			});
+			$('.paymethodselect').show();
+		});
+	});
+
 })( jQuery );

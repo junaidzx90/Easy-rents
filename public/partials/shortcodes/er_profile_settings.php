@@ -9,7 +9,7 @@ $page = 'settings';
     * */
 ?>
 <?php wp_enqueue_style( 'er_profile_style' ); ?>
-<?php wp_enqueue_style( 'er_profile_script' ); ?>
+<?php wp_enqueue_script( 'er_profile_script' ); ?>
 
 <section>
     <div id="er_profileMain">

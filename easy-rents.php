@@ -1,5 +1,5 @@
 <?php
-
+ob_start();
 /**
  * The plugin bootstrap file
  *

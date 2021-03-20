@@ -472,7 +472,6 @@ class Easy_Rents_Admin {
 				global $wpdb;
 				$job_price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
 				if($job_price){
-					// show content of 'directors_name' column
 					echo $job_price.' tk';
 				}else{
 					print_r('N/A');
@@ -492,27 +491,29 @@ class Easy_Rents_Admin {
 				}
 
 				$drivername = get_user_by( 'id', $driver_id )->user_nicename;
-				echo '<span class="drivername">'.$drivername.'</sapan>';
+				echo '<span style="text-transform:capitalize;" class="drivername">'.$drivername.'</sapan>';
 				
 				$price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+				
 				$netprice = $wpdb->get_var("SELECT net_price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+
+				$commission = $wpdb->get_var("SELECT commrate FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
 
 				if($netprice > 0){
 					$paybill = $price-$netprice;
 				}else{
-					$commission = $wpdb->get_var("SELECT commrate FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
 					$comm = 100 + $commission;
 					$commbill =  $price/$comm * $commission;
 					$paybill = round($commbill);
 				}
 
 				if($postinfo[0]['job_status'] == 'ends'){
-					echo '<span style="color:#0073aa" class="payment"><br>Commision ('.$paybill.' tk)';
-					$payment = $wpdb->get_var("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
-					if($payment == true){
+					echo '<span style="color:#0073aa" class="payment"><br>'.$commission.'% ('.$paybill.' tk)';
+					$payment = $wpdb->get_var("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
+					if($payment == 1){
 						echo '<span title="Paid"> ☑<span>';
 					}else{
-						echo '<span title="Unpaid"> ❗<span>';
+						echo '<span title="Unpaid"> ⛔<span>';
 					}
 				}
 				
@@ -523,15 +524,18 @@ class Easy_Rents_Admin {
 		}
 
 		if ($column_name == 'erpost_status') {
+			global $wpdb;
 			// show content of 'directors_name' column
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
-			if($postinfo[0]['job_status'] == 'running'){
+			$status_ = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
+
+			if($postinfo[0]['job_status'] == 'running' && $status_ == 1){
 				echo '<span title="Publish" class="status_circle" style="background-color:#0280d2"></span>';
 			}
-			if($postinfo[0]['job_status'] == 'inprogress'){
+			if($postinfo[0]['job_status'] == 'inprogress' && $status_ == 2){
 				echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
 			}
-			if($postinfo[0]['job_status'] == 'ends'){
+			if($postinfo[0]['job_status'] == 'ends' && $status_ == 3){
 				echo '<span title="End" class="status_circle" style="background-color:gray"></span>';
 			}
 		}
@@ -603,10 +607,10 @@ class Easy_Rents_Admin {
 				$dname = get_user_by("id",$driver_id)->user_nicename;
 				$message = str_replace('%s',$dname, get_option('paymentrequestmsg'));
 
-				if($this->message_to_user($to, $message)){
+				// if($this->message_to_user($to, $message)){
 					echo "Sent Successfull";
 					wp_die();
-				}
+				// }
 			}
 			die;
 		}

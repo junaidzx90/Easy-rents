@@ -56,14 +56,13 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                     // Only active/ running job
                                     if($job_info[0]['job_status'] == 'running'){
                                     ?>
-                                    
                                     <div class="jobitem">
                                         <table>
                                             <thead>
                                                 <tr>
                                                     <th><strong>Trip ID</strong></th>
                                                     <th><strong>Price</strong></th>
-                                                    <th><strong>Application TIME</strong></th>
+                                                    <th><strong>Create TIME</strong></th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -342,7 +341,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                     <tr>
                                                         <th><strong>Trip ID</strong></th>
                                                         <th><strong>Price</strong></th>
-                                                        <th><strong>Application TIME</strong></th>
+                                                        <th><strong>Apply Date</strong></th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -355,7 +354,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                         </td>
                                                         <td>
                                                         <?php 
-                                                        echo Easy_Rents_Public::time_elapsed_string($application->create_at, true);?>
+                                                        echo Easy_Rents_Public::time_elapsed_string($application->apply_date, true);?>
                                                         </td>
                                                     </tr>
                                                     <tr>

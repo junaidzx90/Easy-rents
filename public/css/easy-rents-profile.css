@@ -77,6 +77,21 @@ main .helper span {
     outline: none;
 }
 
+.paid {
+    color: #226699;
+    font-weight: 600;
+}
+
+.pending {
+    color: #c14a11;
+    font-weight: 600;
+}
+
+.unpaid {
+    color: #be1931;
+    font-weight: 600;
+}
+
 .ermenu .avatar {
     padding: 1em 0.5em !important;
     text-align: center;
@@ -98,10 +113,12 @@ main .helper span {
     font-size: 28px !important;
     margin-top: 5px;
 }
+
 .ermenu .avatar h2 i {
     font-size: 18px;
     color: #65bc7b;
 }
+
 .ermenu ul {
     list-style: none;
     padding: 0.5em 0;
@@ -207,37 +224,46 @@ button.cancel {
     color: #fff;
 }
 
-#running{
+#running {
     display: none;
 }
+
 .erbtnactive {
     background: #e2e2e2 !important;
     color: #23282d !important;
 }
+
 .pendingjobid {
     margin: 5px 0px;
 }
+
 .pendingjobid .price {
     float: right;
     margin-right: 25px;
 }
+
 .pendingjobid .price {
     float: right;
     margin-right: 25px;
     color: #f28282;
 }
-.requestforfinished,.finishedjobreq {
+
+.requestforfinished,
+.finishedjobreq {
     color: #65bc7b;
     float: right;
     background: #e7e6e6;
     padding: 0px 14px;
 }
-.finishedjobreq{
+
+.finishedjobreq {
     color: #f28282;
 }
+
 .username {
     text-transform: capitalize;
 }
+
 span.notification {
     background: #65bc7b;
     color: white !important;
@@ -251,6 +277,89 @@ span.notification {
     border-radius: 50%;
     padding: 2px;
 }
+
+#paymentform {
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-color: #23282de8;
+    z-index: 10;
+}
+
+.formhelper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.paymentform {
+    position: absolute;
+    left: 40%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 8px 0px black;
+    width: 40%;
+}
+
+.paymentform select {
+    width: 100%;
+    color: #23282d;
+    cursor: pointer;
+}
+
+div#bkash,
+div#roket {
+    color: #23282d;
+}
+
+#bkash,
+#roket {
+    display: none;
+}
+
+.transiction_number small {
+    float: right;
+}
+
+input {
+    border-color: #65bc7b !important;
+}
+
+span.backbtn {
+    font-size: 25px;
+    display: inline-block;
+    line-height: 25px;
+    color: #23282d;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.transiction_number .submitbtn {
+    width: 100px;
+    height: 30px;
+    margin-top: 7px;
+    cursor: pointer;
+}
+
+.transiction_number {
+    padding: 20px;
+}
+
+.bkashlogo,
+.addr {
+    text-align: center;
+}
+
+.addr img {
+    width: 200px;
+}
+
 @media screen and (max-width: 900px) and (min-width: 400px) {
     body {
         padding-left: 90px;

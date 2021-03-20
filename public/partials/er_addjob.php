@@ -1,4 +1,8 @@
- <?php
+<?php
+if(!Easy_Rents_Public::er_role_check( ['Customer'] )){
+    wp_safe_redirect( home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true ))) );
+    exit;
+}
  /** 
  * @link       example.com
  * @since      1.0.0
@@ -12,14 +16,7 @@
  <?php wp_enqueue_style( 'select2' ); ?>
  <?php wp_enqueue_style( 'er_addjob_style' ); ?>
  <?php wp_enqueue_script( 'select2' ); ?>
- <?php wp_enqueue_script( 'er_addjob_script' ); ?>
- <?php 
-    if(!Easy_Rents_Public::er_role_check( ['Customer'] )){
-        echo 'Please Login To See';
-        return;
-    }
- ?>
- <?php 
+ <?php wp_enqueue_script( 'er_addjob_script' ); 
 //  Get form data to upload database
 
 if(isset($_POST['addjob']) && isset($_POST['jobform']) && $_POST['jobform'] != ""){

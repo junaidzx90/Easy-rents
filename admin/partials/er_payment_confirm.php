@@ -21,15 +21,15 @@ wp_localize_script( $admin_this->get_plugin_name(), "admin_ajaxurl", array(
 ?>
 <div class="notice">
     <h3>PAYMENT STATUS FOR FINISHED JOBS</h3>
-    
+    <?php $total = 0; ?>
     <table class="table">
         <thead>
             <tr>
                 <th>Job ID</th>
-                <th>Price</th>
-                <th>Payment</th>
                 <th>Driver</th>
                 <th>Phone</th>
+                <th>Price</th>
+                <th>Payment</th>
                 <th>Payment Status</th>
                 <th>Action</th>
             </tr>
@@ -38,7 +38,7 @@ wp_localize_script( $admin_this->get_plugin_name(), "admin_ajaxurl", array(
             <?php
                 global $wpdb,$wp_query;
                 $payment_status = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE status = 3");
-
+                $total += count($payment_status);
                 if(!empty($payment_status)){
                     foreach($payment_status as $payment){
                         $jobs_args = array(
@@ -60,11 +60,19 @@ wp_localize_script( $admin_this->get_plugin_name(), "admin_ajaxurl", array(
                                 if($job_info[0]['job_status'] == 'ends'){
                                     $driverName = get_user_by( 'id', $payment->driver_id )->user_nicename;
                                     $user_number = get_user_meta( $payment->driver_id, 'user_phone_number', true );
+
                                     if($payment->payment == 1){
-                                    $paymentStatus = "<span style='color:#65bc7b'>Paid&nbsp;☑</span>"; 
-                                    }
-                                    if($payment->payment == 0){
-                                        $paymentStatus = "<span style='color:#ca4a1f'>Unpaid&nbsp;❗</span>"; 
+                                        $paymentStatus = "<span style='color:#65bc7b'>Paid&nbsp;☑</span><br><small>".$payment->transaction_num."</small>"; 
+                                    }elseif($payment->payment == 0){
+                                        $paymentStatus = "<span style='color:#ca4a1f'>Unpaid&nbsp;⛔</span>"; 
+                                    }elseif($payment->payment == 2){
+                                        if($payment->payment_date != 0){
+                                            $applytime = '/ '.Easy_Rents_Public::time_elapsed_string($payment->payment_date);
+                                        }else{
+                                            $applytime = '';
+                                        }
+                                        
+                                        $paymentStatus = "<span style='color:#226699'>Pending ◔</span><br><small>".$payment->transaction_num." ".$applytime."</small>"; 
                                     }
 
                                     if($payment->net_price > 0){
@@ -77,16 +85,21 @@ wp_localize_script( $admin_this->get_plugin_name(), "admin_ajaxurl", array(
                                     ?>
                                     <tr>
                                         <td scope="row"><?php echo __(the_title(),'easy-rents'); ?></td>
-                                        <td><?php echo __($payment->price,'easy-rents') ?> tk</td>
-                                        <td><?php echo __($paybill,'easy-rents') ?> tk</td>
                                         <td><?php echo __($driverName,'easy-rents') ?></td>
                                         <td><?php echo __(($user_number != ""? $user_number:'N/A'),'easy-rents') ?></td>
+                                        <td><?php echo __($payment->price,'easy-rents') ?> tk</td>
+                                        <td><?php echo __($paybill,'easy-rents') ?> tk</td>
                                         <td><?php echo __($paymentStatus,'easy-rents') ?></td>
                                         <td>
                                             <?php
                                             if($payment->payment == 0){
                                                 ?>
-                                                <button data-driver="<?php echo intval($payment->driver_id) ?>" data-amount="<?php echo intval( $paybill ) ?>" class="sendpaymentalert">✉</button>
+                                                <button title="Send SMS" data-driver="<?php echo intval($payment->driver_id) ?>" data-amount="<?php echo intval( $paybill ) ?>" class="sendpaymentalert">✉</button>
+                                                <?php
+                                            }
+                                            if($payment->payment == 2){
+                                                ?>
+                                                <button title="Accept" data-driver="<?php echo intval($payment->driver_id) ?>" data-amount="<?php echo intval( $paybill ) ?>" class="paymentapprove">✔</button>
                                                 <?php
                                             }
                                             ?>
@@ -101,4 +114,5 @@ wp_localize_script( $admin_this->get_plugin_name(), "admin_ajaxurl", array(
             ?>
         </tbody>
     </table>
+    <span class="totalcount">Total <?php echo $total; ?></span>
 </div>

@@ -299,7 +299,7 @@ class Easy_Rents_Public {
 			if($post_id != "" && $driver_id != ""){
 				if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
 					$redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
-					if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2  WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")){
+					if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2, apply_date = now() WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")){
 						$job_info = get_post_meta( $post_id, 'er_job_info' );
 						$job_info[0]['job_status'] = 'inprogress';
 
@@ -311,10 +311,10 @@ class Easy_Rents_Public {
 								$dname = get_user_by("id",$driver_id)->user_nicename;
 								$message = str_replace('%s',$dname,get_option('acceptjobmsg'));
 	
-								if(Easy_Rents_Admin::message_to_user($to, $message)){
+								// if(Easy_Rents_Admin::message_to_user($to, $message)){
 									echo " ";
 									wp_die();
-								}
+								// }
 							}
 							
 							die;
@@ -351,7 +351,7 @@ class Easy_Rents_Public {
 			global $current_user,$wpdb;
 
 			if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
-				if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 3  WHERE customer_id = $current_user->ID AND driver_id = $driver_id AND ID = $offer_id")){
+				if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 3, finished_date = now() WHERE customer_id = $current_user->ID AND driver_id = $driver_id AND ID = $offer_id")){
 					$job_info = get_post_meta( $post_id, 'er_job_info' );
 					$job_info[0]['job_status'] = 'ends';
 
@@ -362,10 +362,10 @@ class Easy_Rents_Public {
 							$dname = get_user_by("id",$driver_id)->user_nicename;
 							$message = str_replace('%s',$dname,get_option('jobconfirmationmsg'));
 
-							if(Easy_Rents_Admin::message_to_user($to, $message)){
+							// if(Easy_Rents_Admin::message_to_user($to, $message)){
 								echo " ";
 								wp_die();
-							}
+							// }
 						}
 						echo " ";
 						wp_die();
