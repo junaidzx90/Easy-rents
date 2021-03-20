@@ -17,7 +17,7 @@
         </li>
 
         <?php
-        if(Easy_Rents_Public::er_role_check( ['Customer'] )){
+        if(Easy_Rents_Public::er_role_check( ['customer'] )){
             ?>
             <li tabindex="0" class="listitem">
                 <i class="fa fa-truck" aria-hidden="true"></i>

@@ -293,7 +293,7 @@ if(have_posts()){
                                         <?php
                                         }
                                     }else{
-                                        if(Easy_Rents_Public::er_role_check( ['Customer'] )){
+                                        if(Easy_Rents_Public::er_role_check( ['customer'] )){
                                             // This for logged out users
                                             ?>
                                                 <!-- Disabled btn for existing applications -->

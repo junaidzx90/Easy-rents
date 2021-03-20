@@ -1,5 +1,5 @@
 <?php
-if(!Easy_Rents_Public::er_role_check( ['Customer'] )){
+if(!Easy_Rents_Public::er_role_check( ['customer'] )){
     wp_safe_redirect( home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true ))) );
     exit;
 }
@@ -20,7 +20,7 @@ if(!Easy_Rents_Public::er_role_check( ['Customer'] )){
 //  Get form data to upload database
 
 if(isset($_POST['addjob']) && isset($_POST['jobform']) && $_POST['jobform'] != ""){
-    if(!is_user_logged_in(  ) && !Easy_Rents_Public::er_role_check( ['Customer'] )){
+    if(!is_user_logged_in(  ) && !Easy_Rents_Public::er_role_check( ['customer'] )){
         return;
     }
     if ( empty($_POST) || ! wp_verify_nonce( $_POST['er_addjob_nonce'], 'er_addjob_nonce_val') ){

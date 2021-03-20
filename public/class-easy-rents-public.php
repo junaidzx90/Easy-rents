@@ -276,7 +276,7 @@ class Easy_Rents_Public {
 			global $current_user,$wpdb;
 			
 			if($post_id != "" && $driver_id != ""){
-				if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
+				if(is_user_logged_in(  ) && $this->er_role_check( ['customer'] )){
 					if($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = $driver_id AND customer_id = $current_user->ID")){
 					    $redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
 						echo home_url( '/'.$redirect_page );
@@ -297,7 +297,7 @@ class Easy_Rents_Public {
 			global $current_user,$wpdb;
 
 			if($post_id != "" && $driver_id != ""){
-				if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
+				if(is_user_logged_in(  ) && $this->er_role_check( ['customer'] )){
 					$redirect_page = $this->get_post_slug(get_option( 'profile_page', true ));
 					if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2, apply_date = now() WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")){
 						$job_info = get_post_meta( $post_id, 'er_job_info' );
@@ -350,7 +350,7 @@ class Easy_Rents_Public {
 			$offer_id = $_POST['offer_id'];
 			global $current_user,$wpdb;
 
-			if(is_user_logged_in(  ) && $this->er_role_check( ['Customer'] )){
+			if(is_user_logged_in(  ) && $this->er_role_check( ['customer'] )){
 				if($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 3, finished_date = now() WHERE customer_id = $current_user->ID AND driver_id = $driver_id AND ID = $offer_id")){
 					$job_info = get_post_meta( $post_id, 'er_job_info' );
 					$job_info[0]['job_status'] = 'ends';
@@ -392,7 +392,7 @@ class Easy_Rents_Public {
 
 	// Profile page
 	function er_profile_page( $atts ){
-		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+		if(is_user_logged_in(  ) && $this->er_role_check( ['customer','driver'] )){
 			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_dashboard.php');
 		}else{
 			echo 'Please Login to see';
@@ -402,7 +402,7 @@ class Easy_Rents_Public {
 
 	// er_profile_trips
 	function er_profile_trips( $atts ){
-		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+		if(is_user_logged_in(  ) && $this->er_role_check( ['customer','driver'] )){
 			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_mytrips.php');
 		}else{
 			echo 'Please Login to see';
@@ -411,7 +411,7 @@ class Easy_Rents_Public {
 
 	// er_payment_page
 	function er_payment_page( $atts ){
-		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+		if(is_user_logged_in(  ) && $this->er_role_check( ['customer','driver'] )){
 			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_payment.php');
 		}else{
 			echo 'Please Login to see';
@@ -420,7 +420,7 @@ class Easy_Rents_Public {
 
 	// er_profile_settings
 	function er_profile_settings( $atts ){
-		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+		if(is_user_logged_in(  ) && $this->er_role_check( ['customer','driver'] )){
 			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_profile_settings.php');
 		}else{
 			echo 'Please Login to see';
@@ -429,7 +429,7 @@ class Easy_Rents_Public {
 
 	// er_register / login page
 	function er_login_register( $atts ){
-		if(is_user_logged_in(  ) && $this->er_role_check( ['Customer','driver'] )){
+		if(is_user_logged_in(  ) && $this->er_role_check( ['customer','driver'] )){
 			require_once(plugin_dir_path( __FILE__ ).'partials/shortcodes/er_login_register.php');
 		}else{
 			echo 'Please Login to see';

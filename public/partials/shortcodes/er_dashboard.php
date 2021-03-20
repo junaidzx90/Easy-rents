@@ -33,7 +33,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 
             <div id="pending" class="tabelem">
                 <?php
-                if(Easy_Rents_Public::er_role_check( ['Customer'] )){
+                if(Easy_Rents_Public::er_role_check( ['customer'] )){
                     // Checking for pending requ
                     $pendingrequests = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE customer_id = {$current_user->ID} AND status = 1");
 
@@ -309,7 +309,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                     }
                 }
 
-                if(Easy_Rents_Public::er_role_check( ['Customer'] )){
+                if(Easy_Rents_Public::er_role_check( ['customer'] )){
                     // Checking for pending requ
                     $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE customer_id = {$current_user->ID} AND status = 2 OR status = 4");
                 
