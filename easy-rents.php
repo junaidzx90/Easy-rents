@@ -37,6 +37,7 @@ if ( ! defined( 'WPINC' ) ) {
  */
 define( 'EASY_RENTS_VERSION', '1.0.0' );
 define( 'ER_PATH', plugin_dir_path( __FILE__ ) );
+define( 'ER_URL', plugin_dir_url( __FILE__ ) );
 
 /**
  * The code that runs during plugin activation.

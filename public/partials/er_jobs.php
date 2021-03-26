@@ -57,7 +57,11 @@
                                         if ( ! is_wp_error( $product_terms ) ) {
                                             foreach( $product_terms as $term ) {
                                                 echo '<div class="erjobitemimg">';
-                                                echo '<img width="150" src="'.get_term_meta( $term->term_id, 'term_image', true ).'" alt="'.esc_url( get_term_link( $term->slug, 'truckstype' ) ).'">';
+                                                if(!empty(get_term_meta( $term->term_id, 'term_image', true )) || get_term_meta( $term->term_id, 'term_image', true ) != 0){
+													echo '<img width="150" src="'.get_term_meta( $term->term_id, 'term_image', true ).'" alt="'.esc_url( get_term_link( $term->slug, 'truckstype' ) ).'">';
+												}else{
+                                                    echo '<img width="150" src="'.ER_PATH.'public/images/truck.PNG" alt="">';
+                                                }
                                                 echo '</div>';
                                             }
                                         }
@@ -70,20 +74,20 @@
                                 <div class="jobinfotexts">
                                     <div class="_jobitem">
                                         <span class="er_location">
-                                            <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> 
+                                            <i class="fas fa-arrow-alt-circle-up"></i> 
                                             <?php echo __(substr($job_info[0]['location_1'],0,29),'easy-rents'); ?>
                                         </span>
                                     </div>
                                     
                                     <div class="_jobitem">
                                         <span class="er_location">
-                                            <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i> 
+                                            <i class="fas fa-arrow-alt-circle-down"></i> 
                                             <?php echo __(substr($job_info[0]['unload_location'],0,29),'easy-rents'); ?>
                                         </span>
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_time">
-                                        <i class="fa fa-clock-o" aria-hidden="true"></i> 
+                                        <i class="far fa-clock"></i>
                                         <?php echo __($job_info[0]['loading_times'],'easy-rents'); ?>
                                         </span>
                                     </div>

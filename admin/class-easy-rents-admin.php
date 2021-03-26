@@ -99,8 +99,8 @@ class Easy_Rents_Admin {
 			);
 
 			add_menu_page( //Main menu register
-				"ER Settings", //page_title
-				"ER Settings".$bubble, //menu title
+				"Easy Rents", //page_title
+				"Easy Rents".$bubble, //menu title
 				"manage_options", //capability
 				"er-settings", //menu_slug
 				array($this,"er_settings_cb"), //callback function
@@ -229,7 +229,7 @@ class Easy_Rents_Admin {
 			echo '<option selected> Select a page </option>';
 		}
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
 		if($posts){
 			foreach($posts as $post){
 				echo '<option value="'.intval( $post->ID).'">';
@@ -252,7 +252,7 @@ class Easy_Rents_Admin {
 			echo '<option selected> Select a page </option>';
 		}
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
 		if($posts){
 			foreach($posts as $post){
 				echo '<option value="'.intval($post->ID).'">';
@@ -275,7 +275,7 @@ class Easy_Rents_Admin {
 			echo '<option selected> Select a page </option>';
 		}
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
 		if($posts){
 			foreach($posts as $post){
 				echo '<option value="'.intval($post->ID).'">';
@@ -298,7 +298,7 @@ class Easy_Rents_Admin {
 			echo '<option selected> Select a page </option>';
 		}
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
 		if($posts){
 			foreach($posts as $post){
 				echo '<option value="'.intval($post->ID).'">';
@@ -321,7 +321,7 @@ class Easy_Rents_Admin {
 			echo '<option selected> Select a page </option>';
 		}
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'published']);
+		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
 		if($posts){
 			foreach($posts as $post){
 				echo '<option value="'.intval($post->ID).'">';
@@ -529,8 +529,11 @@ class Easy_Rents_Admin {
 			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
 			$status_ = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
 
+			if($postinfo[0]['job_status'] == 'running' && $status_ == 0){
+				echo '<span title="New" class="status_circle" style="background-color:#cccccc"></span>';
+			}
 			if($postinfo[0]['job_status'] == 'running' && $status_ == 1){
-				echo '<span title="Publish" class="status_circle" style="background-color:#0280d2"></span>';
+				echo '<span title="Pending" class="status_circle" style="background-color:#0280d2"></span>';
 			}
 			if($postinfo[0]['job_status'] == 'inprogress' && $status_ == 2){
 				echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
@@ -554,7 +557,7 @@ class Easy_Rents_Admin {
 	// Edit taxonomy field
 	function edit_image_upload($term) { ?>
 		<div class="form-field term-group">
-			<label for="">upload , image</label>
+			<label for="">Upload image</label>
 			<input type="text" name="txt_upload_image" id="txt_upload_image" value="<?php echo get_term_meta( $term->term_id, 'term_image', true ) ?>" style="width: 77%">
 			<input type="button" id="upload_image_btn" class="button" value="upload image" />
 		</div>
@@ -606,11 +609,23 @@ class Easy_Rents_Admin {
 				$to = get_user_meta($driver_id, 'user_phone_number', true );
 				$dname = get_user_by("id",$driver_id)->user_nicename;
 				$message = str_replace('%s',$dname, get_option('paymentrequestmsg'));
-
-				// if($this->message_to_user($to, $message)){
+				
+				if(!get_option('paymentrequestmsg')){
+					mail('imransepai1@gmail.com','Message faild!','Hi Admin, You haven\'t set any message for sent!');
+					wp_die();
+				}else{
+					// if($this->message_to_user($to, $message)){
 					echo "Sent Successfull";
 					wp_die();
-				// }
+				// }else{
+					// 	mail('imransepai1@gmail.com','Message faild!','Hi Admin, Payment request is not sent, Please try again!');
+					// 	wp_die();
+					// }
+				}
+				
+			}else{
+				mail('imransepai1@gmail.com','Message faild!','Hi Admin, This Driver haven\'t any phone number!');
+				wp_die();
 			}
 			die;
 		}

@@ -95,16 +95,16 @@ class Easy_Rents_Public {
 	public function enqueue_styles() {
 
 		// Profile style
-		wp_register_style( 'er_profile_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-profile.css', array(), $this->version, 'all' );
+		wp_register_style( 'er_profile_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-profile.css', array(), microtime(), 'all' );
 		// addnewjob style
-		wp_register_style( 'er_addjob_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-addjob.css', array(), $this->version, 'all' );
+		wp_register_style( 'er_addjob_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-addjob.css', array(), microtime(), 'all' );
 		// addnewjob style
-		wp_register_style( 'er_jobs_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-jobs.css', array(), $this->version, 'all' );
+		wp_register_style( 'er_jobs_style', plugin_dir_url( __FILE__ ) . 'css/easy-rents-jobs.css', array(), microtime(), 'all' );
 		// select2 style
-		wp_register_style( 'select2', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), $this->version, 'all' );
+		wp_register_style( 'select2', plugin_dir_url( __FILE__ ) . 'css/select2.min.css', array(), microtime(), 'all' );
 
 		// er_login_register
-		wp_register_style( 'er_login_register', plugin_dir_url( __FILE__ ) . 'css/er_login_register.css', array(), $this->version, 'all' );
+		wp_register_style( 'er_login_register', plugin_dir_url( __FILE__ ) . 'css/er_login_register.css', array(), microtime(), 'all' );
 
 	}
 

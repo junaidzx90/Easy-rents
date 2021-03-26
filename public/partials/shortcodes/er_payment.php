@@ -95,7 +95,7 @@ $page = 'payment';
         <main>
         <?php
             global $wpdb,$current_user;
-            $trips = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = $current_user->ID AND status > 2 ORDER BY payment ASC");
+            $trips = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = $current_user->ID AND status = 3 OR status = 4 ORDER BY payment ASC");
 
             if(!empty($trips)){
                 foreach($trips as $trip){

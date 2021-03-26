@@ -28,7 +28,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                 <button class="pending erbtnactive" onclick="er_transform('pending',this)">Pending</button>
                 <button class="running" onclick="er_transform('running',this)">Running</button>
 
-                <a href="<?php echo wp_logout_url(); ?>">Log Out</a>
+                <a class="logout" href="<?php echo wp_logout_url(); ?>"><i class="fas fa-sign-out-alt"></i> Log Out</a>
             </div>
 
             <div id="pending" class="tabelem">

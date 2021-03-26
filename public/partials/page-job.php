@@ -131,30 +131,30 @@ if(have_posts()){
                     
                         <div class="locations">
                             <div class="loadpoint">
-                                <h4> <i class="fa fa-map-marker" aria-hidden="true"></i> Load point</h4>
+                                <h4> <i class="fas fa-map-marked-alt"></i> Load point</h4>
                                 <ul>
                                     <?php
                                     if(!empty($jobitem['location_1'])){
-                                        echo '<li><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> '.__($jobitem['location_1'], 'easy-rents').'</li>';
+                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($jobitem['location_1'], 'easy-rents').'</li>';
                                     }
 
                                     if(!empty($jobitem['location_2'])){
-                                        echo '<li><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> '.__($jobitem['location_2'], 'easy-rents').'</li>';
+                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($jobitem['location_2'], 'easy-rents').'</li>';
                                     }
 
                                     if(!empty($jobitem['location_3'])){
-                                        echo '<li><i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> '.__($jobitem['location_3'], 'easy-rents').'</li>';
+                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($jobitem['location_3'], 'easy-rents').'</li>';
                                     }
                                     ?>
                                 </ul>
                             </div>
 
                             <div class="unloadpoint">
-                                <h4> <i class="fa fa-map-marker" aria-hidden="true"></i> Unload point</h4>
+                                <h4> <i class="fas fa-map-marked-alt"></i> Unload point</h4>
                                 <ul>
                                     <?php
                                     if(!empty($jobitem['unload_location'])){
-                                        echo '<li><i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i> '.__($jobitem['unload_location'], 'easy-rents').'</li>';
+                                        echo '<li><i class="fas fa-arrow-alt-circle-down"></i> '.__($jobitem['unload_location'], 'easy-rents').'</li>';
                                     }
                                     ?>
                                 </ul>
@@ -163,7 +163,7 @@ if(have_posts()){
 
                         <div class="otherinfo">
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fa fa-cubes" aria-hidden="true"></i> Weights</h4>
+                                <h4 class="infotitle"><i class="fas fa-cubes" aria-hidden="true"></i> Weights</h4>
                                  <?php
                                     if(!empty($jobitem['goods_weight'])){
                                         echo '<span>'.intval($jobitem['goods_weight']).' Ton</span>';
@@ -172,7 +172,7 @@ if(have_posts()){
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fa fa-people-carry"></i> Laborer</h4>
+                                <h4 class="infotitle"><i class="fas fa-people-carry"></i> Laborer</h4>
                                 <?php
                                 if(!empty($jobitem['er_labore'])){
                                     echo '<span>'.intval($jobitem['er_labore']).' Labores</span>';
@@ -183,7 +183,7 @@ if(have_posts()){
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fa fa-truck" aria-hidden="true"></i> Truck Type</h4>
+                                <h4 class="infotitle"><i class="fas fa-truck" aria-hidden="true"></i> Truck Type</h4>
 
                                 <?php
                                 $product_terms = wp_get_object_terms( get_post()->ID,  'truckstype' );
@@ -199,7 +199,7 @@ if(have_posts()){
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fa fa-houzz" aria-hidden="true"></i> Goods Type</h4>
+                                <h4 class="infotitle"><i class="fas fa-luggage-cart"></i> Goods Type</h4>
                                 <?php
                                 if(!empty($jobitem['goods_type'])){
                                     echo '<span>'.__($jobitem['goods_type'],'easy-rents').'</span>';
@@ -208,7 +208,7 @@ if(have_posts()){
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fa fa-clock-o" aria-hidden="true"></i> Load time</h4>
+                                <h4 class="infotitle"><i class="far fa-clock"></i> Load time</h4>
                                 <?php
                                 if(!empty($jobitem['loading_times'])){
                                     echo '<span>'.__($jobitem['loading_times'],'easy-rents').'</span>';
@@ -252,7 +252,7 @@ if(have_posts()){
                                     </div>
                                     <?php
                                 }else{
-                                    $paymentstatus = $wpdb->get_results("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = $current_user->ID AND payment = '' OR payment = 0");
+                                    $paymentstatus = $wpdb->get_results("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = $current_user->ID AND status = 3 AND payment = 0");
                                     
                                     if(count($paymentstatus) > 0){
                                         ?>

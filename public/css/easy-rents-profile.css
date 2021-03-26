@@ -5,7 +5,9 @@ body {
     color: #fff;
     padding-left: 240px;
 }
-
+#boxed-wrapper{
+	overflow: unset;
+}
 :root {
     --ermain: #ffea92;
 }
@@ -112,6 +114,7 @@ main .helper span {
     color: #ddd;
     font-size: 28px !important;
     margin-top: 5px;
+    margin-top: 12px;
 }
 
 .ermenu .avatar h2 i {
@@ -210,8 +213,11 @@ button.cancel {
     height: 50px;
     background: #23282d;
     padding-left: 20px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
-
 .tabs button {
     margin-top: 5px;
     height: 90%;
@@ -306,7 +312,12 @@ span.notification {
     box-shadow: 0px 0px 8px 0px black;
     width: 40%;
 }
-
+.logout{
+    float: right;
+    padding-right: 20px;
+    padding-top: 10px;
+    color: #e2e2e2;
+}
 .paymentform select {
     width: 100%;
     color: #23282d;

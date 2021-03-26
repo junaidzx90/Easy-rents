@@ -4,10 +4,11 @@
     <header class="avatar">
         <img style="width: 100px" src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" />
         <h2 class="username"><?php echo __($current_user->user_nicename,'easy-rents') ?> <i class="fa fa-check-circle verified" aria-hidden="true"></i></h2>
+        <span class="profile-ratings">100%</span>
     </header>
     <ul>
         <li tabindex="0" class="listitem <?php echo ($page == 'dashboard')?'eractive':'' ?>">
-            <i class="fa fa-handshake-o" aria-hidden="true"></i>
+            <i class="fas fa-recycle"></i>
             <a href="<?php echo home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true ))) ?>"> <span class=" <?php echo ($page == 'dashboard')?'eractivecolor':'' ?>">Dashboard</span> </a>
         </li>
 
@@ -20,7 +21,7 @@
         if(Easy_Rents_Public::er_role_check( ['customer'] )){
             ?>
             <li tabindex="0" class="listitem">
-                <i class="fa fa-truck" aria-hidden="true"></i>
+                <i class="fas fa-truck" aria-hidden="true"></i>
                 <a href="<?php echo home_url(Easy_Rents_Public::get_post_slug(get_option( 'add_trip_page', true ))) ?>"> <span>Request for truck</span></a>
             </li>
             <?php
@@ -31,11 +32,11 @@
         if(Easy_Rents_Public::er_role_check( ['driver'] )){
         ?>
             <li tabindex="0" class="listitem  <?php echo ($page == 'payment')?'eractive':'' ?>">
-                <i class="fa fa-institution" aria-hidden="true"></i>
+                <i class="fas fa-hand-holding-usd"></i>
                 <a href="<?php echo home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_payment', true ))) ?>"><span class=" <?php echo ($page == 'payment')?'eractivecolor':'' ?>">Payments</span>
                 <?php
                 global $wp_query,$current_user,$wpdb;
-                $paymentstatus = $wpdb->query("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 3 AND payment = 0 OR payment = ''");
+                $paymentstatus = $wpdb->query("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 3 AND payment = 0");
                 if($paymentstatus){
                     echo '<span class="notification">'.intval($paymentstatus).'</span>';
                 }
