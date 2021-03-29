@@ -7,100 +7,78 @@ main#main {
 div#eraddjob {
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
 }
 .additemform {
-    min-width: 70%;
+    min-width: 50%;
+    max-width: 50%;
+    padding: 30px;
+    background: #fff;
+}
+.additemform h1 {
+    margin-top: 0px;
+}
+
+.locationgroup {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+}
+span.backbtn {
+    position: absolute;
+    right: 4px;
+    top: 0px;
+    font-size: 29px;
+    cursor: pointer;
+    display: none;
+}
+.locationgroup select,.locationgroup input {
+    width: 100%;
 }
 input.addjob {
     margin-top: 30px;
-}
-.erform_items {
-    display: flex;
-    flex-direction: row;
-}
-.locations,.erkobinfo{
-    width: 48%;
-    padding: 10px;
-    overflow: hidden;
-}
-.input-group {
-    display: inline-block;
-    margin: 10px;
-    width: 98%;
-}
-.input-group input, .input-group select{
-    width: 100%;
-}
-label.eraddjobformwarning {
-    color: red;
-    font-weight: bold;
-    letter-spacing: 2px;
-}
-input[type='time'] {
-    height: 50px;
-    outline: none;
-    border: none;
-    border-radius: 5px;
-}
-.select2 {
-    border-radius: 5px;
-}
-.select2-dropdown{
-    /* top: 31px; */
-    border-radius: 5px;
-}
-.select2-container--classic .select2-selection--single{
-    height: 50px;
-    border: 1px solid transparent;
-}
-.select2-container--classic .select2-selection--single .select2-selection__rendered {
-    line-height: 48px;
-}
-.select2-container--classic .select2-selection--single .select2-selection__clear {
-    height: 50px;
-    margin-right: 5px;
-}
-.select2-container--classic .select2-selection--single .select2-selection__arrow{
-    height: 48px;
-    border: none;
-    display: none;
-}
-small.optional {
-    color: var(--ermain);
 }
 .datetimewrap {
     display: flex;
     justify-content: space-between;
 }
-input#loading_date, input#loading_time {
+.datetimewrap input {
     width: 48%;
-}
-input.addjob{
-    outline: none;
-    padding: 6px;
-    font-size: 19px;
-    height: 45px;
+    border: 1px solid #ddd;
     border-radius: 5px;
-    cursor: pointer;
-    background: var(--ermain);
-    border: ridge;
-    opacity: .7;
+}
+.locations label {
+    margin-top: 10px;
+    display: inline-block;
+}
+.erkobinfo {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+}
+.erkobinfo .input-group {
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.input-group:first-child{
+    margin-left: 0px !important;
+}
+.erkobinfo .input-group:last-child {
+    margin-right: 0px !important;
+    width: 200px;
+}
+
+.ercity,.locationinput,.erunion{
+    display: none;
+}
+select#er_labore {
+    width: 100%;
+}
+input#addjob {
+    width: 100%;
+    padding: 4px;
+    background: orangered;
     color: #fff;
-    display: inline;
-}
-
-input[type="submit"]:hover{
-    opacity: 1;
-    transition: .3s ease;
-}
-
-
-.er_sidebar {
-    min-width: 22%;
-    max-width: 22% !important;
-    background: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    height: fit-content;
+    font-size: 20px;
 }

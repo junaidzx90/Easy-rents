@@ -69,6 +69,8 @@ class Easy_Rents_Admin {
 	 */
 	public function enqueue_styles() {
 
+		wp_register_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css', array(), $this->version, 'all' );
+
 		wp_register_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/easy-rents-admin.css', array(), $this->version, 'all' );
 
 		wp_enqueue_style( 'er_bubble_notify', plugin_dir_url( __FILE__ ) . 'css/er_bubble_notify.css', array(), $this->version, 'all' );
@@ -81,6 +83,8 @@ class Easy_Rents_Admin {
 	 * @since    1.0.0
 	 */
 	public function enqueue_scripts() {
+
+		wp_register_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'js/jquery-ui.js', array( 'jquery' ), $this->version, false );
 
 		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/easy-rents-admin.js', array( 'jquery' ), $this->version, false );
 
@@ -107,10 +111,13 @@ class Easy_Rents_Admin {
 				"",
 				65
 			);
+
 			add_submenu_page( "er-settings", "Settings", "Settings", "manage_options", "er-settings", array($this,"er_settings_cb")
 			);
 			
 			add_submenu_page( 'er-settings', 'Payment', 'Payment'.$bubble, 'manage_options', 'payment', array($this,'er_payment_confirm'));
+
+			add_submenu_page( 'er-settings', 'Locations', 'Locations', 'manage_options', 'locations', array($this,'er_locations_lists'));
 		}
 	}
 
@@ -354,13 +361,17 @@ class Easy_Rents_Admin {
 		echo '<textarea name="paymentrequestmsg" type="text" placeholder="Payment Request Message" cols="50" rows="2">'.get_option('paymentrequestmsg').'</textarea>';
 	}
 
-	//webclass general settings
+	//er_settings_cb
 	function er_settings_cb(){
 		require_once plugin_dir_path( __FILE__ ).'partials/easy-rents-admin-display.php';
 	}
-	//webclass general settings
+	//er_payment_confirm
 	function er_payment_confirm(){
 		require_once plugin_dir_path( __FILE__ ).'partials/er_payment_confirm.php';
+	}
+	//er_locations_lists
+	function er_locations_lists(){
+		require_once plugin_dir_path( __FILE__ ).'partials/er_locations_lists.php';
 	}
 
 	/*

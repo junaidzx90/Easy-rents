@@ -25,4 +25,28 @@
 			});
 		}
 	});
+
+	// Districs
+	var districs = [];
+	$('#districtlists').children().each(function () {
+		districs.push($(this).val());
+	});
+	$('#districtlocation').autocomplete({
+		source: districs,
+	});
+
+
+	// Cities
+	var cities = [];
+	$('#citylocation').autocomplete({
+		source: cities,
+	});
+
+
+	// Unions
+	var unions = [];
+	$('#unionlocation').autocomplete({
+		source: unions,
+	});
+
 })( jQuery );

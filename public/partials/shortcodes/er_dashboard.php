@@ -210,10 +210,10 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
             <div id="running" class="tabelem">
             <?php
                 if(Easy_Rents_Public::er_role_check( ['driver'] )){
-                    // Checking for pending requ
+                    // Checking for running project
                     $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 2 OR status = 4"); 
                 
-                    // My pending requests loop
+                    // My inprogress loop
                     if($acceptedapplications){
                         foreach($acceptedapplications as $application){
 
@@ -298,7 +298,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                 }
                             }
                         }
-                    }//My pending requests loop end
+                    }//My running loop end
                     else{
                         ?>
                         <div class="helper">
@@ -313,7 +313,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                     // Checking for pending requ
                     $acceptedapplications = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE customer_id = {$current_user->ID} AND status = 2 OR status = 4");
                 
-                    // My pending requests loop
+                    // My running loop
                     if($acceptedapplications){
                         foreach($acceptedapplications as $application){
 
@@ -392,7 +392,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                 }
                             }
                         }
-                    }//My pending requests loop end
+                    }//My running loop end
                     else{
                         ?>
                         <div class="helper">
