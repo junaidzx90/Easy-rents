@@ -184,6 +184,22 @@ class Easy_Rents {
 		// Send sms to driver for payment
 		$this->loader->add_action("wp_ajax_send_sms_forpayment", $plugin_admin, "send_sms_forpayment");
 		$this->loader->add_action("wp_ajax_nopriv_send_sms_forpayment", $plugin_admin, "send_sms_forpayment");
+
+		//Adding location
+		$this->loader->add_action("wp_ajax_addNewLocation", $plugin_admin, "addNewLocation");
+		$this->loader->add_action("wp_ajax_nopriv_addNewLocation", $plugin_admin, "addNewLocation");
+		//Get Cities
+		$this->loader->add_action("wp_ajax_get_cities_under_district", $plugin_admin, "get_cities_under_district");
+		$this->loader->add_action("wp_ajax_nopriv_get_cities_under_district", $plugin_admin, "get_cities_under_district");
+		//Get Unions
+		$this->loader->add_action("wp_ajax_get_unions_under_cities", $plugin_admin, "get_unions_under_cities");
+		$this->loader->add_action("wp_ajax_nopriv_get_unions_under_cities", $plugin_admin, "get_unions_under_cities");
+		//get refresh data
+		$this->loader->add_action("wp_ajax_get_all_table_data_for_refresh", $plugin_admin, "get_all_table_data_for_refresh");
+		$this->loader->add_action("wp_ajax_nopriv_get_all_table_data_for_refresh", $plugin_admin, "get_all_table_data_for_refresh");
+		//Delete location data
+		$this->loader->add_action("wp_ajax_delete_easy_rents_location", $plugin_admin, "delete_easy_rents_location");
+		$this->loader->add_action("wp_ajax_nopriv_delete_easy_rents_location", $plugin_admin, "delete_easy_rents_location");
 	}
 
 	/**
@@ -222,6 +238,16 @@ class Easy_Rents {
 		// finished confirm
 		$this->loader->add_action("wp_ajax_finishedconfirmed", $plugin_public, "finishedconfirmed");
 		$this->loader->add_action("wp_ajax_nopriv_finishedconfirmed", $plugin_public, "finishedconfirmed");
+
+		//Get Cities
+		$this->loader->add_action("wp_ajax_pbget_cities_under_district", $plugin_public, "pbget_cities_under_district");
+		$this->loader->add_action("wp_ajax_nopriv_pbget_cities_under_district", $plugin_public, "pbget_cities_under_district");
+		//Get Unions
+		$this->loader->add_action("wp_ajax_pbget_unions_under_cities", $plugin_public, "pbget_unions_under_cities");
+		$this->loader->add_action("wp_ajax_nopriv_pbget_unions_under_cities", $plugin_public, "pbget_unions_under_cities");
+		//Create Job
+		$this->loader->add_action("wp_ajax_er_create_job", $plugin_public, "er_create_job");
+		$this->loader->add_action("wp_ajax_nopriv_er_create_job", $plugin_public, "er_create_job");
 	}
 
 	/**

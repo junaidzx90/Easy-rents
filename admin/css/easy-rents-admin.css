@@ -1,16 +1,39 @@
-.locations {
-    max-height: 258px;
+.topforms {
+    display: flex;
+    justify-content: space-between;
 }
-
+.filter_search form{
+    display: flex;
+}
+.filter_search,.add_locations {
+    align-self: flex-end;
+}
+.filter_search {
+    width: 208px;
+}
+.filter_search input {
+    width: 200px;
+}
+.searchttl{
+    margin-bottom: 10px;
+}
+input[name="searchfilter"]{
+    cursor: pointer;
+}
+.locations {
+    max-height: 80vh;
+}
+.searchttl {
+    margin-bottom: 10px;
+    text-align: right;
+}
 .locations::-webkit-scrollbar {
     width: 11px
 }
-
 .locations {
     scrollbar-width: thin;
     scrollbar-color: #007cba
 }
-
 .locations::-webkit-scrollbar-track {
     background: 0 0;
     cursor: grabbing !important
@@ -21,16 +44,24 @@
     border-radius: 6px;
     border: 3px solid #cfd8dc
 }
+#citylocation,#unionlocation{
+    display: none;
+}
 
 .add_locations select{
     display: none;
 }
+th.del {
+    width: 30px;
+}
+
 button.delete_addr {
     color: #fff;
     background: red;
     border: none;
     border-radius: 50%;
     font-size: 16px;
+    line-height: 16px;
     width: 28px;
     height: 28px;
     cursor: pointer;
@@ -72,7 +103,7 @@ tr:nth-child(even) {
 
 tr:hover {
     transition: .5s;
-    background-color: #f5f5f5;
+    background-color: #23282d66;
 }
 
 table tr button {

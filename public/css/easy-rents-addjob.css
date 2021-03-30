@@ -81,4 +81,5 @@ input#addjob {
     background: orangered;
     color: #fff;
     font-size: 20px;
+    cursor: pointer;
 }

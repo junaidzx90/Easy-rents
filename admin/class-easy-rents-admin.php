@@ -71,9 +71,9 @@ class Easy_Rents_Admin {
 
 		wp_register_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css', array(), $this->version, 'all' );
 
-		wp_register_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/easy-rents-admin.css', array(), $this->version, 'all' );
+		wp_register_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/easy-rents-admin.css', array(), microtime(), 'all' );
 
-		wp_enqueue_style( 'er_bubble_notify', plugin_dir_url( __FILE__ ) . 'css/er_bubble_notify.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'er_bubble_notify', plugin_dir_url( __FILE__ ) . 'css/er_bubble_notify.css', array(), microtime(), 'all' );
 
 	}
 
@@ -86,7 +86,9 @@ class Easy_Rents_Admin {
 
 		wp_register_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'js/jquery-ui.js', array( 'jquery' ), $this->version, false );
 
-		wp_register_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/easy-rents-admin.js', array( 'jquery' ), $this->version, false );
+		wp_register_script( 'easy-rents-locations', plugin_dir_url( __FILE__ ) . 'js/easy-rents-locations.js', array( 'jquery' ), microtime(), false );
+
+		wp_register_script( 'easy-rents-payments', plugin_dir_url( __FILE__ ) . 'js/easy-rents-payments.js', array( 'jquery' ), microtime(), false );
 
 		wp_register_script( 'trucktype_media', plugin_dir_url( __FILE__ ) . 'js/media-uploader.js', array( 'jquery' ), $this->version, true );
 
@@ -612,6 +614,10 @@ class Easy_Rents_Admin {
 
 	// Send sms to driver for payment
 	function send_sms_forpayment(){
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
+			die ( 'Hey! What are you doing?');
+		}
+
 		if(isset($_POST['driver_id']) && isset($_POST['amount'])){
 			$driver_id = intval($_POST['driver_id']);
 			$amount = intval($_POST['amount']);
@@ -639,6 +645,159 @@ class Easy_Rents_Admin {
 				wp_die();
 			}
 			die;
+		}
+	}
+
+
+	// Adding location
+	function addNewLocation(){
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
+			die ( 'Hey! What are you doing?');
+		}
+
+		if(isset($_POST['distric']) && isset($_POST['city']) && isset($_POST['union'])){
+			$district = sanitize_text_field( $_POST['distric'] );
+			$city = sanitize_text_field( $_POST['city'] );
+			$union = sanitize_text_field( $_POST['union'] );
+
+			global $wpdb;
+			$tbl = $wpdb->prefix.'easy_rents_prelocations';
+
+			$lochas = $wpdb->get_var("SELECT ID FROM $tbl WHERE `district` = '$district' AND `city` = '$city' AND `union` = '$union'");
+
+			if($lochas){
+				echo json_encode(array('faild' => 'This Location already Exist!'));
+				die;
+			}
+			
+			$location = $wpdb->insert($tbl, array('district' => $district, 'city' => $city, 'union' => $union), array('%s', '%s', '%s'));
+			
+			if($location){
+				echo json_encode(array('success' => 'Added Success!'));
+				die;
+			}else{
+				echo json_encode(array('faild' => 'Try again!'));
+				die;
+			}
+		}
+	}
+
+	// Get cities by ajax
+	function get_cities_under_district(){
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
+			die ( 'Hey! What are you doing?');
+		}
+
+		if(isset($_POST['district'])){
+			$district = sanitize_text_field( $_POST['district'] );
+		
+			global $wpdb;
+
+			$cities = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' ORDER BY ID DESC");
+			if($cities){
+				echo json_encode($cities);
+				die;
+			}
+			die;
+		}
+	}
+
+	// Get unions by ajax
+	function get_unions_under_cities(){
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
+			die ( 'Hey! What are you doing?');
+		}
+
+		if(isset($_POST['city'])){
+			$city = sanitize_text_field( $_POST['city'] );
+		
+			global $wpdb;
+
+			$unions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE city = '$city' ORDER BY ID DESC");
+
+			if($unions){
+				echo json_encode($unions);
+				die;
+			}
+		}
+	}
+
+	// Get able data by ajax
+	function get_all_table_data_for_refresh(){
+		global $wpdb;
+
+		$locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+
+		if($locations){
+			$i = 1;
+			foreach($locations as $location){
+				?>
+				<tr>
+					<td class="slnum"><?php echo __($i, 'easy-rents'); ?></td>
+					<td><?php echo __($location->district, 'easy-rents'); ?></td>
+					<td><?php echo __($location->city, 'easy-rents'); ?></td>
+					<td><?php echo __($location->union, 'easy-rents'); ?></td>
+					<td>
+						<button data-id="<?php echo esc_html( $location->ID ); ?>" name="delete_addr" class="delete_addr">X</button>
+					</td>
+				</tr>
+				<?php
+				$i++;
+			}
+		}
+	}
+
+	// Location table default values
+	function erLocationsList($filter = ''){
+		global $wpdb;
+
+		if($filter != ''){
+			$locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$filter' ORDER BY ID DESC");
+		}else{
+			 $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+		}
+
+		if($locations){
+			$i = 1;
+			foreach($locations as $location){
+				?>
+				<tr>
+					<td class="slnum"><?php echo __($i, 'easy-rents'); ?></td>
+					<td><?php echo __($location->district, 'easy-rents'); ?></td>
+					<td><?php echo __($location->city, 'easy-rents'); ?></td>
+					<td><?php echo __($location->union, 'easy-rents'); ?></td>
+					<td>
+						<button data-id="<?php echo esc_html( $location->ID ); ?>" name="delete_addr" class="delete_addr">X</button>
+					</td>
+				</tr>
+				<?php
+				$i++;
+			}
+		}
+	}
+
+	// Delete location
+	function delete_easy_rents_location(){
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
+			die ( 'Hey! What are you doing?');
+		}
+
+		if(isset($_POST['addId'])){
+			$id = intval($_POST['addId']);
+			global $wpdb,$wp_query;
+			$lochas = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_prelocations WHERE `ID` = $id");
+
+			if($lochas){
+				if($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_prelocations WHERE ID = $id")){
+					echo 'Delete Success!';
+					die;
+				}else{
+					echo 'Try again!';
+					die;
+				}
+			}else{
+				die;
+			}
 		}
 	}
 	

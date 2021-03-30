@@ -14,9 +14,10 @@
 
 $admin_this = new Easy_Rents( );
 wp_enqueue_style( $admin_this->get_plugin_name() );
-wp_enqueue_script( $admin_this->get_plugin_name() );
-wp_localize_script( $admin_this->get_plugin_name(), "admin_ajaxurl", array(
-    'ajax_url' => admin_url('admin-ajax.php')
+wp_enqueue_script( 'easy-rents-payments' );
+wp_localize_script( 'easy-rents-payments', "payment_ajaxurl", array(
+    'ajax_url' => admin_url('admin-ajax.php'),
+    'nonce'     => wp_create_nonce('ajax-nonce')
 ));
 ?>
 <div class="notice">
