@@ -20,441 +20,430 @@
  * @subpackage Easy_Rents/admin
  * @author     Junayed <devjoo.contact@gmail.com>
  */
-class Easy_Rents_Admin {
+class Easy_Rents_Admin
+{
 
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
+    /**
+     * The ID of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $plugin_name    The ID of this plugin.
+     */
+    private $plugin_name;
 
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
+    /**
+     * The version of this plugin.
+     *
+     * @since    1.0.0
+     * @access   private
+     * @var      string    $version    The current version of this plugin.
+     */
+    private $version;
 
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of this plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
-	public function __construct( $plugin_name, $version ) {
+    /**
+     * Initialize the class and set its properties.
+     *
+     * @since    1.0.0
+     * @param      string    $plugin_name       The name of this plugin.
+     * @param      string    $version    The version of this plugin.
+     */
+    public function __construct($plugin_name, $version)
+    {
 
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+        $this->plugin_name = $plugin_name;
+        $this->version = $version;
 
-		// ONLY MOVIE CUSTOM TYPE POSTS
-		add_filter('manage_jobs_posts_columns', array($this, 'wp_list_table_columnname'));
+        // ONLY MOVIE CUSTOM TYPE POSTS
+        add_filter('manage_jobs_posts_columns', array($this, 'wp_list_table_columnname'));
 
-		// Set custom column in job table
-		if($_GET['post_type'] == 'jobs'){
-			$this->jobs_list_table_css();
-		}
-	}
-	
+        // Set custom column in job table
+        if ($_GET['post_type'] == 'jobs') {
+            $this->jobs_list_table_css();
+        }
+    }
 
-	/**
-	 * Register the stylesheets for the admin area.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles() {
+    /**
+     * Register the stylesheets for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_styles()
+    {
 
-		wp_register_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'css/jquery-ui.css', array(), $this->version, 'all' );
+        wp_register_style('jquery-ui', plugin_dir_url(__FILE__) . 'css/jquery-ui.css', array(), $this->version, 'all');
 
-		wp_register_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/easy-rents-admin.css', array(), microtime(), 'all' );
+        wp_register_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/easy-rents-admin.css', array(), microtime(), 'all');
 
-		wp_enqueue_style( 'er_bubble_notify', plugin_dir_url( __FILE__ ) . 'css/er_bubble_notify.css', array(), microtime(), 'all' );
+        wp_enqueue_style('er_bubble_notify', plugin_dir_url(__FILE__) . 'css/er_bubble_notify.css', array(), microtime(), 'all');
 
-	}
+    }
 
-	/**
-	 * Register the JavaScript for the admin area.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_scripts() {
+    /**
+     * Register the JavaScript for the admin area.
+     *
+     * @since    1.0.0
+     */
+    public function enqueue_scripts()
+    {
 
-		wp_register_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . 'js/jquery-ui.js', array( 'jquery' ), $this->version, false );
+        wp_register_script('jquery-ui', plugin_dir_url(__FILE__) . 'js/jquery-ui.js', array('jquery'), $this->version, false);
 
-		wp_register_script( 'easy-rents-locations', plugin_dir_url( __FILE__ ) . 'js/easy-rents-locations.js', array( 'jquery' ), microtime(), false );
+        wp_register_script('easy-rents-locations', plugin_dir_url(__FILE__) . 'js/easy-rents-locations.js', array('jquery'), microtime(), false);
 
-		wp_register_script( 'easy-rents-payments', plugin_dir_url( __FILE__ ) . 'js/easy-rents-payments.js', array( 'jquery' ), microtime(), false );
+        wp_register_script('easy-rents-payments', plugin_dir_url(__FILE__) . 'js/easy-rents-payments.js', array('jquery'), microtime(), false);
 
-		wp_register_script( 'trucktype_media', plugin_dir_url( __FILE__ ) . 'js/media-uploader.js', array( 'jquery' ), $this->version, true );
+        wp_register_script('trucktype_media', plugin_dir_url(__FILE__) . 'js/media-uploader.js', array('jquery'), $this->version, true);
 
-	}
+    }
 
-	// General settings
-	function easy_rents_setup(){
-		if(is_admin(  )){
-			global $wpdb,$wp_query;
-			$billpay = $wpdb->query("SELECT COUNT(payment) FROM {$wpdb->prefix}easy_rents_applications WHERE payment = 1");
-			$bubble = sprintf(
-				' <span class="paymentstatus"><span class="count">%d</span></span>',
-				42 //bubble contents
-			);
+    // General settings
+    public function easy_rents_setup()
+    {
+        if (is_admin()) {
+            global $wpdb, $wp_query;
+            $billpay = $wpdb->query("SELECT COUNT(payment) FROM {$wpdb->prefix}easy_rents_applications WHERE payment = 1");
+            $bubble = sprintf(
+                ' <span class="paymentstatus"><span class="count">%d</span></span>',
+                42//bubble contents
+            );
 
-			add_menu_page( //Main menu register
-				"Easy Rents", //page_title
-				"Easy Rents".$bubble, //menu title
-				"manage_options", //capability
-				"er-settings", //menu_slug
-				array($this,"er_settings_cb"), //callback function
-				"",
-				65
-			);
+            add_menu_page( //Main menu register
+                "Easy Rents", //page_title
+                "Easy Rents" . $bubble, //menu title
+                "manage_options", //capability
+                "er-settings", //menu_slug
+                array($this, "er_settings_cb"), //callback function
+                "",
+                65
+            );
 
-			add_submenu_page( "er-settings", "Settings", "Settings", "manage_options", "er-settings", array($this,"er_settings_cb")
-			);
-			
-			add_submenu_page( 'er-settings', 'Payment', 'Payment'.$bubble, 'manage_options', 'payment', array($this,'er_payment_confirm'));
+            add_submenu_page("er-settings", "Settings", "Settings", "manage_options", "er-settings", array($this, "er_settings_cb")
+            );
 
-			add_submenu_page( 'er-settings', 'Locations', 'Locations', 'manage_options', 'locations', array($this,'er_locations_lists'));
-		}
-	}
+            add_submenu_page('er-settings', 'Payment', 'Payment' . $bubble, 'manage_options', 'payment', array($this, 'er_payment_confirm'));
 
-	// Message to user
-	function message_to_user($toval,$messageval){
-		if(get_option( 'er_smstoken' )){
-			$to = '+88'.$toval;
-			$token = get_option( 'er_smstoken' );
-			$message = $messageval;
+            add_submenu_page('er-settings', 'Locations', 'Locations', 'manage_options', 'locations', array($this, 'er_locations_lists'));
+        }
+    }
 
-			$url = "http://api.greenweb.com.bd/api.php?json";
+    // Message to user
+    public function message_to_user($toval, $messageval)
+    {
+        if (get_option('er_smstoken')) {
+            $to = '+88' . $toval;
+            $token = get_option('er_smstoken');
+            $message = $messageval;
 
-			$data= array(
-				'to'=>"$to",
-				'message'=>"$message",
-				'token'=>"$token"
-			); // Add parameters in key value
-			$ch = curl_init(); // Initialize cURL
-			curl_setopt($ch, CURLOPT_URL,$url);
-			curl_setopt($ch, CURLOPT_ENCODING, '');
-			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $url = "http://api.greenweb.com.bd/api.php?json";
 
-			if(curl_exec($ch)){
-				//Result
-				return $smsresult;
-			}else{
-				//Error Display
-				return curl_error($ch);
-			}
-		}
-	}
+            $data = array(
+                'to' => "$to",
+                'message' => "$message",
+                'token' => "$token",
+            ); // Add parameters in key value
+            $ch = curl_init(); // Initialize cURL
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_ENCODING, '');
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-	// Register settings
-	function er_page_settings_register(){
-		add_settings_section( 'er_settings_section', 'Easy Rents Settings', '', 'er-settings' );
+            if (curl_exec($ch)) {
+                //Result
+                return $smsresult;
+            } else {
+                //Error Display
+                return curl_error($ch);
+            }
+        }
+    }
 
-		// Add new trip page
-		add_settings_field( 'add_trip_page', 'Add trip page', array($this,'er_add_trip_page_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'add_trip_page');
+    // Register settings
+    public function er_page_settings_register()
+    {
+        add_settings_section('er_settings_section', 'Easy Rents Settings', '', 'er-settings');
 
-		// Profile page
-		add_settings_field( 'profile_page', 'Profile page', array($this,'er_profile_page_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'profile_page');
+        // Add new trip page
+        add_settings_field('add_trip_page', 'Add trip page', array($this, 'er_add_trip_page_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'add_trip_page');
 
-		// Profile trips
-		add_settings_field( 'profile_trips', 'Profile Trips', array($this,'er_profile_trips_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'profile_trips');
+        // Profile page
+        add_settings_field('profile_page', 'Profile page', array($this, 'er_profile_page_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'profile_page');
 
-		// Profile payment
-		add_settings_field( 'profile_payment', 'Payments', array($this,'er_profile_payment_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'profile_payment');
+        // Profile trips
+        add_settings_field('profile_trips', 'Profile Trips', array($this, 'er_profile_trips_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'profile_trips');
 
-		// Profile settings
-		add_settings_field( 'erprofile_settings', 'Settings', array($this,'er_profile_settings_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'erprofile_settings');
+        // Profile payment
+        add_settings_field('profile_payment', 'Payments', array($this, 'er_profile_payment_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'profile_payment');
 
-		// Set commission %
-		add_settings_field( 'job_commission', 'Commissions Percents', array($this,'er_job_commission_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'job_commission');
+        // Profile settings
+        add_settings_field('erprofile_settings', 'Settings', array($this, 'er_profile_settings_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'erprofile_settings');
 
-		// Set sms token
-		add_settings_field( 'er_smstoken', 'Token Number', array($this,'er_smstoken_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'er_smstoken');
+        // Set commission %
+        add_settings_field('job_commission', 'Commissions Percents', array($this, 'er_job_commission_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'job_commission');
 
-		// Set finished job confirmation
-		add_settings_field( 'jobconfirmationmsg', 'Trip Confirmation Message', array($this,'er_jobconfirmation_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'jobconfirmationmsg');
+        // Set sms token
+        add_settings_field('er_smstoken', 'Token Number', array($this, 'er_smstoken_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'er_smstoken');
 
-		// Set accept job msg
-		add_settings_field( 'acceptjobmsg', 'Trip Accept Message', array($this,'er_acceptjobmsg_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'acceptjobmsg');
+        // Set finished job confirmation
+        add_settings_field('jobconfirmationmsg', 'Trip Confirmation Message', array($this, 'er_jobconfirmation_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'jobconfirmationmsg');
 
-		// Payment request message
-		add_settings_field( 'paymentrequestmsg', 'Payment Request Message', array($this,'er_paymentrequestmsg_cb'), 'er-settings', 'er_settings_section');
-		register_setting( 'er_settings_section', 'paymentrequestmsg');
-	}
+        // Set accept job msg
+        add_settings_field('acceptjobmsg', 'Trip Accept Message', array($this, 'er_acceptjobmsg_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'acceptjobmsg');
 
-	//Disabled wp backend access
-	function disable_backend_access(){
-		global $current_user;
-		$redirect = home_url( '/' );
-		if( is_admin() && !defined('DOING_AJAX') && ( !current_user_can('administrator'))){
-			wp_redirect(home_url());
-			exit;
-		}
-	}
+        // Payment request message
+        add_settings_field('paymentrequestmsg', 'Payment Request Message', array($this, 'er_paymentrequestmsg_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'paymentrequestmsg');
+    }
 
-	/**
-	 * After login redirect user
-	 */
-	function er_login_redirects( $url, $request, $user ) {
-		 //is there a user to check?
-		 if ( isset( $user->roles ) && is_array( $user->roles ) ) {
-			//check for admins
-			if ( in_array( 'administrator', $user->roles ) ) {
-				// redirect them to the default place
-				return admin_url();
-			} else {
-				return home_url('/'.Easy_Rents_Public::get_post_slug(get_option( 'profile_page', true )));
-			}
-		} else {
-			return admin_url();
-		}
-	}
+    //Disabled wp backend access
+    public function disable_backend_access()
+    {
+        global $current_user;
+        $redirect = home_url('/');
+        if (is_admin() && !defined('DOING_AJAX') && (!current_user_can('administrator'))) {
+            wp_redirect(home_url());
+            exit;
+        }
+    }
 
-	// Add new trip page calback
-	function er_add_trip_page_cb(){
-		echo '<select name="add_trip_page">';
-		if(get_option('add_trip_page') != ""){
-			$page = get_post( intval(get_option( 'add_trip_page' )) )->post_title;
-			echo '<option value="'.intval(get_option('add_trip_page')).'" selected>';
-			echo	__($page,'easy-rents');
-			echo '</option>';
-		}else{
-			echo '<option selected> Select a page </option>';
-		}
+    /**
+     * After login redirect user
+     */
+    public function er_login_redirects($url, $request, $user)
+    {
+        //is there a user to check?
+        if (isset($user->roles) && is_array($user->roles)) {
+            //check for admins
+            if (in_array('administrator', $user->roles)) {
+                // redirect them to the default place
+                return admin_url();
+            } else {
+                return home_url('/' . Easy_Rents_Public::get_post_slug(get_option('profile_page', true)));
+            }
+        } else {
+            return admin_url();
+        }
+    }
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
-		if($posts){
-			foreach($posts as $post){
-				echo '<option value="'.intval( $post->ID).'">';
-				echo __($post->post_title, 'easy-rents');
-				echo '</option>';
-			}
-		}
-		echo '</select><br>';
-	}
+    // Add new trip page calback
+    public function er_add_trip_page_cb()
+    {
+        global $wp_query;
+        $args = array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'name' => 'add_trip_page',
+            'selected' => get_option('add_trip_page'),
+            'show_option_none' => '',
+            'show_option_no_change' => 'Select Page',
+            'option_none_value' => '',
+        );
+        wp_dropdown_pages($args);
+        echo '<br>';
+    }
 
-	// Profile page callback
-	function er_profile_page_cb(){
-		echo '<select name="profile_page">';
-		if(get_option('profile_page') != ""){
-			$page = get_post( intval(get_option( 'profile_page' )) )->post_title;
-			echo '<option value="'.intval(get_option('profile_page')).'" selected>';
-			echo	__($page,'easy-rents');
-			echo '</option>';
-		}else{
-			echo '<option selected> Select a page </option>';
-		}
+    // Profile page callback
+    public function er_profile_page_cb()
+    {
+        global $wp_query;
+        $args = array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'name' => 'profile_page',
+            'selected' => get_option('profile_page'),
+            'show_option_none' => '',
+            'show_option_no_change' => 'Select Page',
+            'option_none_value' => '',
+        );
+        wp_dropdown_pages($args);
+        echo '<br>';
+    }
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
-		if($posts){
-			foreach($posts as $post){
-				echo '<option value="'.intval($post->ID).'">';
-				echo __($post->post_title, 'easy-rents');
-				echo '</option>';
-			}
-		}
-		echo '</select><br>';
-	}
+    // Profile trips page callback
+    public function er_profile_trips_cb()
+    {
+        global $wp_query;
+        $args = array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'name' => 'profile_trips',
+            'selected' => get_option('profile_trips'),
+            'show_option_none' => '',
+            'show_option_no_change' => 'Select Page',
+            'option_none_value' => '',
+        );
+        wp_dropdown_pages($args);
+        echo '<br>';
+    }
 
-	// Profile trips page callback
-	function er_profile_trips_cb(){
-		echo '<select name="profile_trips">';
-		if(get_option('profile_trips') != ""){
-			$page = get_post( intval(get_option( 'profile_trips' )) )->post_title;
-			echo '<option value="'.intval(get_option('profile_trips')).'" selected>';
-			echo	__($page,'easy-rents');
-			echo '</option>';
-		}else{
-			echo '<option selected> Select a page </option>';
-		}
+    // Profile payment callback
+    public function er_profile_payment_cb()
+    {
+        global $wp_query;
+        $args = array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'name' => 'profile_payment',
+            'selected' => get_option('profile_payment'),
+            'show_option_none' => '',
+            'show_option_no_change' => 'Select Page',
+            'option_none_value' => '',
+        );
+        wp_dropdown_pages($args);
+        echo '<br>';
+    }
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
-		if($posts){
-			foreach($posts as $post){
-				echo '<option value="'.intval($post->ID).'">';
-				echo __($post->post_title, 'easy-rents');
-				echo '</option>';
-			}
-		}
-		echo '</select><br>';
-	}
+    // Profile settings
+    public function er_profile_settings_cb()
+    {
+        global $wp_query;
+        $args = array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'name' => 'erprofile_settings',
+            'selected' => get_option('erprofile_settings'),
+            'show_option_none' => '',
+            'show_option_no_change' => 'Select Page',
+            'option_none_value' => '',
+        );
+        wp_dropdown_pages($args);
+        echo '<br>';
+    }
 
-	// Profile payment callback
-	function er_profile_payment_cb(){
-		echo '<select name="profile_payment">';
-		if(get_option('profile_payment') != ""){
-			$page = get_post( intval(get_option( 'profile_payment' )) )->post_title;
-			echo '<option value="'.intval(get_option('profile_payment')).'" selected>';
-			echo	__($page,'easy-rents');
-			echo '</option>';
-		}else{
-			echo '<option selected> Select a page </option>';
-		}
+    // Profile page callback
+    public function er_job_commission_cb()
+    {
+        $ommision = get_option('job_commission');
+        echo '<input style="width:55px" type="number" name="job_commission" value="' . __($ommision, 'easy-rents') . '" placeholder="0"><br><h3>SMS <hr></h3>';
+    }
+    // er_smstoken_cb
+    public function er_smstoken_cb()
+    {
+        echo '<input type="password" value="' . get_option('er_smstoken') . '" name="er_smstoken" placeholder="Add Token Number"><br>';
+    }
+    // er_jobconfirmation_cb
+    public function er_jobconfirmation_cb()
+    {
+        echo '<textarea name="jobconfirmationmsg" type="text" placeholder="Trip Confirmation Message" cols="50" rows="2">' . get_option('jobconfirmationmsg') . '</textarea><br>';
+    }
+    // er_acceptjobmsg_cb
+    public function er_acceptjobmsg_cb()
+    {
+        echo '<textarea name="acceptjobmsg" type="text" placeholder="Trip Accept Message" cols="50" rows="2">' . get_option('acceptjobmsg') . '</textarea><br>';
+    }
+    // er_paymentrequestmsg_cb
+    public function er_paymentrequestmsg_cb()
+    {
+        echo '<textarea name="paymentrequestmsg" type="text" placeholder="Payment Request Message" cols="50" rows="2">' . get_option('paymentrequestmsg') . '</textarea>';
+    }
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
-		if($posts){
-			foreach($posts as $post){
-				echo '<option value="'.intval($post->ID).'">';
-				echo __($post->post_title, 'easy-rents');
-				echo '</option>';
-			}
-		}
-		echo '</select><br>';
-	}
+    //er_settings_cb
+    public function er_settings_cb()
+    {
+        require_once plugin_dir_path(__FILE__) . 'partials/easy-rents-admin-display.php';
+    }
+    //er_payment_confirm
+    public function er_payment_confirm()
+    {
+        require_once plugin_dir_path(__FILE__) . 'partials/er_payment_confirm.php';
+    }
+    //er_locations_lists
+    public function er_locations_lists()
+    {
+        require_once plugin_dir_path(__FILE__) . 'partials/er_locations_lists.php';
+    }
 
-	// Profile settings
-	function er_profile_settings_cb(){
-		echo '<select name="erprofile_settings">';
-		if(get_option('erprofile_settings') != ""){
-			$page = get_post( intval(get_option( 'erprofile_settings' )) )->post_title;
-			echo '<option value="'.intval(get_option('erprofile_settings')).'" selected>';
-			echo	__($page,'easy-rents');
-			echo '</option>';
-		}else{
-			echo '<option selected> Select a page </option>';
-		}
+    /*
+     * Creating a function to create our CPT
+     */
 
-		$posts = get_posts(['post_type' => 'page','post_status' => 'publish']);
-		if($posts){
-			foreach($posts as $post){
-				echo '<option value="'.intval($post->ID).'">';
-				echo __($post->post_title, 'easy-rents');
-				echo '</option>';
-			}
-		}
-		echo '</select><br>';
-	}
+    public function er_job_post()
+    {
+        // Set UI labels for Custom Post Type
+        $labels = array(
+            'name' => _x('Jobs', 'Post Type General Name', 'easy-rents'),
+            'singular_name' => _x('Job', 'Post Type Singular Name', 'easy-rents'),
+            'menu_name' => __('Jobs', 'easy-rents'),
+            'all_items' => __('All Jobs', 'easy-rents'),
+            'view_item' => __('View Job', 'easy-rents'),
+            'add_new_item' => __('Add New Job', 'easy-rents'),
+            'add_new' => __('Add New', 'easy-rents'),
+            'edit_item' => __('Edit Job', 'easy-rents'),
+            'update_item' => __('Update Job', 'easy-rents'),
+            'search_items' => __('Search Job', 'easy-rents'),
+            'not_found' => __('Not Found', 'easy-rents'),
+            'not_found_in_trash' => __('Not found in Trash', 'easy-rents'),
+        );
 
-	// Profile page callback
-	function er_job_commission_cb(){
-		$ommision = get_option('job_commission');
-		echo '<input style="width:55px" type="number" name="job_commission" value="'.__($ommision,'easy-rents').'" placeholder="0"><br><h3>SMS <hr></h3>';
-	}
-	// er_smstoken_cb
-	function er_smstoken_cb(){
-		echo '<input type="password" value="'.get_option( 'er_smstoken' ).'" name="er_smstoken" placeholder="Add Token Number"><br>';
-	}
-	// er_jobconfirmation_cb
-	function er_jobconfirmation_cb(){
-		echo '<textarea name="jobconfirmationmsg" type="text" placeholder="Trip Confirmation Message" cols="50" rows="2">'.get_option('jobconfirmationmsg').'</textarea><br>';
-	}
-	// er_acceptjobmsg_cb
-	function er_acceptjobmsg_cb(){
-		echo '<textarea name="acceptjobmsg" type="text" placeholder="Trip Accept Message" cols="50" rows="2">'.get_option('acceptjobmsg').'</textarea><br>';
-	}
-	// er_paymentrequestmsg_cb
-	function er_paymentrequestmsg_cb(){
-		echo '<textarea name="paymentrequestmsg" type="text" placeholder="Payment Request Message" cols="50" rows="2">'.get_option('paymentrequestmsg').'</textarea>';
-	}
+        // Set other options for Custom Post Type
 
-	//er_settings_cb
-	function er_settings_cb(){
-		require_once plugin_dir_path( __FILE__ ).'partials/easy-rents-admin-display.php';
-	}
-	//er_payment_confirm
-	function er_payment_confirm(){
-		require_once plugin_dir_path( __FILE__ ).'partials/er_payment_confirm.php';
-	}
-	//er_locations_lists
-	function er_locations_lists(){
-		require_once plugin_dir_path( __FILE__ ).'partials/er_locations_lists.php';
-	}
+        $args = array(
+            'label' => __('jobs', 'easy-rents'),
+            'description' => __('Job news and reviews', 'easy-rents'),
+            'labels' => $labels,
+            'supports' => array('title', 'author'),
+            'taxonomies' => array('jobs'),
+            'hierarchical' => false,
+            'public' => true,
+            'show_ui' => true,
+            'show_in_menu' => true,
+            'show_in_nav_menus' => true,
+            'show_in_admin_bar' => true,
+            'menu_position' => 5,
+            'can_export' => true,
+            'has_archive' => true,
+            'exclude_from_search' => false,
+            'publicly_queryable' => true,
+            'capability_type' => 'post',
+            'show_in_rest' => true,
 
-	/*
-	* Creating a function to create our CPT
-	*/
-	
-	function er_job_post() {
-		// Set UI labels for Custom Post Type
-		$labels = array(
-			'name'                => _x( 'Jobs', 'Post Type General Name', 'easy-rents' ),
-			'singular_name'       => _x( 'Job', 'Post Type Singular Name', 'easy-rents' ),
-			'menu_name'           => __( 'Jobs', 'easy-rents' ),
-			'all_items'           => __( 'All Jobs', 'easy-rents' ),
-			'view_item'           => __( 'View Job', 'easy-rents' ),
-			'add_new_item'        => __( 'Add New Job', 'easy-rents' ),
-			'add_new'             => __( 'Add New', 'easy-rents' ),
-			'edit_item'           => __( 'Edit Job', 'easy-rents' ),
-			'update_item'         => __( 'Update Job', 'easy-rents' ),
-			'search_items'        => __( 'Search Job', 'easy-rents' ),
-			'not_found'           => __( 'Not Found', 'easy-rents' ),
-			'not_found_in_trash'  => __( 'Not found in Trash', 'easy-rents' ),
-		);
-		 
-		// Set other options for Custom Post Type
-		 
-		$args = array(
-			'label'               => __( 'jobs', 'easy-rents' ),
-			'description'         => __( 'Job news and reviews', 'easy-rents' ),
-			'labels'              => $labels,
-			'supports'            => array( 'title', 'author' ),
-			'taxonomies'          => array( 'jobs' ),
-			'hierarchical'        => false,
-			'public'              => true,
-			'show_ui'             => true,
-			'show_in_menu'        => true,
-			'show_in_nav_menus'   => true,
-			'show_in_admin_bar'   => true,
-			'menu_position'       => 5,
-			'can_export'          => true,
-			'has_archive'         => true,
-			'exclude_from_search' => false,
-			'publicly_queryable'  => true,
-			'capability_type'     => 'post',
-			'show_in_rest' => true,
-	 
-		);
-		 
-		// Registering your Custom Post Type
-		register_post_type( 'jobs', $args );
-	 
-	}
+        );
 
-	// Job car type taxonomy
-	function the_car_type_taxonomy() {
-		
-		$labels = array(
-			'name' => _x( 'Trucks', 'trucks' ),
-			'singular_name' => _x( 'Truck', 'truck' ),
-			'search_items' =>  __( 'Search trucks' ),
-			'all_items' => __( 'All trucks' ),
-			'edit_item' => __( 'Edit Truck' ), 
-			'update_item' => __( 'Update Truck' ),
-			'add_new_item' => __( 'Add New Truck' ),
-			'new_item_name' => __( 'New Truck Name' ),
-			'menu_name' => __( 'Trucks' ),
-		);    
-		
-		// Now register the truck
-		register_taxonomy('truckstype',array('jobs'), array(
-			'hierarchical' => true,
-			'labels' => $labels,
-			'show_ui' => true,
-			'show_in_rest' => true,
-			'show_admin_column' => true,
-			'query_var' => true,
-			'rewrite' => array( 'slug' => 'truck' ),
-		));
-	}
+        // Registering your Custom Post Type
+        register_post_type('jobs', $args);
 
-	// Wp list table css for jobs post
-	function jobs_list_table_css(){ ?>
+    }
+
+    // Job car type taxonomy
+    public function the_car_type_taxonomy()
+    {
+
+        $labels = array(
+            'name' => _x('Trucks', 'trucks'),
+            'singular_name' => _x('Truck', 'truck'),
+            'search_items' => __('Search trucks'),
+            'all_items' => __('All trucks'),
+            'edit_item' => __('Edit Truck'),
+            'update_item' => __('Update Truck'),
+            'add_new_item' => __('Add New Truck'),
+            'new_item_name' => __('New Truck Name'),
+            'menu_name' => __('Trucks'),
+        );
+
+        // Now register the truck
+        register_taxonomy('truckstype', array('jobs'), array(
+            'hierarchical' => true,
+            'labels' => $labels,
+            'show_ui' => true,
+            'show_in_rest' => true,
+            'show_admin_column' => true,
+            'query_var' => true,
+            'rewrite' => array('slug' => 'truck'),
+        ));
+    }
+
+    // Wp list table css for jobs post
+    public function jobs_list_table_css()
+    {?>
 		<style>
 			th#erpost_status {
 				width: 8%;
@@ -470,335 +459,343 @@ class Easy_Rents_Admin {
 			}
 		</style>
 	<?php
-	}
-	// CREATE WP LIST TABLE COLUMN FOR STATUS
-	function wp_list_table_columnname($defaults) {
-		$defaults['erpricet_status'] = 'Price';
-		$defaults['erdriver_status'] = 'Driver/Payment';
-		$defaults['erpost_status'] = 'Status';
-		return $defaults;
-	}
-	function wp_list_table_column_view($column_name, $post_ID) {
-		if ($column_name == 'erpricet_status') {
-			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
-			if($postinfo[0]['job_status'] == 'inprogress' || $postinfo[0]['job_status'] == 'ends'){
-				global $wpdb;
-				$job_price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
-				if($job_price){
-					echo $job_price.' tk';
-				}else{
-					print_r('N/A');
-				}
-			}else{
-				print_r('N/A');
-			}
-		}
+}
+    // CREATE WP LIST TABLE COLUMN FOR STATUS
+    public function wp_list_table_columnname($defaults)
+    {
+        $defaults['erprice_status'] = 'Price';
+        $defaults['erdriver_status'] = 'Driver/Payment';
+        $defaults['erpost_status'] = 'Status';
+        return $defaults;
+    }
+    public function wp_list_table_column_view($column_name, $post_ID)
+    {
+        if ($column_name == 'erprice_status') {
+            global $wpdb;
 
-		if ($column_name == 'erdriver_status') {
-			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
-			if($postinfo[0]['job_status'] == 'inprogress' || $postinfo[0]['job_status'] == 'ends'){
-				global $wpdb;
-				$driver_id = $wpdb->get_var("SELECT driver_id FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
-				if(!$driver_id){
-					print_r('N/A');
-				}
+            $job_info = $wpdb->get_row("SELECT tr.*,ap.* FROM {$wpdb->prefix}easy_rents_trips tr, {$wpdb->prefix}easy_rents_applications ap WHERE tr.post_id = ap.post_id AND tr.post_id = {$post_ID} AND tr.job_status = 'inprogress' OR tr.job_status = 'ends' AND ap.status > 1");
+            
+            if ($job_info) {
+                echo $job_info->price . ' tk';
+            } else {
+                print_r('N/A');
+            }
+        }
 
-				$drivername = get_user_by( 'id', $driver_id )->user_nicename;
-				echo '<span style="text-transform:capitalize;" class="drivername">'.$drivername.'</sapan>';
-				
-				$price = $wpdb->get_var("SELECT price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
-				
-				$netprice = $wpdb->get_var("SELECT net_price FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+        if ($column_name == 'erdriver_status') {
+            global $wpdb;
 
-				$commission = $wpdb->get_var("SELECT commrate FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID} AND status = 3");
+            $job_info = $wpdb->get_row("SELECT tr.*,ap.* FROM {$wpdb->prefix}easy_rents_trips tr, {$wpdb->prefix}easy_rents_applications ap WHERE tr.post_id = {$post_ID} AND tr.job_status = 'inprogress' OR tr.job_status = 'ends' AND ap.status > 1");
 
-				if($netprice > 0){
-					$paybill = $price-$netprice;
-				}else{
-					$comm = 100 + $commission;
-					$commbill =  $price/$comm * $commission;
-					$paybill = round($commbill);
-				}
+            if ($job_info) {
+                $driver_id = $job_info->driver_id;
+                
+                if (!$driver_id) {
+                    print_r('N/A');
+                }else{
+                    $drivername = get_user_by('id', $driver_id)->user_nicename;
+                    echo '<span style="text-transform:capitalize;" class="drivername">' . $drivername . '</sapan>';
 
-				if($postinfo[0]['job_status'] == 'ends'){
-					echo '<span style="color:#0073aa" class="payment"><br>'.$commission.'% ('.$paybill.' tk)';
-					$payment = $wpdb->get_var("SELECT payment FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
-					if($payment == 1){
-						echo '<span title="Paid"> ☑<span>';
-					}else{
-						echo '<span title="Unpaid"> ⛔<span>';
-					}
-				}
-				
-				echo '</sapan>';
-			}else{
-				print_r('N/A');
-			}
-		}
+                    if ($job_info->net_price > 0) {
+                        $paybill = $job_info->price - $job_info->net_price;
+                    } else {
+                        $comm = 100 + $job_info->commrate;
+                        $commbill = $job_info->price / $comm * $job_info->commrate;
+                        $paybill = round($commbill);
+                    }
 
-		if ($column_name == 'erpost_status') {
-			global $wpdb;
-			// show content of 'directors_name' column
-			$postinfo = get_post_meta( $post_ID, 'er_job_info' );
-			$status_ = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_ID}");
+                    
+                    echo '<span style="color:#0073aa" class="payment"><br>' . $job_info->commrate . '% (' . $paybill . ' tk)';
+                    
+                    if($job_info->job_status == 'ends'){
+                        if ($job_info->payment == 1) {
+                            echo '<span title="Paid"> ☑<span>';
+                        } else {
+                            echo '<span title="Unpaid"> ⛔<span>';
+                        }
+                    }
+                    
+                    echo '</sapan>';
+                }
+            } else {
+                print_r('N/A');
+            }
+        }
 
-			if($postinfo[0]['job_status'] == 'running' && $status_ == 0){
-				echo '<span title="New" class="status_circle" style="background-color:#cccccc"></span>';
-			}
-			if($postinfo[0]['job_status'] == 'running' && $status_ == 1){
-				echo '<span title="Pending" class="status_circle" style="background-color:#0280d2"></span>';
-			}
-			if($postinfo[0]['job_status'] == 'inprogress' && $status_ == 2){
-				echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
-			}
-			if($postinfo[0]['job_status'] == 'ends' && $status_ == 3){
-				echo '<span title="End" class="status_circle" style="background-color:gray"></span>';
-			}
-		}
-	}
+        if ($column_name == 'erpost_status') {
+            global $wpdb;
+            
+            $job_info = $wpdb->get_row("SELECT tr.*,ap.* FROM {$wpdb->prefix}easy_rents_trips tr, {$wpdb->prefix}easy_rents_applications ap WHERE tr.post_id = ap.post_id AND tr.post_id = {$post_ID} ORDER BY ap.ID ASC");
 
-	// Add taxonomy field
-	function add_term_image($taxonomy){ ?>
+            if ( $job_info->job_status == 'running' && $job_info->status == 0) {
+                echo '<span title="New" class="status_circle" style="background-color:#cccccc"></span>';
+            }
+            if ( $job_info->job_status == 'running' && $job_info->status == 1) {
+                echo '<span title="Pending" class="status_circle" style="background-color:#0280d2"></span>';
+            }
+            if ( $job_info->job_status == 'inprogress' && $job_info->status >= 2) {
+                echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
+            }
+            if ( $job_info->job_status == 'ends' && $job_info->status == 3) {
+                echo '<span title="End" class="status_circle" style="background-color:gray"></span>';
+            }
+        }
+    }
+
+    // Add taxonomy field
+    public function add_term_image($taxonomy)
+    {?>
 		<div class="form-field term-group">
 			<label for="txt_upload_image">Upload , image</label>
 			<input type="text" name="txt_upload_image" id="txt_upload_image" value="" style="width: 77%">
 			<input type="button" id="upload_image_btn" class="button" value="upload image" />
 		</div>
-	<?php 
-	}
+	<?php
+}
 
-	// Edit taxonomy field
-	function edit_image_upload($term) { ?>
+    // Edit taxonomy field
+    public function edit_image_upload($term)
+    {?>
 		<div class="form-field term-group">
 			<label for="">Upload image</label>
-			<input type="text" name="txt_upload_image" id="txt_upload_image" value="<?php echo get_term_meta( $term->term_id, 'term_image', true ) ?>" style="width: 77%">
+			<input type="text" name="txt_upload_image" id="txt_upload_image" value="<?php echo get_term_meta($term->term_id, 'term_image', true) ?>" style="width: 77%">
 			<input type="button" id="upload_image_btn" class="button" value="upload image" />
 		</div>
-	<?php 
-	}
+	<?php
+}
 
-	// Save taxonomy
-	function save_term_image($term_id) {
-		if (isset($_POST['txt_upload_image']) && $_POST['txt_upload_image'] != ''){      
-			$group = sanitize_text_field($_POST['txt_upload_image']);
-			add_term_meta($term_id, 'term_image', $group);
-		} 
-	}
+    // Save taxonomy
+    public function save_term_image($term_id)
+    {
+        if (isset($_POST['txt_upload_image']) && $_POST['txt_upload_image'] != '') {
+            $group = sanitize_text_field($_POST['txt_upload_image']);
+            add_term_meta($term_id, 'term_image', $group);
+        }
+    }
 
-	// update taxonomy
-	function update_image_upload($term_id) {
-		if (isset($_POST['txt_upload_image']) && $_POST['txt_upload_image'] != '' ){
-			$group = sanitize_text_field($_POST['txt_upload_image']);
-			update_term_meta($term_id, 'term_image', $group);
-		} 
-	}
+    // update taxonomy
+    public function update_image_upload($term_id)
+    {
+        if (isset($_POST['txt_upload_image']) && $_POST['txt_upload_image'] != '') {
+            $group = sanitize_text_field($_POST['txt_upload_image']);
+            update_term_meta($term_id, 'term_image', $group);
+        }
+    }
 
-	/*
-	* Add script
-	* @since 1.0.0
-	*/
-	function load_media(){
-		wp_enqueue_media();
-	}
-	function add_script() {
-		if(isset($_GET['taxonomy']) && $_GET['taxonomy'] == 'truckstype'){
-			wp_enqueue_script('trucktype_media');
-			wp_localize_script( 'trucktype_media', 'meta_image',
-				array(
-					'title' => 'Upload an Image',
-					'button' => 'Use this Image',
-				)
-			);
-		}
-	}
+    /*
+     * Add script
+     * @since 1.0.0
+     */
+    public function load_media()
+    {
+        wp_enqueue_media();
+    }
+    public function add_script()
+    {
+        if (isset($_GET['taxonomy']) && $_GET['taxonomy'] == 'truckstype') {
+            wp_enqueue_script('trucktype_media');
+            wp_localize_script('trucktype_media', 'meta_image',
+                array(
+                    'title' => 'Upload an Image',
+                    'button' => 'Use this Image',
+                )
+            );
+        }
+    }
 
-	// Send sms to driver for payment
-	function send_sms_forpayment(){
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
-			die ( 'Hey! What are you doing?');
-		}
+    // Send sms to driver for payment
+    public function send_sms_forpayment()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+            die('Hey! What are you doing?');
+        }
 
-		if(isset($_POST['driver_id']) && isset($_POST['amount'])){
-			$driver_id = intval($_POST['driver_id']);
-			$amount = intval($_POST['amount']);
-			
-			if(get_user_meta($driver_id, 'user_phone_number', true )){
-				$to = get_user_meta($driver_id, 'user_phone_number', true );
-				$dname = get_user_by("id",$driver_id)->user_nicename;
-				$message = str_replace('%s',$dname, get_option('paymentrequestmsg'));
-				
-				if(!get_option('paymentrequestmsg')){
-					mail('imransepai1@gmail.com','Message faild!','Hi Admin, You haven\'t set any message for sent!');
-					wp_die();
-				}else{
-					// if($this->message_to_user($to, $message)){
-					echo "Sent Successfull";
-					wp_die();
-				// }else{
-					// 	mail('imransepai1@gmail.com','Message faild!','Hi Admin, Payment request is not sent, Please try again!');
-					// 	wp_die();
-					// }
-				}
-				
-			}else{
-				mail('imransepai1@gmail.com','Message faild!','Hi Admin, This Driver haven\'t any phone number!');
-				wp_die();
-			}
-			die;
-		}
-	}
+        if (isset($_POST['driver_id']) && isset($_POST['amount'])) {
+            $driver_id = intval($_POST['driver_id']);
+            $amount = intval($_POST['amount']);
 
+            if (get_user_meta($driver_id, 'user_phone_number', true)) {
+                $to = get_user_meta($driver_id, 'user_phone_number', true);
+                $dname = get_user_by("id", $driver_id)->user_nicename;
+                $message = str_replace('%s', $dname, get_option('paymentrequestmsg'));
 
-	// Adding location
-	function addNewLocation(){
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
-			die ( 'Hey! What are you doing?');
-		}
+                if (!get_option('paymentrequestmsg')) {
+                    mail('imransepai1@gmail.com', 'Message faild!', 'Hi Admin, You haven\'t set any message for sent!');
+                    wp_die();
+                } else {
+                    // if($this->message_to_user($to, $message)){
+                    echo "Sent Successfull";
+                    wp_die();
+                    // }else{
+                    //     mail('imransepai1@gmail.com','Message faild!','Hi Admin, Payment request is not sent, Please try again!');
+                    //     wp_die();
+                    // }
+                }
 
-		if(isset($_POST['distric']) && isset($_POST['city']) && isset($_POST['union'])){
-			$district = sanitize_text_field( $_POST['distric'] );
-			$city = sanitize_text_field( $_POST['city'] );
-			$union = sanitize_text_field( $_POST['union'] );
+            } else {
+                mail('imransepai1@gmail.com', 'Message faild!', 'Hi Admin, This Driver haven\'t any phone number!');
+                wp_die();
+            }
+            die;
+        }
+    }
 
-			global $wpdb;
-			$tbl = $wpdb->prefix.'easy_rents_prelocations';
+    // Adding location
+    public function addNewLocation()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+            die('Hey! What are you doing?');
+        }
 
-			$lochas = $wpdb->get_var("SELECT ID FROM $tbl WHERE `district` = '$district' AND `city` = '$city' AND `union` = '$union'");
+        if (isset($_POST['distric']) && isset($_POST['city']) && isset($_POST['union'])) {
+            $district = sanitize_text_field($_POST['distric']);
+            $city = sanitize_text_field($_POST['city']);
+            $union = sanitize_text_field($_POST['union']);
 
-			if($lochas){
-				echo json_encode(array('faild' => 'This Location already Exist!'));
-				die;
-			}
-			
-			$location = $wpdb->insert($tbl, array('district' => $district, 'city' => $city, 'union' => $union), array('%s', '%s', '%s'));
-			
-			if($location){
-				echo json_encode(array('success' => 'Added Success!'));
-				die;
-			}else{
-				echo json_encode(array('faild' => 'Try again!'));
-				die;
-			}
-		}
-	}
+            global $wpdb;
+            $tbl = $wpdb->prefix . 'easy_rents_prelocations';
 
-	// Get cities by ajax
-	function get_cities_under_district(){
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
-			die ( 'Hey! What are you doing?');
-		}
+            $lochas = $wpdb->get_var("SELECT ID FROM $tbl WHERE `district` = '$district' AND `city` = '$city' AND `union` = '$union'");
 
-		if(isset($_POST['district'])){
-			$district = sanitize_text_field( $_POST['district'] );
-		
-			global $wpdb;
+            if ($lochas) {
+                echo json_encode(array('faild' => 'This Location already Exist!'));
+                die;
+            }
 
-			$cities = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' ORDER BY ID DESC");
-			if($cities){
-				echo json_encode($cities);
-				die;
-			}
-			die;
-		}
-	}
+            $location = $wpdb->insert($tbl, array('district' => $district, 'city' => $city, 'union' => $union), array('%s', '%s', '%s'));
 
-	// Get unions by ajax
-	function get_unions_under_cities(){
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
-			die ( 'Hey! What are you doing?');
-		}
+            if ($location) {
+                echo json_encode(array('success' => 'Added Success!'));
+                die;
+            } else {
+                echo json_encode(array('faild' => 'Try again!'));
+                die;
+            }
+        }
+    }
 
-		if(isset($_POST['city'])){
-			$city = sanitize_text_field( $_POST['city'] );
-		
-			global $wpdb;
+    // Get cities by ajax
+    public function get_cities_under_district()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+            die('Hey! What are you doing?');
+        }
 
-			$unions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE city = '$city' ORDER BY ID DESC");
+        if (isset($_POST['district'])) {
+            $district = sanitize_text_field($_POST['district']);
 
-			if($unions){
-				echo json_encode($unions);
-				die;
-			}
-		}
-	}
+            global $wpdb;
 
-	// Get able data by ajax
-	function get_all_table_data_for_refresh(){
-		global $wpdb;
+            $cities = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' ORDER BY ID DESC");
+            if ($cities) {
+                echo json_encode($cities);
+                die;
+            }
+            die;
+        }
+    }
 
-		$locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+    // Get unions by ajax
+    public function get_unions_under_cities()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+            die('Hey! What are you doing?');
+        }
 
-		if($locations){
-			$i = 1;
-			foreach($locations as $location){
-				?>
+        if (isset($_POST['city'])) {
+            $city = sanitize_text_field($_POST['city']);
+
+            global $wpdb;
+
+            $unions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE city = '$city' ORDER BY ID DESC");
+
+            if ($unions) {
+                echo json_encode($unions);
+                die;
+            }
+        }
+    }
+
+    // Get able data by ajax
+    public function get_all_table_data_for_refresh()
+    {
+        global $wpdb;
+
+        $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+
+        if ($locations) {
+            $i = 1;
+            foreach ($locations as $location) {
+                ?>
 				<tr>
 					<td class="slnum"><?php echo __($i, 'easy-rents'); ?></td>
 					<td><?php echo __($location->district, 'easy-rents'); ?></td>
 					<td><?php echo __($location->city, 'easy-rents'); ?></td>
 					<td><?php echo __($location->union, 'easy-rents'); ?></td>
 					<td>
-						<button data-id="<?php echo esc_html( $location->ID ); ?>" name="delete_addr" class="delete_addr">X</button>
+						<button data-id="<?php echo esc_html($location->ID); ?>" name="delete_addr" class="delete_addr">X</button>
 					</td>
 				</tr>
 				<?php
 				$i++;
-			}
-		}
-	}
+            }
+        }
+    }
 
-	// Location table default values
-	function erLocationsList($filter = ''){
-		global $wpdb;
+    // Location table default values
+    public function erLocationsList($filter = '')
+    {
+        global $wpdb;
 
-		if($filter != ''){
-			$locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$filter' ORDER BY ID DESC");
-		}else{
-			 $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
-		}
+        if ($filter != '') {
+            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$filter' ORDER BY ID DESC");
+        } else {
+            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+        }
 
-		if($locations){
-			$i = 1;
-			foreach($locations as $location){
-				?>
+        if ($locations) {
+            $i = 1;
+            foreach ($locations as $location) {
+                ?>
 				<tr>
 					<td class="slnum"><?php echo __($i, 'easy-rents'); ?></td>
 					<td><?php echo __($location->district, 'easy-rents'); ?></td>
 					<td><?php echo __($location->city, 'easy-rents'); ?></td>
 					<td><?php echo __($location->union, 'easy-rents'); ?></td>
 					<td>
-						<button data-id="<?php echo esc_html( $location->ID ); ?>" name="delete_addr" class="delete_addr">X</button>
+						<button data-id="<?php echo esc_html($location->ID); ?>" name="delete_addr" class="delete_addr">X</button>
 					</td>
 				</tr>
 				<?php
-				$i++;
-			}
-		}
-	}
+$i++;
+            }
+        }
+    }
 
-	// Delete location
-	function delete_easy_rents_location(){
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
-			die ( 'Hey! What are you doing?');
-		}
+    // Delete location
+    public function delete_easy_rents_location()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+            die('Hey! What are you doing?');
+        }
 
-		if(isset($_POST['addId'])){
-			$id = intval($_POST['addId']);
-			global $wpdb,$wp_query;
-			$lochas = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_prelocations WHERE `ID` = $id");
+        if (isset($_POST['addId'])) {
+            $id = intval($_POST['addId']);
+            global $wpdb, $wp_query;
+            $lochas = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_prelocations WHERE `ID` = $id");
 
-			if($lochas){
-				if($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_prelocations WHERE ID = $id")){
-					echo 'Delete Success!';
-					die;
-				}else{
-					echo 'Try again!';
-					die;
-				}
-			}else{
-				die;
-			}
-		}
-	}
-	
+            if ($lochas) {
+                if ($wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_prelocations WHERE ID = $id")) {
+                    echo 'Delete Success!';
+                    die;
+                } else {
+                    echo 'Try again!';
+                    die;
+                }
+            } else {
+                die;
+            }
+        }
+    }
+
 }

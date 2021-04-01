@@ -17,25 +17,28 @@
         <div class="er_jobs_content">
             <?php
             global $wp_query,$wpdb,$current_user;
+
             $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
             $jobs_args = array(
                 'post_type' => 'jobs',
                 'post_status' => 'publish',
-                'order'     => 'ASC',
+                'order'     => 'DESC',
                 'paged'     => $paged,
                 'posts_per_page'     => 12,
                 'order_by'     => 'date'
             );
             $jobs = new WP_Query($jobs_args);
+
             if ( $jobs->have_posts() ) :
                 while ( $jobs->have_posts() ) : $jobs->the_post();
                     $post_id = get_post()->ID;
 
-                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+                    $tripinfo = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $post_id ORDER BY ID ASC");
 
+                    
                     // Only active/ running job
                     $nofound ="";
-                    if($job_info[0]['job_status'] == 'running'){
+                    if($tripinfo->job_status == 'running'){
                         
                         $myapplication = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = {$post_id} AND driver_id = {$current_user->ID}"); ?>
 
@@ -58,8 +61,8 @@
                                             foreach( $product_terms as $term ) {
                                                 echo '<div class="erjobitemimg">';
                                                 if(!empty(get_term_meta( $term->term_id, 'term_image', true )) || get_term_meta( $term->term_id, 'term_image', true ) != 0){
-													echo '<img width="150" src="'.get_term_meta( $term->term_id, 'term_image', true ).'" alt="'.esc_url( get_term_link( $term->slug, 'truckstype' ) ).'">';
-												}else{
+                                                    echo '<img width="150" src="'.get_term_meta( $term->term_id, 'term_image', true ).'" alt="'.esc_url( get_term_link( $term->slug, 'truckstype' ) ).'">';
+                                                }else{
                                                     echo '<img width="150" src="'.ER_PATH.'public/images/truck.PNG" alt="">';
                                                 }
                                                 echo '</div>';
@@ -75,32 +78,32 @@
                                     <div class="_jobitem">
                                         <span class="er_location">
                                             <i class="fas fa-arrow-alt-circle-up"></i> 
-                                            <?php echo __(substr($job_info[0]['location_1'],0,29),'easy-rents'); ?>
+                                            <?php echo __(substr($tripinfo->location_1,0,29),'easy-rents'); ?>
                                         </span>
                                     </div>
                                     
                                     <div class="_jobitem">
                                         <span class="er_location">
                                             <i class="fas fa-arrow-alt-circle-down"></i> 
-                                            <?php echo __(substr($job_info[0]['unload_location'],0,29),'easy-rents'); ?>
+                                            <?php echo __(substr($tripinfo->unload_loc,0,29),'easy-rents'); ?>
                                         </span>
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_time">
                                         <i class="far fa-clock"></i>
-                                        <?php echo __($job_info[0]['loading_times'],'easy-rents'); ?>
+                                        <?php echo __($tripinfo->load_time,'easy-rents'); ?>
                                         </span>
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_weight">
-                                        <i class="fa fa-cubes" aria-hidden="true"></i> <?php echo __($job_info[0]['goods_weight'],'easy-rents'); ?> Ton
+                                        <i class="fa fa-cubes" aria-hidden="true"></i> <?php echo __($tripinfo->weight,'easy-rents'); ?> Ton
                                         </span>
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_laborer">
                                             <i class="fa fa-people-carry"></i>
                                             Laborer
-                                            <?php echo ($job_info[0]['er_labore'] != "")? '<i class="fas fa-check-circle laboriconcheck"></i>':'<i class="fas fa-times-circle laboriconnone"></i>' ?>
+                                            <?php echo ($tripinfo->laborer != "")? '<i class="fas fa-check-circle laboriconcheck"></i>':'<i class="fas fa-times-circle laboriconnone"></i>' ?>
                                         </span>
                                     </div>
                                 </div>
@@ -111,7 +114,10 @@
                     }else{
                         $nofound = 'Sorry, no job were found.';
                     }
+                        
+                    
                 endwhile;
+
                 echo '<div class="pagination"> <div class="paginate">';
                 if($jobs->max_num_pages > 1){
                     global $wp_query;

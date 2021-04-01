@@ -11,6 +11,8 @@ if(have_posts()){
     $application = $wpdb->get_var("SELECT status FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id AND driver_id = {$current_user->ID}");
 
     $exists = $wpdb->get_var("SELECT post_id FROM {$wpdb->prefix}easy_rents_applications WHERE status > 2");
+
+    $postinfo = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $post_id ORDER BY ID ASC");
 ?>
 <section>
     <div id="er_jobs_section">
@@ -69,9 +71,8 @@ if(have_posts()){
                 exit;
             }
 
-            $job_status = get_post_meta( get_post()->ID, 'er_job_info' );
             // Only active/ running job
-            if($job_status[0]['job_status'] == 'running' && !$application){ ?>
+            if($postinfo->job_status == 'running' && !$application){ ?>
                 <div class="bidelem">
                     <table>
                         <tbody>
@@ -124,9 +125,8 @@ if(have_posts()){
 
                 <h1><?php echo __('JOB Informations', 'easy-rents') ?></h1>
             <?php
-                $postinfo = get_post_meta( get_post()->ID, 'er_job_info' );
+                
                 if(!empty($postinfo)){ 
-                    $jobitem = $postinfo[0];
                     ?>
                     
                         <div class="locations">
@@ -134,16 +134,16 @@ if(have_posts()){
                                 <h4> <i class="fas fa-map-marked-alt"></i> Load point</h4>
                                 <ul>
                                     <?php
-                                    if(!empty($jobitem['location_1'])){
-                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($jobitem['location_1'], 'easy-rents').'</li>';
+                                    if(!empty($postinfo->location_1)){
+                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($postinfo->location_1, 'easy-rents').'</li>';
                                     }
 
-                                    if(!empty($jobitem['location_2'])){
-                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($jobitem['location_2'], 'easy-rents').'</li>';
+                                    if(!empty($postinfo->location_2)){
+                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($postinfo->location_2, 'easy-rents').'</li>';
                                     }
 
-                                    if(!empty($jobitem['location_3'])){
-                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($jobitem['location_3'], 'easy-rents').'</li>';
+                                    if(!empty($postinfo->location_3)){
+                                        echo '<li><i class="fas fa-arrow-alt-circle-up"></i> '.__($postinfo->location_3, 'easy-rents').'</li>';
                                     }
                                     ?>
                                 </ul>
@@ -153,8 +153,8 @@ if(have_posts()){
                                 <h4> <i class="fas fa-map-marked-alt"></i> Unload point</h4>
                                 <ul>
                                     <?php
-                                    if(!empty($jobitem['unload_location'])){
-                                        echo '<li><i class="fas fa-arrow-alt-circle-down"></i> '.__($jobitem['unload_location'], 'easy-rents').'</li>';
+                                    if(!empty($postinfo->unload_loc)){
+                                        echo '<li><i class="fas fa-arrow-alt-circle-down"></i> '.__($postinfo->unload_loc, 'easy-rents').'</li>';
                                     }
                                     ?>
                                 </ul>
@@ -165,8 +165,8 @@ if(have_posts()){
                             <div class="jobinfoitem">
                                 <h4 class="infotitle"><i class="fas fa-cubes" aria-hidden="true"></i> Weights</h4>
                                  <?php
-                                    if(!empty($jobitem['goods_weight'])){
-                                        echo '<span>'.intval($jobitem['goods_weight']).' Ton</span>';
+                                    if(!empty($postinfo->weight)){
+                                        echo '<span>'.intval($postinfo->weight).' Ton</span>';
                                     }
                                  ?>
                             </div>
@@ -174,10 +174,10 @@ if(have_posts()){
                             <div class="jobinfoitem">
                                 <h4 class="infotitle"><i class="fas fa-people-carry"></i> Laborer</h4>
                                 <?php
-                                if(!empty($jobitem['er_labore'])){
-                                    echo '<span>'.intval($jobitem['er_labore']).' Labores</span>';
+                                if(!empty($postinfo->er_labore)){
+                                    echo '<span>'.intval($postinfo->laborer).' Labores</span>';
                                 }else{
-                                    echo '<span>'.intval($jobitem['er_labore']).' Labores</span>';
+                                    echo '<span>'.intval($postinfo->laborer).' Labores</span>';
                                 }
                                 ?>
                             </div>
@@ -201,8 +201,8 @@ if(have_posts()){
                             <div class="jobinfoitem">
                                 <h4 class="infotitle"><i class="fas fa-luggage-cart"></i> Goods Type</h4>
                                 <?php
-                                if(!empty($jobitem['goods_type'])){
-                                    echo '<span>'.__($jobitem['goods_type'],'easy-rents').'</span>';
+                                if(!empty($postinfo->goods_type)){
+                                    echo '<span>'.__($postinfo->goods_type,'easy-rents').'</span>';
                                 }
                                 ?>
                             </div>
@@ -210,8 +210,8 @@ if(have_posts()){
                             <div class="jobinfoitem">
                                 <h4 class="infotitle"><i class="far fa-clock"></i> Load time</h4>
                                 <?php
-                                if(!empty($jobitem['loading_times'])){
-                                    echo '<span>'.__($jobitem['loading_times'],'easy-rents').'</span>';
+                                if(!empty($postinfo->load_time)){
+                                    echo '<span>'.__($postinfo->load_time,'easy-rents').'</span>';
                                 }
                                 ?>
                             </div>
@@ -274,7 +274,7 @@ if(have_posts()){
                             }else{
                                 // checking for job status
                                 if($application == 1 && Easy_Rents_Public::er_role_check( ['driver'] )){
-                                    if($jobitem['job_status'] == 'running'){
+                                    if($postinfo->job_status == 'running'){
                                     ?>
                                         <!-- Disabled btn for existing applications -->
                                         <div class="applybtn">
@@ -284,7 +284,7 @@ if(have_posts()){
                                     }
                                 }else{
                                     if($application == 2 && Easy_Rents_Public::er_role_check( ['driver'] )){
-                                        if($jobitem['job_status'] == 'inprogress'){
+                                        if($postinfo->job_status == 'inprogress'){
                                         ?>
                                             <!-- Disabled btn for existing applications -->
                                             <div class="applybtn">

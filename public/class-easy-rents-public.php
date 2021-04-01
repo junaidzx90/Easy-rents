@@ -62,7 +62,7 @@ class Easy_Rents_Public
     public function er_add_fileters()
     {
         // webclass Load page template
-        add_filter('theme_page_templates', array($this, 'webclass_templates'));
+        add_filter('theme_page_templates', array($this, 'easy_rents_templates'));
         add_filter('template_include', array($this, 'wp_page_attributes'));
         // webclass archive page include for projects
         add_filter('template_include', array($this, 'projects_template'));
@@ -297,43 +297,26 @@ class Easy_Rents_Public
     }
 
     // Thanks for this SCRIPT https://stackoverflow.com/a/18602474
-    public function time_elapsed_string($datetime, $full = false)
-    {
-        $now = new DateTime;
-        $ago = new DateTime($datetime);
-        $diff = $now->diff($ago);
-
-        $diff->w = floor($diff->d / 7);
-        $diff->d -= $diff->w * 7;
-
-        $string = array(
-            'y' => 'year',
-            'm' => 'month',
-            'w' => 'week',
-            'd' => 'day',
-            'h' => 'hour',
-            'i' => 'min',
-            's' => 'sec',
-        );
-        foreach ($string as $k => &$v) {
-            if ($diff->$k) {
-                $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
-            } else {
-                unset($string[$k]);
-            }
-        }
-
-        if (!$full) {
-            $string = array_slice($string, 0, 1);
-        }
-
-        return $string ? implode(', ', $string) . ' ago' : 'just now';
+    public function time_elapsed_string($secs){
+        $bit = array(
+            'y' => $secs / 31556926 % 12,
+            'w' => $secs / 604800 % 52,
+            'd' => $secs / 86400 % 7,
+            'h' => $secs / 3600 % 24,
+            'm' => $secs / 60 % 60,
+            's' => $secs % 60
+            );
+           
+        foreach($bit as $k => $v)
+            if($v > 0)$ret[] = $v . $k;
+           
+        return join(' ', $ret);
     }
 
     /**
      * Define template name
      */
-    public function webclass_templates($templates)
+    public function easy_rents_templates($templates)
     {
         $templates['er_jobs.php'] = 'All jobs';
         $templates['er_addjob.php'] = 'Add job';
@@ -452,12 +435,13 @@ class Easy_Rents_Public
             if ($post_id != "" && $driver_id != "") {
                 if (is_user_logged_in() && $this->er_role_check(['customer'])) {
                     $redirect_page = $this->get_post_slug(get_option('profile_page', true));
-                    if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2, apply_date = now() WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")) {
-                        $job_info = get_post_meta($post_id, 'er_job_info');
-                        $job_info[0]['job_status'] = 'inprogress';
+                    $tm = time();
+                    if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2, apply_date = $tm WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")) {
 
-                        if (update_post_meta($post_id, 'er_job_info', $job_info[0])) {
-                            $wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE  driver_id = $driver_id AND ID = $offer_id AND status = 1");
+
+                        if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_trips SET job_status = 'inprogress' WHERE post_id = $post_id")) {
+
+                            $wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE  customer_id = $current_user->ID AND post_id = $post_id AND status = 1");
 
                             if (get_user_meta($driver_id, 'user_phone_number', true)) {
                                 $to = get_user_meta($driver_id, 'user_phone_number', true);
@@ -507,10 +491,8 @@ class Easy_Rents_Public
 
             if (is_user_logged_in() && $this->er_role_check(['customer'])) {
                 if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 3, finished_date = now() WHERE customer_id = $current_user->ID AND driver_id = $driver_id AND ID = $offer_id")) {
-                    $job_info = get_post_meta($post_id, 'er_job_info');
-                    $job_info[0]['job_status'] = 'ends';
 
-                    if (update_post_meta($post_id, 'er_job_info', $job_info[0])) {
+                    if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_trips SET job_status = 'ends' WHERE post_id = $post_id")) {
                         // SENT SMS TO DRIVER
                         if (get_user_meta($driver_id, 'user_phone_number', true)) {
                             $to = get_user_meta($driver_id, 'user_phone_number', true);

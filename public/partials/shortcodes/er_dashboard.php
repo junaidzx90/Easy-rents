@@ -51,33 +51,33 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 
                             if ( $pendingJobs->have_posts() ){
                                 while ( $pendingJobs->have_posts() ){
-                                    $pendingJobs->the_post(); 
-                                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+                                    $pendingJobs->the_post();
+
+                                    $job_info = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $pjob->post_id AND job_status = 'running' ORDER BY ID ASC");
                                     // Only active/ running job
-                                    if($job_info[0]['job_status'] == 'running'){
-                                    ?>
-                                    <div class="jobitem">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th><strong>Trip ID</strong></th>
-                                                    <th><strong>Price</strong></th>
-                                                    <th><strong>Create TIME</strong></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <?php echo __(the_title(),'easy-rents'); ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo __($pjob->price,'easy-rents'); ?>tk
-                                                    </td>
-                                                    <td>
-                                                    <?php echo Easy_Rents_Public::time_elapsed_string($pjob->create_at, true); ?>
-                                                    </td>
-                                                </tr>
-                                                <tr>
+                                    if($job_info){
+                                        ?>
+                                        <div class="jobitem">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th><strong>Trip ID</strong></th>
+                                                        <th><strong>Price</strong></th>
+                                                        <th><strong>Rattings</strong></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <?php echo __(the_title(),'easy-rents'); ?>
+                                                        </td>
+                                                        <td>
+                                                            <?php echo __($pjob->price,'easy-rents'); ?>tk
+                                                        </td>
+                                                        <td>
+                                                            100%
+                                                        </td>
+                                                    </tr>
                                                     <div class="job_actions">
                                                         <button class="view">
                                                         <a href="<?php echo the_permalink(); ?>" target="_junu">View</a></button>
@@ -95,11 +95,16 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                             <button class="cancel ignorerequest" name="ignorerequest">Cancel</button>
                                                         </form>
                                                     </div>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <?php
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <?php
+                                    }else{
+                                        ?>
+                                            <div class="helper">
+                                                No request found
+                                            </div>
+                                        <?php
                                     }
                                 }
                             }
@@ -134,11 +139,11 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                             if ( $jobs->have_posts() ){
                                 while ( $jobs->have_posts() ){
                                     $jobs->the_post();
-                                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+
+                                    $job_info = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $myapplication->post_id AND job_status = 'running' ORDER BY ID ASC");
                                     // Only active/ running job
-                                    if($job_info[0]['job_status'] == 'running'){
+                                    if($job_info){
                                         ?>
-                                        
                                         <div class="jobitem">
                                             <table>
                                                 <thead>
@@ -153,15 +158,15 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                     <tr>
                                                         <td>
                                                             <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> 
-                                                            <?php echo __(substr($job_info[0]['location_1'],0,29),'easy-rents'); ?>
+                                                            <?php echo __(substr($job_info->location_1,0,29),'easy-rents'); ?>
                                                         </td>
                                                         <td>
                                                             <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i> 
-                                                            <?php echo __(substr($job_info[0]['unload_location'],0,29),'easy-rents'); ?>
+                                                            <?php echo __(substr($job_info->unload_loc,0,29),'easy-rents'); ?>
                                                         </td>
                                                         <td>
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i> 
-                                                            <?php echo __($job_info[0]['loading_times'],'easy-rents'); ?>
+                                                            <?php echo __($job_info->load_time,'easy-rents'); ?>
                                                         </td>
                                                         <td>
                                                             <?php echo __($myapplication->price,'easy-rents'); ?>tk
@@ -188,7 +193,12 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                 </tbody>
                                             </table>
                                         </div>
-
+                                        <?php
+                                    }else{
+                                        ?>
+                                            <div class="helper">
+                                                No request found
+                                            </div>
                                         <?php
                                     }
                                 }
@@ -231,68 +241,86 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                             if ( $jobs->have_posts() ){
                                 while ( $jobs->have_posts() ){
                                     $jobs->the_post();
-                                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
-                                    // Only active/ running job
-                                    if($job_info[0]['job_status'] == 'inprogress'){
-                                        ?>
-                                        
-                                        <div class="jobitem">
-                                        <table>
-                                            <thead>
-                                                <tr>
-                                                    <th><strong>Load Location</strong></th>
-                                                    <th><strong>Unload Location</strong></th>
-                                                    <th><strong>Load Time</strong></th>
-                                                    <th><strong>Price</strong></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> 
-                                                        <?php echo __(substr($job_info[0]['location_1'],0,29),'easy-rents'); ?>
-                                                    </td>
-                                                    <td>
-                                                        <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i> 
-                                                        <?php echo __(substr($job_info[0]['unload_location'],0,29),'easy-rents'); ?>
-                                                    </td>
-                                                    <td>
-                                                        <i class="fa fa-clock-o" aria-hidden="true"></i> 
-                                                        <?php echo __($job_info[0]['loading_times'],'easy-rents'); ?>
-                                                    </td>
-                                                    <td>
-                                                        <?php echo __($application->price,'easy-rents'); ?>tk
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <div class="job_actions">
-                                                        <button class="view">
-                                                        <a href="<?php echo the_permalink(); ?>">View</a></button>
-                                                        <form action="" method="post">
-                                                            <input type="hidden" value="<?php echo intval(get_post()->ID); ?>" name="erp">
-                                                            <input type="hidden" value="<?php echo intval(get_post()->post_author); ?>" name="erc">
-                                                            <?php
-                                                            if($application->status == 2){
-                                                                ?>
-                                                                <button data-id="<?php echo intval($application->ID) ?>" class="finishedjob" name="finishedjob">Finished</button>
-                                                                <?php
-                                                            }
-                                                            ?>
-                                                            <button class="cancel cancelrunningjob" name="cancelrunningjob">Cancel</button>
-                                                            <?php
-                                                                if($application->status == 4){
-                                                                ?>
-                                                                   <span class="finishedjobreq">Request Pending</span>
-                                                                <?php
-                                                                }
-                                                            ?>
-                                                        </form>
-                                                    </div>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                        </div>
 
+                                    $job_info = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $application->post_id AND job_status = 'inprogress' ORDER BY ID ASC");
+                                    // Only active/ running job
+                                    if($job_info){
+                                        ?>
+                                        <div class="jobitem">
+                                            <table>
+                                                <thead>
+                                                    <tr>
+                                                        <th><strong>Load Location</strong></th>
+                                                        <th><strong>Unload Location</strong></th>
+                                                        <th><strong>Load Time</strong></th>
+                                                        <th><strong>Price</strong></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <i class="fa fa-arrow-circle-o-up" aria-hidden="true"></i> 
+                                                            <?php echo __(substr($job_info->location_1,0,29),'easy-rents'); ?>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-arrow-circle-o-down" aria-hidden="true"></i> 
+                                                            <?php echo __(substr($job_info->unload_loc,0,29),'easy-rents'); ?>
+                                                        </td>
+                                                        <td>
+                                                            <i class="fa fa-clock-o" aria-hidden="true"></i> 
+                                                            <?php echo __($job_info->load_time,'easy-rents'); ?>
+                                                        </td>
+                                                        <td>
+                                                            <?php echo __($application->price,'easy-rents'); ?>tk
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="background: white" colspan="4">
+                                                        <span class="applydate"><span class="erbadge-color">Approved: </span><?php 
+                                                            echo Easy_Rents_Public::time_elapsed_string(time()-$application->apply_date);
+                                                        ?></span>
+                                                        <span class="phone">
+                                                            ☎️
+                                                            <?php
+                                                            echo get_user_meta($application->driver_id, 'user_phone_number', true);
+                                                            ?>
+                                                        </span>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <div class="job_actions">
+                                                            <button class="view">
+                                                            <a href="<?php echo the_permalink(); ?>">View</a></button>
+                                                            <form action="" method="post">
+                                                                <input type="hidden" value="<?php echo intval(get_post()->ID); ?>" name="erp">
+                                                                <input type="hidden" value="<?php echo intval(get_post()->post_author); ?>" name="erc">
+                                                                <?php
+                                                                if($application->status == 2){
+                                                                    ?>
+                                                                    <button data-id="<?php echo intval($application->ID) ?>" class="finishedjob" name="finishedjob">Finished</button>
+                                                                    <?php
+                                                                }
+                                                                ?>
+                                                                <button class="cancel cancelrunningjob" name="cancelrunningjob">Cancel</button>
+                                                                <?php
+                                                                    if($application->status == 4){
+                                                                    ?>
+                                                                    <span class="finishedjobreq">Request Pending</span>
+                                                                    <?php
+                                                                    }
+                                                                ?>
+                                                            </form>
+                                                        </div>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <?php
+                                    }else{
+                                        ?>
+                                            <div class="helper">
+                                                No request found
+                                            </div>
                                         <?php
                                     }
                                 }
@@ -331,9 +359,10 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                             if ( $jobs->have_posts() ){
                                 while ( $jobs->have_posts() ){
                                     $jobs->the_post();
-                                    $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+
+                                    $job_info = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $application->post_id AND job_status = 'inprogress' ORDER BY ID ASC");
                                     // Only active/ running job
-                                    if($job_info[0]['job_status'] == 'inprogress'){
+                                    if($job_info){
                                         ?>
                                         <div class="jobitem">
                                             <table>
@@ -354,7 +383,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                         </td>
                                                         <td>
                                                         <?php 
-                                                        echo Easy_Rents_Public::time_elapsed_string($application->apply_date, true);?>
+                                                        echo Easy_Rents_Public::time_elapsed_string(time()-$application->apply_date);?>
                                                         </td>
                                                     </tr>
                                                     <tr>
@@ -376,7 +405,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                             <?php
                                                                 if($application->status == 4){
                                                                 ?>
-                                                                   <span class="requestforfinished">Request for finished</span>
+                                                                    <span class="requestforfinished">Request for finished</span>
                                                                 <?php
                                                                 }
                                                             ?>
@@ -386,7 +415,12 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
                                                 </tbody>
                                             </table>
                                         </div>
-
+                                        <?php
+                                    }else{
+                                        ?>
+                                            <div class="helper">
+                                                No request found
+                                            </div>
                                         <?php
                                     }
                                 }

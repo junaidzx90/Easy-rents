@@ -25,7 +25,9 @@ main {
     position: relative;
     height: 100vh;
 }
-
+.erbadge-color{
+    color: #c14a11;
+}
 div#er_profileMain ul li i {
     width: 20px;
 }
@@ -166,8 +168,14 @@ th {
     text-align: left;
     padding: 8px;
 }
+.applydate{
+    float: left;
+}
+tr td .phone{
+    float: right;
+}
 
-.jobitem table td i {
+tr td .jobitem table td i {
     color: #fff;
 }
 

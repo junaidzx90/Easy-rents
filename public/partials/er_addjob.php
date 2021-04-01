@@ -30,7 +30,7 @@ wp_localize_script( 'er_addjob_script', "addjob_ajaxurl", array(
 
 ?>
 
-<section>
+<section id="ermainsection">
     <div id="eraddjob">
         <!-- Form -->
         <div class="additemform">

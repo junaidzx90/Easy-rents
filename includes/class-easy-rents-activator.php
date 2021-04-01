@@ -35,7 +35,7 @@ class Easy_Rents_Activator {
 		 */
 		global $wpdb;
 
-		$applications = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}easy_rents_applications ( `ID` INT NOT NULL AUTO_INCREMENT , `driver_id` INT NOT NULL , `customer_id` INT NOT NULL , `post_id` INT NOT NULL , `price` FLOAT NOT NULL ,`commrate` INT NOT NULL , `net_price` INT NOT NULL ,`payment` INT(11) NOT NULL,`apply_date` DATETIME NOT NULL,`payment_date` DATETIME NOT NULL,`finished_date` DATETIME NOT NULL, `status` INT NOT NULL ,`transaction_num` VARCHAR(100) NOT NULL, `create_at` DATETIME NOT NULL, PRIMARY KEY (`ID`)) ENGINE = InnoDB";
+		$applications = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}easy_rents_applications ( `ID` INT NOT NULL AUTO_INCREMENT , `driver_id` INT NOT NULL , `customer_id` INT NOT NULL , `post_id` INT NOT NULL , `price` FLOAT NOT NULL ,`commrate` INT NOT NULL , `net_price` INT NOT NULL ,`payment` INT(11) NOT NULL,`apply_date` VARCHAR(255) NOT NULL,`payment_date` DATETIME NOT NULL,`finished_date` DATETIME NOT NULL, `status` INT NOT NULL ,`transaction_num` VARCHAR(100) NOT NULL, `create_at` DATETIME NOT NULL, PRIMARY KEY (`ID`)) ENGINE = InnoDB";
 
 		$prelocations = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}easy_rents_prelocations ( `ID` INT NOT NULL AUTO_INCREMENT , `district` VARCHAR(500) NOT NULL, `city` VARCHAR(500) NOT NULL, `union` VARCHAR(500) NOT NULL, `create_at` DATETIME NOT NULL, PRIMARY KEY (`ID`)) ENGINE = InnoDB";
 
