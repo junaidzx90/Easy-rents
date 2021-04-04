@@ -4,51 +4,51 @@
 	 * Locations page
 	 * ==============
 	 */
-	// Cities
-	var cities = [];
-	// Union
-	var unions = [];
+	// districts
+	var districts = [];
+	// p_station
+	var p_stations = [];
 
-	districtdata();
-	function districtdata() {
-		// Districs
-		var districs = [];
+	divisiondata();
+	function divisiondata() {
+		// divisions
+		var divisions = [];
 		$('.filterItems').autocomplete({
-			source: districs,
+			source: divisions,
 		});
 
-		$('#districtlocation').autocomplete({
-			source: districs,
+		$('#divisionlocation').autocomplete({
+			source: divisions,
 		});
-		$('#districtlists').children().each(function () {
-			districs.push($(this).val());
+		$('#divisionlists').children().each(function () {
+			divisions.push($(this).val());
 		});
 		
 		
-		$('#districtlocation').on('keyup', function () {
+		$('#divisionlocation').on('keyup', function () {
 			$(this).css('border', '1px solid transparent');
 			if ($(this).val() != "") {
-				$('#citylocation').show();
+				$('#districtlocation').show();
 			} else {
-				$('#citylocation').hide();
+				$('#districtlocation').hide();
 			}
 		});
 
-		// Get cities under disrtrict
-		$('#districtlocation').blur(function () {
+		// Get districts under disrtrict
+		$('#divisionlocation').blur(function () {
 			$.ajax({
 				type: "post",
 				url: locations_ajaxurl.ajax_url,
 				data: {
-					action: "get_cities_under_district",
-					district: $('#districtlocation').val(),
+					action: "get_districts_under_division",
+					division: $('#divisionlocation').val(),
 					nonce: locations_ajaxurl.nonce
 				},
 				dataType: 'json',
 				success: function (response) {
 					if (response) {
 						$.each(response, function (ind, elm) {
-							cities.push(elm.city);
+							districts.push(elm.district);
 						});
 					}
 				}
@@ -57,36 +57,36 @@
 	}
 	
 
-	citiesdata();
-	function citiesdata() {
-		$('#citylocation').autocomplete({
-			source: cities,
+	districtsdata();
+	function districtsdata() {
+		$('#districtlocation').autocomplete({
+			source: districts,
 		});
 
-		$('#citylocation').on('keyup', function () {
+		$('#districtlocation').on('keyup', function () {
 			$(this).css('border', '1px solid transparent');
 			if ($(this).val() != "") {
-				$('#unionlocation').show();
+				$('#p_stationlocation').show();
 			} else {
-				$('#unionlocation').hide();
+				$('#p_stationlocation').hide();
 			}
 		});
 
-		// Get cities under disrtrict
-		$('#citylocation').blur(function () {
+		// Get districts under disrtrict
+		$('#districtlocation').blur(function () {
 			$.ajax({
 				type: "post",
 				url: locations_ajaxurl.ajax_url,
 				data: {
-					action: "get_unions_under_cities",
-					city: $('#citylocation').val(),
+					action: "get_p_stations_under_districts",
+					district: $('#districtlocation').val(),
 					nonce: locations_ajaxurl.nonce
 				},
 				dataType: 'json',
 				success: function (response) {
 					if (response) {
 						$.each(response, function (ind, elm) {
-							unions.push(elm.union);
+							p_stations.push(elm.p_station);
 						})
 					}
 				}
@@ -94,13 +94,13 @@
 		});
 	}
 
-	uniondata();
-	function uniondata() {
-		$('#unionlocation').autocomplete({
-			source: unions,
+	p_stationdata();
+	function p_stationdata() {
+		$('#p_stationlocation').autocomplete({
+			source: p_stations,
 		});
 
-		$('#unionlocation').on('keyup', function () {
+		$('#p_stationlocation').on('keyup', function () {
 			$(this).css('border', '1px solid transparent');
 		});
 	}
@@ -123,9 +123,9 @@
 		e.preventDefault();
 		let btn = $(this);
 
-		let distric = $('#districtlocation').val();
-		let city = $('#citylocation').val();
-		let union = $('#unionlocation').val();
+		let division = $('#divisionlocation').val();
+		let district = $('#districtlocation').val();
+		let p_station = $('#p_stationlocation').val();
 
 		let slnum = parseInt($('.locations table tbody tr').last().children('.slnum').text());
 
@@ -136,18 +136,18 @@
 			ernumbers = slnum + 1;
 		}
 
-		if (distric != '') {
-			if (city != '') {
-				if (union != '') {
+		if (division != '') {
+			if (district != '') {
+				if (p_station != '') {
 					// Ajax call for store data in database
 					$.ajax({
 						type: "post",
 						url: locations_ajaxurl.ajax_url,
 						data: {
 							action: 'addNewLocation',
-							distric: distric,
-							city: city,
-							union: union,
+							division: division,
+							district: district,
+							p_station: p_station,
 							nonce: locations_ajaxurl.nonce
 						},
 						dataType: "json",
@@ -161,30 +161,30 @@
 								// Refresh data
 								getAllTableDataForRefresh();
 								
-								$('#districtlocation').val('').css('border', '1px solid #7e8993');
-								$('#citylocation').val('').css('border', '1px solid #7e8993').hide();
-								$('#unionlocation').val('').css('border', '1px solid #7e8993').hide();
+								$('#divisionlocation').val('').css('border', '1px solid #7e8993');
+								$('#districtlocation').val('').css('border', '1px solid #7e8993').hide();
+								$('#p_stationlocation').val('').css('border', '1px solid #7e8993').hide();
 							}
 							if (response.faild) {
 								alert(response.faild);
 								btn.val('Add').removeAttr('disabled');
 
-								$('#districtlocation').val('').css('border', '1px solid #7e8993');
-								$('#citylocation').val('').css('border', '1px solid #7e8993').hide();
-								$('#unionlocation').val('').css('border', '1px solid #7e8993').hide();
-								cities = [];
-								unions = [];
+								$('#divisionlocation').val('').css('border', '1px solid #7e8993');
+								$('#districtlocation').val('').css('border', '1px solid #7e8993').hide();
+								$('#p_stationlocation').val('').css('border', '1px solid #7e8993').hide();
+								districts = [];
+								p_stations = [];
 							}
 						}
 					});
 				} else {
-					$('#unionlocation').css('border', '1px solid red');
+					$('#p_stationlocation').css('border', '1px solid red');
 				}
 			} else {
-				$('#citylocation').css('border', '1px solid red');
+				$('#districtlocation').css('border', '1px solid red');
 			}
 		} else {
-			$('#districtlocation').css('border', '1px solid red');
+			$('#divisionlocation').css('border', '1px solid red');
 		}
 	});
 

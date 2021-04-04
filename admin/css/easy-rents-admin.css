@@ -44,7 +44,7 @@ input[name="searchfilter"]{
     border-radius: 6px;
     border: 3px solid #cfd8dc
 }
-#citylocation,#unionlocation{
+#districtlocation,#p_stationlocation{
     display: none;
 }
 

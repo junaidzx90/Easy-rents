@@ -188,12 +188,12 @@ class Easy_Rents {
 		//Adding location
 		$this->loader->add_action("wp_ajax_addNewLocation", $plugin_admin, "addNewLocation");
 		$this->loader->add_action("wp_ajax_nopriv_addNewLocation", $plugin_admin, "addNewLocation");
-		//Get Cities
-		$this->loader->add_action("wp_ajax_get_cities_under_district", $plugin_admin, "get_cities_under_district");
-		$this->loader->add_action("wp_ajax_nopriv_get_cities_under_district", $plugin_admin, "get_cities_under_district");
-		//Get Unions
-		$this->loader->add_action("wp_ajax_get_unions_under_cities", $plugin_admin, "get_unions_under_cities");
-		$this->loader->add_action("wp_ajax_nopriv_get_unions_under_cities", $plugin_admin, "get_unions_under_cities");
+		//Get districts
+		$this->loader->add_action("wp_ajax_get_districts_under_division", $plugin_admin, "get_districts_under_division");
+		$this->loader->add_action("wp_ajax_nopriv_get_districts_under_division", $plugin_admin, "get_districts_under_division");
+		//Get p_stations
+		$this->loader->add_action("wp_ajax_get_p_stations_under_districts", $plugin_admin, "get_p_stations_under_districts");
+		$this->loader->add_action("wp_ajax_nopriv_get_p_stations_under_districts", $plugin_admin, "get_p_stations_under_districts");
 		//get refresh data
 		$this->loader->add_action("wp_ajax_get_all_table_data_for_refresh", $plugin_admin, "get_all_table_data_for_refresh");
 		$this->loader->add_action("wp_ajax_nopriv_get_all_table_data_for_refresh", $plugin_admin, "get_all_table_data_for_refresh");
@@ -239,12 +239,12 @@ class Easy_Rents {
 		$this->loader->add_action("wp_ajax_finishedconfirmed", $plugin_public, "finishedconfirmed");
 		$this->loader->add_action("wp_ajax_nopriv_finishedconfirmed", $plugin_public, "finishedconfirmed");
 
-		//Get Cities
-		$this->loader->add_action("wp_ajax_pbget_cities_under_district", $plugin_public, "pbget_cities_under_district");
-		$this->loader->add_action("wp_ajax_nopriv_pbget_cities_under_district", $plugin_public, "pbget_cities_under_district");
-		//Get Unions
-		$this->loader->add_action("wp_ajax_pbget_unions_under_cities", $plugin_public, "pbget_unions_under_cities");
-		$this->loader->add_action("wp_ajax_nopriv_pbget_unions_under_cities", $plugin_public, "pbget_unions_under_cities");
+		//Get districts
+		$this->loader->add_action("wp_ajax_pbget_districts_under_division", $plugin_public, "pbget_districts_under_division");
+		$this->loader->add_action("wp_ajax_nopriv_pbget_districts_under_division", $plugin_public, "pbget_districts_under_division");
+		//Get p_stations
+		$this->loader->add_action("wp_ajax_pbget_p_stations_under_districts", $plugin_public, "pbget_p_stations_under_districts");
+		$this->loader->add_action("wp_ajax_nopriv_pbget_p_stations_under_districts", $plugin_public, "pbget_p_stations_under_districts");
 		//Create Job
 		$this->loader->add_action("wp_ajax_er_create_job", $plugin_public, "er_create_job");
 		$this->loader->add_action("wp_ajax_nopriv_er_create_job", $plugin_public, "er_create_job");

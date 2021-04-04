@@ -12,7 +12,7 @@
  <?php wp_enqueue_script( 'er_jobs_script' ); ?>
 
 <section>
-    <h1>All trips</h1>
+    <h1>চালু ট্রিপগুলি</h1>
     <div id="er_jobs_section">
         <div class="er_jobs_content">
             <?php
@@ -45,10 +45,10 @@
                         <div class="er_jobItem">
                             <span class="erjobstatus"><?php 
                             if(!empty($myapplication)){
-                                echo __('Pending','easy-rents');
+                                echo __('অপেক্ষমান','easy-rents');
                             }
                             if(get_post()->post_author == $current_user->ID){
-                                echo __('My Job','easy-rents');
+                                echo __('আমার ট্রিপ','easy-rents');
                             } 
                             ?></span>
                             <a href="<?php echo the_permalink(  ); ?>">
@@ -96,14 +96,14 @@
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_weight">
-                                        <i class="fa fa-cubes" aria-hidden="true"></i> <?php echo __($tripinfo->weight,'easy-rents'); ?> Ton
+                                        <i class="fa fa-cubes" aria-hidden="true"></i> <?php echo __($tripinfo->weight,'easy-rents'); ?> টন
                                         </span>
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_laborer">
                                             <i class="fa fa-people-carry"></i>
-                                            Laborer
-                                            <?php echo ($tripinfo->laborer != "")? '<i class="fas fa-check-circle laboriconcheck"></i>':'<i class="fas fa-times-circle laboriconnone"></i>' ?>
+                                            লেবার
+                                            <?php echo ($tripinfo->laborer > 0)? '<i class="fas fa-check-circle laboriconcheck"></i>':'<i class="fas fa-times-circle laboriconnone"></i>' ?>
                                         </span>
                                     </div>
                                 </div>
@@ -112,7 +112,7 @@
                         </div>
                     <?php  
                     }else{
-                        $nofound = 'Sorry, no job were found.';
+                        $nofound = 'দুঃখিত! কোন ট্রিপ চালু নেই ।';
                     }
                         
                     
@@ -137,13 +137,13 @@
                 wp_reset_postdata(  );
                 echo $nofound;
                 else :
-                    _e( 'Sorry, no job were found.', 'easy-rents' );
+                    _e( 'দুঃখিত! কোন ট্রিপ চালু নেই ।', 'easy-rents' );
             endif;
             ?>
         </div>
 
         <div class="er_sidebar">
-            <?php echo the_content(); ?>
+            <?php the_content(); ?>
         </div>
     </div> 
 </section>

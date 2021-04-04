@@ -104,6 +104,8 @@ class Easy_Rents_Public
         wp_register_style('er_login_register', plugin_dir_url(__FILE__) . 'css/er_login_register.css', array(), microtime(), 'all');
         // er_jequery uri
         wp_register_style('jquery-ui', plugin_dir_url(__FILE__) . 'css/jquery-ui.css', array(), $this->version, 'all');
+        // select2.min
+        wp_register_style('select2.min', plugin_dir_url(__FILE__) . 'css/select2.min.css', array(), $this->version, 'all');
         // jquery.datetimepicker.min
         wp_register_style('jquery.timepicker.min', plugin_dir_url(__FILE__) . 'css/jquery.timepicker.min.css', array(), $this->version, 'all');
         // addnewjob style
@@ -124,8 +126,10 @@ class Easy_Rents_Public
         wp_register_script('er_jobs_script', plugin_dir_url(__FILE__) . 'js/easy-rents-jobs.js', array('jquery'), microtime(), true);
         // er_login_register
         wp_register_script('er_login_register', plugin_dir_url(__FILE__) . 'js/er_login_register.js', array('jquery'), microtime(), true);
-        // jquery.datetimepicker.min
+        // jquery-ui
         wp_register_script('jquery-ui', plugin_dir_url(__FILE__) . 'js/jquery-ui.js', array('jquery'), $this->version, true);
+        // select2.min
+        wp_register_script('select2.min', plugin_dir_url(__FILE__) . 'js/select2.min.js', array('jquery'), $this->version, true);
         // er_login_register
         wp_register_script('jquery.timepicker.min', plugin_dir_url(__FILE__) . 'js/jquery.timepicker.min.js', array('jquery'), $this->version, true);
         // addjob script
@@ -133,41 +137,61 @@ class Easy_Rents_Public
 
     }
 
-    public function er_prelocation_input($id,$name,$placeholder){
+    public function er_prelocation_input($id,$placeholder, $classes = ''){
     ?>
 		<div class="input-group locationgroup">
-			<select name="erdistrict" class="erdistrict">
-				<option value="-1">Select District</option>
+			<select style="height:50px" class="erdivision <?php echo $classes; ?>">
+				<option value="-1">বিভাগ বাছুন</option>
                 <?php
                     global $wpdb;
 
-                    $districts = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
-                    if($districts){
-                        foreach($districts as $district){
-                            echo '<option value="'.esc_html($district->district).'">'.esc_html($district->district).'</option>';
+                    $divisions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations GROUP BY `division` ORDER BY ID DESC");
+                    if($divisions){
+                        foreach($divisions as $division){
+                            echo '<option value="'.esc_html($division->division).'">'.esc_html($division->division).'</option>';
                         }
                     }
                 ?>
 			</select>
 			
-			<select name="ercity" class="ercity">
-				<option value="-1">Select City</option>
+			<select style="height:50px" class="erdistrict <?php echo $classes; ?>">
+				<option value="-1">জেলা বাছুন</option>
 			</select>
 
-			<select name="erunion" class="erunion">
-				<option value="-1">Select Union</option>
+			<select style="height:50px" class="erp_station <?php echo $classes; ?>">
+				<option value="-1">থানা বাছুন</option>
 			</select>
             
-			<input class='locationinput' id="<?php echo $id; ?>" type="text" name="<?php echo $name; ?>" Placeholder="<?php echo $placeholder; ?>" value="">
-			<span class="backbtn">🔄</span>
+			<input class='locationinput <?php echo $classes; ?>' id="<?php echo $id; ?>" type="text" Placeholder="<?php echo $placeholder; ?>" value="">
+			
 		</div>
-
 	<?php
 	}
 
 
-    // Get cities by ajax
-	function pbget_cities_under_district(){
+    // Get districts by ajax
+	function pbget_districts_under_division(){
+		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
+			die ( 'Hey! What are you doing?');
+		}
+
+		if(isset($_POST['division'])){
+			$division = sanitize_text_field( $_POST['division'] );
+		
+			global $wpdb;
+
+			$districts = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE division = '$division' GROUP BY `district` ORDER BY ID DESC");
+			if($districts){
+                
+				echo json_encode($districts);
+				die;
+			}
+			die;
+		}
+	}
+
+	// Get p_stations by ajax
+	function pbget_p_stations_under_districts(){
 		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
 			die ( 'Hey! What are you doing?');
 		}
@@ -177,31 +201,10 @@ class Easy_Rents_Public
 		
 			global $wpdb;
 
-			$cities = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' ORDER BY ID DESC");
-			if($cities){
-                
-				echo json_encode($cities);
-				die;
-			}
-			die;
-		}
-	}
+			$p_stations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' GROUP BY `p_station` ORDER BY ID DESC");
 
-	// Get unions by ajax
-	function pbget_unions_under_cities(){
-		if ( ! wp_verify_nonce( $_POST['nonce'], 'ajax-nonce' ) ) {
-			die ( 'Hey! What are you doing?');
-		}
-
-		if(isset($_POST['city'])){
-			$city = sanitize_text_field( $_POST['city'] );
-		
-			global $wpdb;
-
-			$unions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE city = '$city' ORDER BY ID DESC");
-
-			if($unions){
-				echo json_encode($unions);
+			if($p_stations){
+				echo json_encode($p_stations);
 				die;
 			}
 		}
@@ -224,10 +227,10 @@ class Easy_Rents_Public
             $location_2 = '';
             $location_3 = '';
     
-            if (isset($_POST['loc2']) && $_POST['loc2'] != "") {
+            if (isset($_POST['loc2']) && $_POST['loc2'] != "-1") {
                 $location_2 = sanitize_text_field($_POST['loc2']);
             }
-            if (isset($_POST['loc3']) && $_POST['loc3'] != "") {
+            if (isset($_POST['loc3']) && $_POST['loc3'] != "-1") {
                 $location_3 = sanitize_text_field($_POST['loc3']);
             }
     
@@ -241,34 +244,39 @@ class Easy_Rents_Public
             $goods_weight = sanitize_text_field($_POST['goods_weight']);
             $er_labore = intval($_POST['er_labore']);
     
-            $invoice = new Easy_Rents();
-            $invoice_nom = $invoice->get_invoice_id($current_user->ID);
-    
-            
-            // Create post object
-            $job_post = array(
-                'post_type' => 'jobs',
-                'post_status' => 'publish',
-                'post_title' => wp_strip_all_tags($invoice_nom),
-                'post_name' => wp_strip_all_tags($invoice_nom),
-                'post_content' => '',
-                'post_author' => $current_user->ID,
-            );
-    
-            $post_id = wp_insert_post($job_post);
-            $set_term = wp_set_post_terms($post_id, $truck_type, 'truckstype');
-    
-            $tbl = $wpdb->prefix.'easy_rents_trips';
-            $newtrip = $wpdb->insert($tbl, array('user_id' => $current_user->ID, 'post_id'=> $post_id, 'location_1' => $location_1,'location_2' => $location_2,'location_3' => $location_3, 'unload_loc' => $unload_location, 'goods_type' => $goods_type, 'weight' => $goods_weight, 'laborer' => $er_labore, 'load_time' => $datetime, 'job_status' => 'running','create_at' => date('d.m.Y H:i:s', time() + 3 * 60 * 60)), array('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%s'));
-            
-            if($newtrip){
-                $slug = Easy_Rents_Public::get_post_slug(get_option('trips_page', true));
-                $redirect_page = home_url('/' . $slug);
+            if($location_1 != '-1' && $unload_location != '-1' && $loading_time != '' && $loading_date != '' &&$truck_type != '' && $goods_type != '' && $goods_weight != ''){
 
-                echo json_encode(array('redirect' => $redirect_page));
-                die;
+                $invoice = new Easy_Rents();
+                $invoice_nom = $invoice->get_invoice_id($current_user->ID);
+        
+                
+                // Create post object
+                $job_post = array(
+                    'post_type' => 'jobs',
+                    'post_status' => 'publish',
+                    'post_title' => wp_strip_all_tags($invoice_nom),
+                    'post_name' => wp_strip_all_tags($invoice_nom),
+                    'post_content' => '',
+                    'post_author' => $current_user->ID,
+                );
+        
+                $post_id = wp_insert_post($job_post);
+                $set_term = wp_set_post_terms($post_id, $truck_type, 'truckstype');
+        
+                $tbl = $wpdb->prefix.'easy_rents_trips';
+                $newtrip = $wpdb->insert($tbl, array('user_id' => $current_user->ID, 'post_id'=> $post_id, 'location_1' => $location_1,'location_2' => $location_2,'location_3' => $location_3, 'unload_loc' => $unload_location, 'goods_type' => $goods_type, 'weight' => $goods_weight, 'laborer' => $er_labore, 'load_time' => $datetime, 'job_status' => 'running','create_at' => date('d.m.Y H:i:s', time() + 3 * 60 * 60)), array('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%s'));
+                
+                if($newtrip){
+                    $slug = Easy_Rents_Public::get_post_slug(get_option('trips_page', true));
+                    $redirect_page = home_url('/' . $slug);
+
+                    echo json_encode(array('redirect' => $redirect_page));
+                    die;
+                }else{
+                    echo json_encode(array('faild' => "Something went wrong! Try again"));
+                    die;
+                }
             }else{
-                echo json_encode(array('faild' => "Something went wrong! Try again"));
                 die;
             }
         }

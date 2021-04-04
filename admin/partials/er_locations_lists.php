@@ -11,41 +11,41 @@ wp_localize_script( 'easy-rents-locations', "locations_ajaxurl", array(
 
 ?>
 
-<h1>Locations</h1>
+<h1>স্থানের লিস্ট</h1>
 <hr>
 <div class="topforms">
     <div class="add_locations">
         <form method="post" action="" autocomplete="off">
-        <input  type="text" id="districtlocation" placeholder="District">
-        <select id="districtlists">
+        <input  type="text" id="divisionlocation" placeholder="division">
+        <select id="divisionlists">
         <?php
             global $wpdb;
 
-            $districts = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+            $divisions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
 
-            if($districts){
-                foreach($districts as $district){
+            if($divisions){
+                foreach($divisions as $division){
                     ?>
-                <option value="<?php echo __($district->district, 'easy-rents'); ?>"><?php echo __($district->district, 'easy-rents'); ?></option>
+                <option value="<?php echo __($division->division, 'easy-rents'); ?>"><?php echo __($division->division, 'easy-rents'); ?></option>
                     <?php
                 }
             }
         ?>
         </select>
         
-        <input  type="text" id="citylocation" placeholder="City">
-        <input  type="text" id="unionlocation" placeholder="Union">
+        <input  type="text" id="districtlocation" placeholder="district">
+        <input  type="text" id="p_stationlocation" placeholder="p_station">
 
         <input type="submit" name="addlocation" class="button button-primary" value="Add">
         </form>
     </div>
 
     <div class="filter_search">
-        <h3 class="searchttl">Search By District</h3>
+        <h3 class="searchttl">বিভাগ সার্চ করুণ</h3>
             <form action="" method="post">
                 <input type="submit" name="searchfilter" value="☭">
                 &nbsp;
-                <input type="text" class="filterItems" name="filterItems" placeholder="Select District" value="<?php echo $_POST['filterItems']; ?>">
+                <input type="text" class="filterItems" name="filterItems" placeholder="Select division" value="<?php echo $_POST['filterItems']; ?>">
         </form>
     </div>
 </div>
@@ -55,11 +55,11 @@ wp_localize_script( 'easy-rents-locations', "locations_ajaxurl", array(
     <table>
         <thead>
             <tr>
-                <th>SL</th>
-                <th>District</th>
-                <th>City</th>
-                <th>Union</th>
-                <th class="del">Delete</th>
+                <th>ত্রমিক</th>
+                <th>বিভাগ</th>
+                <th>জেলা</th>
+                <th>থানা</th>
+                <th class="del">মুছুন</th>
             </tr>
         </thead>
         <tbody>

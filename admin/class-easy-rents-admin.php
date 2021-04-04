@@ -647,22 +647,22 @@ class Easy_Rents_Admin
             die('Hey! What are you doing?');
         }
 
-        if (isset($_POST['distric']) && isset($_POST['city']) && isset($_POST['union'])) {
-            $district = sanitize_text_field($_POST['distric']);
-            $city = sanitize_text_field($_POST['city']);
-            $union = sanitize_text_field($_POST['union']);
+        if (isset($_POST['division']) && isset($_POST['district']) && isset($_POST['p_station'])) {
+            $division = sanitize_text_field($_POST['division']);
+            $district = sanitize_text_field($_POST['district']);
+            $p_station = sanitize_text_field($_POST['p_station']);
 
             global $wpdb;
             $tbl = $wpdb->prefix . 'easy_rents_prelocations';
 
-            $lochas = $wpdb->get_var("SELECT ID FROM $tbl WHERE `district` = '$district' AND `city` = '$city' AND `union` = '$union'");
+            $lochas = $wpdb->get_var("SELECT ID FROM $tbl WHERE `division` = '$division' AND `district` = '$district' AND `p_station` = '$p_station'");
 
             if ($lochas) {
                 echo json_encode(array('faild' => 'This Location already Exist!'));
                 die;
             }
 
-            $location = $wpdb->insert($tbl, array('district' => $district, 'city' => $city, 'union' => $union), array('%s', '%s', '%s'));
+            $location = $wpdb->insert($tbl, array('division' => $division, 'district' => $district, 'p_station' => $p_station), array('%s', '%s', '%s'));
 
             if ($location) {
                 echo json_encode(array('success' => 'Added Success!'));
@@ -674,8 +674,29 @@ class Easy_Rents_Admin
         }
     }
 
-    // Get cities by ajax
-    public function get_cities_under_district()
+    // Get districts by ajax
+    public function get_districts_under_division()
+    {
+        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
+            die('Hey! What are you doing?');
+        }
+
+        if (isset($_POST['division'])) {
+            $division = sanitize_text_field($_POST['division']);
+
+            global $wpdb;
+
+            $districts = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE division = '$division' ORDER BY ID DESC");
+            if ($districts) {
+                echo json_encode($districts);
+                die;
+            }
+            die;
+        }
+    }
+
+    // Get p_stations by ajax
+    public function get_p_stations_under_districts()
     {
         if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
             die('Hey! What are you doing?');
@@ -686,31 +707,10 @@ class Easy_Rents_Admin
 
             global $wpdb;
 
-            $cities = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' ORDER BY ID DESC");
-            if ($cities) {
-                echo json_encode($cities);
-                die;
-            }
-            die;
-        }
-    }
+            $p_stations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$district' ORDER BY ID DESC");
 
-    // Get unions by ajax
-    public function get_unions_under_cities()
-    {
-        if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
-            die('Hey! What are you doing?');
-        }
-
-        if (isset($_POST['city'])) {
-            $city = sanitize_text_field($_POST['city']);
-
-            global $wpdb;
-
-            $unions = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE city = '$city' ORDER BY ID DESC");
-
-            if ($unions) {
-                echo json_encode($unions);
+            if ($p_stations) {
+                echo json_encode($p_stations);
                 die;
             }
         }
@@ -729,9 +729,9 @@ class Easy_Rents_Admin
                 ?>
 				<tr>
 					<td class="slnum"><?php echo __($i, 'easy-rents'); ?></td>
+					<td><?php echo __($location->division, 'easy-rents'); ?></td>
 					<td><?php echo __($location->district, 'easy-rents'); ?></td>
-					<td><?php echo __($location->city, 'easy-rents'); ?></td>
-					<td><?php echo __($location->union, 'easy-rents'); ?></td>
+					<td><?php echo __($location->p_station, 'easy-rents'); ?></td>
 					<td>
 						<button data-id="<?php echo esc_html($location->ID); ?>" name="delete_addr" class="delete_addr">X</button>
 					</td>
@@ -748,7 +748,7 @@ class Easy_Rents_Admin
         global $wpdb;
 
         if ($filter != '') {
-            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE district = '$filter' ORDER BY ID DESC");
+            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE division = '$filter' ORDER BY ID DESC");
         } else {
             $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
         }
@@ -759,9 +759,9 @@ class Easy_Rents_Admin
                 ?>
 				<tr>
 					<td class="slnum"><?php echo __($i, 'easy-rents'); ?></td>
+					<td><?php echo __($location->division, 'easy-rents'); ?></td>
 					<td><?php echo __($location->district, 'easy-rents'); ?></td>
-					<td><?php echo __($location->city, 'easy-rents'); ?></td>
-					<td><?php echo __($location->union, 'easy-rents'); ?></td>
+					<td><?php echo __($location->p_station, 'easy-rents'); ?></td>
 					<td>
 						<button data-id="<?php echo esc_html($location->ID); ?>" name="delete_addr" class="delete_addr">X</button>
 					</td>

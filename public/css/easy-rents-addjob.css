@@ -57,7 +57,7 @@ span.backbtn {
 
 .locationgroup select,
 .locationgroup input {
-    width: 100%;
+    width: 24%;
 }
 
 input.addjob {
@@ -100,10 +100,10 @@ input.addjob {
     width: 200px;
 }
 
-.ercity,
+.erdistrict,
 .locationinput,
-.erunion {
-    display: none;
+.erp_station {
+    /* display: none; */
 }
 
 select#er_labore {

@@ -48,12 +48,12 @@ if(have_posts()){
                             $redirect_page = Easy_Rents_Public::get_post_slug(get_option( 'trips_page', true ));
 						    wp_safe_redirect( home_url( '/'.$redirect_page.'/'.get_the_title(  ) ) );
                         }else{
-                            $msg = "Sorry You made some problems!";
+                            $msg = "দুঃক্ষিত! আবার চেষ্টা করুণ। 👍";
                         }
                     }
 
                     if ( is_wp_error( $application ) ) {
-                        throw new Exception( "Something problems" );
+                        throw new Exception( "দুঃক্ষিত! 😥" );
                     }
                 }
                 
@@ -77,18 +77,18 @@ if(have_posts()){
                     <table>
                         <tbody>
                         <tr>
-                            <th>Commission</th>
-                            <th>Commission Money</th>
-                            <th>Customer see</th>
+                            <th>কমিশন</th>
+                            <th>কমিশনের টাকা</th>
+                            <th>ক্লাইন্ট দেখবে</th>
                         </tr>
                         <tr>
                             <td>
-                                <span class="parcents"><?php echo get_option('job_commission'); ?></span>% = <span class="commrate">0</span>tk
+                                <span class="parcents"><?php echo get_option('job_commission'); ?></span>% = <span class="commrate">0</span>টাকা
                         </td>
                             <td>
-                               + <span class="myrate">0</span>tk
+                               + <span class="myrate">0</span>টাকা
                             </td>
-                            <td>= <span class="sumwithcomm">0</span>tk</td>
+                            <td>= <span class="sumwithcomm">0</span>টাকা</td>
                         </tr>
                         </tbody>
                     </table>
@@ -96,12 +96,12 @@ if(have_posts()){
                     <h1><?php echo __('Write your budget', 'easy-rents') ?></h1>
                     <form action="" method="post">
                         <input type="number" name="myprice" id="myprice" placeholder="Write your budget">
-                        <input type="submit" class="bidbtn" name="bidbtn" value="BID">
+                        <input type="submit" class="bidbtn" name="bidbtn" value="জমা দিন">
                     </form>
                 </div>
             <?php
             }else{
-                print_r("This job ended");
+                print_r("ট্রিপটি চালু নেই!");
             }
         }else{ ?>
             <div class="er_jobs_content single_page_job">
@@ -123,7 +123,6 @@ if(have_posts()){
                     ?>
                 </div>
 
-                <h1><?php echo __('JOB Informations', 'easy-rents') ?></h1>
             <?php
                 
                 if(!empty($postinfo)){ 
@@ -131,7 +130,7 @@ if(have_posts()){
                     
                         <div class="locations">
                             <div class="loadpoint">
-                                <h4> <i class="fas fa-map-marked-alt"></i> Load point</h4>
+                                <h4> <i class="fas fa-map-marked-alt"></i> লোডের স্থান</h4>
                                 <ul>
                                     <?php
                                     if(!empty($postinfo->location_1)){
@@ -150,7 +149,7 @@ if(have_posts()){
                             </div>
 
                             <div class="unloadpoint">
-                                <h4> <i class="fas fa-map-marked-alt"></i> Unload point</h4>
+                                <h4> <i class="fas fa-map-marked-alt"></i> আনলোডের স্থান</h4>
                                 <ul>
                                     <?php
                                     if(!empty($postinfo->unload_loc)){
@@ -163,27 +162,27 @@ if(have_posts()){
 
                         <div class="otherinfo">
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fas fa-cubes" aria-hidden="true"></i> Weights</h4>
+                                <h4 class="infotitle"><i class="fas fa-cubes" aria-hidden="true"></i> ওজন</h4>
                                  <?php
                                     if(!empty($postinfo->weight)){
-                                        echo '<span>'.intval($postinfo->weight).' Ton</span>';
+                                        echo '<span>'.intval($postinfo->weight).' টন</span>';
                                     }
                                  ?>
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fas fa-people-carry"></i> Laborer</h4>
+                                <h4 class="infotitle"><i class="fas fa-people-carry"></i> লেবার</h4>
                                 <?php
                                 if(!empty($postinfo->er_labore)){
-                                    echo '<span>'.intval($postinfo->laborer).' Labores</span>';
+                                    echo '<span>'.intval($postinfo->laborer).' জন</span>';
                                 }else{
-                                    echo '<span>'.intval($postinfo->laborer).' Labores</span>';
+                                    echo '<span>'.intval($postinfo->laborer).' জন</span>';
                                 }
                                 ?>
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fas fa-truck" aria-hidden="true"></i> Truck Type</h4>
+                                <h4 class="infotitle"><i class="fas fa-truck" aria-hidden="true"></i> ট্রাকের ধরণ</h4>
 
                                 <?php
                                 $product_terms = wp_get_object_terms( get_post()->ID,  'truckstype' );
@@ -199,7 +198,7 @@ if(have_posts()){
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fas fa-luggage-cart"></i> Goods Type</h4>
+                                <h4 class="infotitle"><i class="fas fa-luggage-cart"></i> মালের ধরণ</h4>
                                 <?php
                                 if(!empty($postinfo->goods_type)){
                                     echo '<span>'.__($postinfo->goods_type,'easy-rents').'</span>';
@@ -208,7 +207,7 @@ if(have_posts()){
                             </div>
 
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="far fa-clock"></i> Load time</h4>
+                                <h4 class="infotitle"><i class="far fa-clock"></i> লোডের সময়</h4>
                                 <?php
                                 if(!empty($postinfo->load_time)){
                                     echo '<span>'.__($postinfo->load_time,'easy-rents').'</span>';
@@ -226,7 +225,7 @@ if(have_posts()){
                                 ?>
                                 <div class="myinfo">
                                     <h3><?php echo __($current_user->user_nicename,'easy-rents'); ?> <i class="fa fa-check-circle green" aria-hidden="true"></i></h3>
-                                    <span class="mycar">TRUCK: T-54545</span>
+                                    <span class="mycar">ট্রাক নাম্বার: T-54545</span>
                                 </div>
                                 <?php
                             }else{
@@ -235,7 +234,7 @@ if(have_posts()){
                                 }else{
                                     ?>
                                     <div class="myinfo">
-                                        <h3><a href="<?php echo esc_url( home_url('/login') ) ?>">Login</a></h3>
+                                        <h3><a href="<?php echo esc_url( home_url('/login') ) ?>">লগিন</a></h3>
                                     </div>
                                     <?php
                                 }
@@ -248,7 +247,7 @@ if(have_posts()){
                                 if($myexiststrip){
                                     ?>
                                     <div class="applybtn">
-                                        <span class="jobapply" name="jobapply">Cannot apply for a new job while in another job</span>
+                                        <span class="jobapply" name="jobapply">দুঃক্ষিত! আপনি কারো সাথে চুক্তিবদ্ধ হয়েছেন।</span>
                                     </div>
                                     <?php
                                 }else{
@@ -257,14 +256,14 @@ if(have_posts()){
                                     if(count($paymentstatus) > 0){
                                         ?>
                                         <div class="applybtn">
-                                            <span class="jobapply" name="jobapply">You can't apply for job before paying <a href="<?php echo esc_url(home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_payment', true )))) ?>">Payments!</a></span>
+                                            <span class="jobapply" name="jobapply">বঁকেয়া বিল পরিশোধ করে আবার চেষ্টা করুণ। <a href="<?php echo esc_url(home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_payment', true )))) ?>">পরিশোধ করুণ!</a></span>
                                         </div>
                                         <?php
                                     }else{
                                         ?>
                                         <div class="applybtn">
                                             <form action="" method="post">
-                                                <button class="jobapply" name="jobapply">Apply</button>
+                                                <button class="jobapply" name="jobapply">আবাদন করুণ</button>
                                             </form>
                                         </div>
                                         <?php
@@ -278,7 +277,7 @@ if(have_posts()){
                                     ?>
                                         <!-- Disabled btn for existing applications -->
                                         <div class="applybtn">
-                                            <button disabled class="jobapply disabledbtn">Pending</button>
+                                            <button disabled class="jobapply disabledbtn">অপেক্ষমান</button>
                                         </div>
                                     <?php
                                     }
@@ -288,7 +287,7 @@ if(have_posts()){
                                         ?>
                                             <!-- Disabled btn for existing applications -->
                                             <div class="applybtn">
-                                                <button disabled class="jobapply disabledbtn">You working</button>
+                                                <button disabled class="jobapply disabledbtn">আপনি কারো সাথে চুক্তিবদ্ধ।</button>
                                             </div>
                                         <?php
                                         }
@@ -306,7 +305,7 @@ if(have_posts()){
                                             ?>
                                                 <!-- Disabled btn for existing applications -->
                                                 <div class="applybtn">
-                                                    <button disabled class="jobapply disabledbtn">Apply</button>
+                                                    <button disabled class="jobapply disabledbtn">আবেদন করুণ</button>
                                                 </div>
                                             <?php
                                         }
