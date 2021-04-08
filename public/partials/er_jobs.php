@@ -96,7 +96,7 @@
                                     </div>
                                     <div class="_jobitem">
                                         <span class="er_weight">
-                                        <i class="fa fa-cubes" aria-hidden="true"></i> <?php echo __($tripinfo->weight,'easy-rents'); ?> টন
+                                        <i class="fa fa-balance-scale" aria-hidden="true"></i> <?php echo __($tripinfo->weight,'easy-rents'); ?> টন
                                         </span>
                                     </div>
                                     <div class="_jobitem">

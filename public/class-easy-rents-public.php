@@ -226,12 +226,16 @@ class Easy_Rents_Public
         
             $location_2 = '';
             $location_3 = '';
+            $er_goodssizes = '';
     
             if (isset($_POST['loc2']) && $_POST['loc2'] != "-1") {
                 $location_2 = sanitize_text_field($_POST['loc2']);
             }
             if (isset($_POST['loc3']) && $_POST['loc3'] != "-1") {
                 $location_3 = sanitize_text_field($_POST['loc3']);
+            }
+            if (isset($_POST['er_goodssizes'])) {
+                $er_goodssizes = intval($_POST['er_goodssizes']);
             }
     
             $location_1 = sanitize_text_field($_POST['loc1']);
@@ -248,7 +252,6 @@ class Easy_Rents_Public
 
                 $invoice = new Easy_Rents();
                 $invoice_nom = $invoice->get_invoice_id($current_user->ID);
-        
                 
                 // Create post object
                 $job_post = array(
@@ -264,7 +267,7 @@ class Easy_Rents_Public
                 $set_term = wp_set_post_terms($post_id, $truck_type, 'truckstype');
         
                 $tbl = $wpdb->prefix.'easy_rents_trips';
-                $newtrip = $wpdb->insert($tbl, array('user_id' => $current_user->ID, 'post_id'=> $post_id, 'location_1' => $location_1,'location_2' => $location_2,'location_3' => $location_3, 'unload_loc' => $unload_location, 'goods_type' => $goods_type, 'weight' => $goods_weight, 'laborer' => $er_labore, 'load_time' => $datetime, 'job_status' => 'running','create_at' => date('d.m.Y H:i:s', time() + 3 * 60 * 60)), array('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d', '%s', '%s', '%s'));
+                $newtrip = $wpdb->insert($tbl, array('user_id' => $current_user->ID, 'post_id'=> $post_id, 'location_1' => $location_1,'location_2' => $location_2,'location_3' => $location_3, 'unload_loc' => $unload_location, 'goods_type' => $goods_type, 'weight' => $goods_weight, 'laborer' => $er_labore, 'er_goodssizes' => $er_goodssizes, 'load_time' => $datetime, 'job_status' => 'running','create_at' => date('d.m.Y H:i:s', time() + 3 * 60 * 60)), array('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d','%d', '%s', '%s', '%s'));
                 
                 if($newtrip){
                     $slug = Easy_Rents_Public::get_post_slug(get_option('trips_page', true));

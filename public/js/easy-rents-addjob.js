@@ -187,6 +187,7 @@
         var goods_type = $('#goods_type').val();
         var goods_weight = $('#goods_weight').val();
         var er_labore = $('#er_labore').val();
+        var er_goodssizes = $('#er_goodssizes').val();
 
 
         if ($('#loading_time').val() != '') {
@@ -222,6 +223,7 @@
                                             goods_type: goods_type,
                                             goods_weight: goods_weight,
                                             er_labore: er_labore,
+                                            er_goodssizes:  er_goodssizes,
                                             nonce: addjob_ajaxurl.nonce
                                         },
                                         dataType: 'json',

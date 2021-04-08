@@ -162,10 +162,19 @@ if(have_posts()){
 
                         <div class="otherinfo">
                             <div class="jobinfoitem">
-                                <h4 class="infotitle"><i class="fas fa-cubes" aria-hidden="true"></i> ওজন</h4>
+                                <h4 class="infotitle"><i class="fas fa-balance-scale" aria-hidden="true"></i> ওজন</h4>
                                  <?php
                                     if(!empty($postinfo->weight)){
                                         echo '<span>'.intval($postinfo->weight).' টন</span>';
+                                    }
+                                 ?>
+                            </div>
+
+                            <div class="jobinfoitem">
+                                <h4 class="infotitle"><i class="fas fa-cubes" aria-hidden="true"></i> আয়োতন</h4>
+                                 <?php
+                                    if(!empty($postinfo->weight)){
+                                        echo '<span>'.intval($postinfo->er_goodssizes).'</span>';
                                     }
                                  ?>
                             </div>
