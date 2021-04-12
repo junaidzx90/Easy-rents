@@ -93,7 +93,7 @@ function render() {
                         }, 4000);
                     });
 
-
+                    // OTP CONFIRMATION
                     $('.confirm').on('click', function (e) {
                         e.preventDefault();
                         var code = $('#verificationCode').value;
