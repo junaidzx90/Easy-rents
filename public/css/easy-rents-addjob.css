@@ -100,12 +100,6 @@ input.addjob {
     width: 200px;
 }
 
-.erdistrict,
-.locationinput,
-.erp_station {
-    /* display: none; */
-}
-
 select#er_labore {
     width: 100%;
 }

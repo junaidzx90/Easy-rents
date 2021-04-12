@@ -200,6 +200,10 @@ class Easy_Rents {
 		//Delete location data
 		$this->loader->add_action("wp_ajax_delete_easy_rents_location", $plugin_admin, "delete_easy_rents_location");
 		$this->loader->add_action("wp_ajax_nopriv_delete_easy_rents_location", $plugin_admin, "delete_easy_rents_location");
+
+		// register access
+		$this->loader->add_action("wp_ajax_register_access_need", $plugin_admin, "register_access_need");
+		$this->loader->add_action("wp_ajax_nopriv_register_access_need", $plugin_admin, "register_access_need");
 	}
 
 	/**

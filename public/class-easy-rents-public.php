@@ -141,7 +141,7 @@ class Easy_Rents_Public
     ?>
 		<div class="input-group locationgroup">
 			<select style="height:50px" class="erdivision <?php echo $classes; ?>">
-				<option value="-1">বিভাগ বাছুন</option>
+				<option value="-1">বিভাগ</option>
                 <?php
                     global $wpdb;
 
@@ -155,11 +155,11 @@ class Easy_Rents_Public
 			</select>
 			
 			<select style="height:50px" class="erdistrict <?php echo $classes; ?>">
-				<option value="-1">জেলা বাছুন</option>
+				<option value="-1">জেলা</option>
 			</select>
 
 			<select style="height:50px" class="erp_station <?php echo $classes; ?>">
-				<option value="-1">থানা বাছুন</option>
+				<option value="-1">থানা</option>
 			</select>
             
 			<input class='locationinput <?php echo $classes; ?>' id="<?php echo $id; ?>" type="text" Placeholder="<?php echo $placeholder; ?>" value="">
@@ -582,7 +582,7 @@ class Easy_Rents_Public
     // er_register / login page
     public function er_login_register($atts)
     {
-        if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
+        if (!is_user_logged_in()) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_login_register.php';
         } else {
             echo 'Please Login to see';

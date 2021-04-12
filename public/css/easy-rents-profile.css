@@ -5,9 +5,11 @@ body {
     color: #fff;
     padding-left: 240px;
 }
-#boxed-wrapper{
-	overflow: unset;
+
+#boxed-wrapper {
+    overflow: unset;
 }
+
 :root {
     --ermain: #ffea92;
 }
@@ -25,9 +27,11 @@ main {
     position: relative;
     height: 100vh;
 }
-.erbadge-color{
+
+.erbadge-color {
     color: #c14a11;
 }
+
 div#er_profileMain ul li i {
     width: 20px;
 }
@@ -168,10 +172,12 @@ th {
     text-align: left;
     padding: 8px;
 }
-.applydate{
+
+.applydate {
     float: left;
 }
-tr td .phone{
+
+tr td .phone {
     float: right;
 }
 
@@ -226,6 +232,7 @@ button.cancel {
     top: 0;
     z-index: 10;
 }
+
 .tabs button {
     margin-top: 5px;
     height: 90%;
@@ -320,12 +327,14 @@ span.notification {
     box-shadow: 0px 0px 8px 0px black;
     width: 40%;
 }
-.logout{
+
+.logout {
     float: right;
     padding-right: 20px;
     padding-top: 10px;
     color: #e2e2e2;
 }
+
 .paymentform select {
     width: 100%;
     color: #23282d;
@@ -379,11 +388,125 @@ span.backbtn {
     width: 200px;
 }
 
+/* Account settings */
+#main {
+    height: 100% !important;
+}
+
+.profile__settingsDetails {
+    padding: 0px 20px;
+    display: flex;
+}
+.update__form {
+    padding: 22px;
+    color: rgb(51, 51, 51);
+    width: 60%;
+}
+.filebtn {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    margin-bottom: 8px;
+}
+.locationgroup {
+    display: flex;
+    justify-content: space-between;
+}
+.locationgroup select {
+    margin-right: 3px;
+}
+.nidphoto,.truckImg {
+    position: relative;
+    width: 48%;
+    text-align: center;
+    padding: 5%;
+    border-style: dashed;
+    border: dashed;
+    border-color: #ababab;
+    background: #ffffff;
+}
+.nidphoto label,.truckImg label{
+    position: relative;
+    z-index: 0;
+    display: inline-block;
+    width: 100%;
+    background: #00bfff;
+    cursor: pointer;
+    color: #fff;
+    padding: 10px 0;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+#nidfront,
+#nidback,#truckImg {
+    display: inline-block;
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 50px;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+button.submit-button {
+    padding: 10px 25px;
+    background: deepskyblue;
+    outline: 0;
+    border: 0;
+    border-radius: 4px;
+    margin-top: 10px;
+    color: #fff;
+    float: right;
+    font-size: 18px;
+    cursor: pointer;
+    opacity: .8;
+}
+.div.nidcardadd,div.truckAdd {
+    padding: 10px;
+    background: #fff;
+    margin: 10px 0px;
+    border-radius: 5px;
+}
+button.submit-button:hover{
+    opacity: 1;
+}
+.update__form h5{
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+.addingContents {
+    display: flex;
+    flex-direction: column;
+}
+.multi-inps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 13px;
+}
+.locationgroup input, .locationgroup select {
+    width: 24%;
+}
+.multi-inps .form-contril select, .multi-inps .form-contril input {
+    width: 95%;
+}
+.truckImgwrap {
+    display: flex;
+    justify-content: space-between;
+}
+.truckshow {
+    height: 100px;
+    width: 50%;
+    background: #4a4e57;
+}
+/* Account settings */
+
 @media screen and (max-width: 900px) and (min-width: 400px) {
     body {
         padding-left: 90px;
     }
-
+    
     .ermenu {
         width: 90px;
     }

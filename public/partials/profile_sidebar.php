@@ -4,6 +4,7 @@
     <header class="avatar">
         <img style="width: 100px" src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" />
         <h2 class="username"><?php echo __($current_user->user_nicename,'easy-rents') ?> <i class="fa fa-check-circle verified" aria-hidden="true"></i></h2>
+        <progress id="profile__ratings" value="32" max="100"> 32% </progress>
         <span class="profile-ratings">100%</span>
     </header>
     <ul>

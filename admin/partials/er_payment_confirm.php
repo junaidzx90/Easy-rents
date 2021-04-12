@@ -56,9 +56,11 @@ wp_localize_script( 'easy-rents-payments', "payment_ajaxurl", array(
                         if ( $jobs->have_posts() ){
                             while ( $jobs->have_posts() ){
                                 $jobs->the_post();
-                                $job_info = get_post_meta( get_post()->ID, 'er_job_info' );
+                                $post__id = get_post()->ID;
+                                $job_info = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $post__id ORDER BY ID ASC");
+
                                     // Only active/ running job
-                                if($job_info[0]['job_status'] == 'ends'){
+                                if($job_info->job_status == 'ends'){
                                     $driverName = get_user_by( 'id', $payment->driver_id )->user_nicename;
                                     $user_number = get_user_meta( $payment->driver_id, 'user_phone_number', true );
 

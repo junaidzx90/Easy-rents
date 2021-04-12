@@ -127,34 +127,53 @@ class Easy_Rents_Admin
         }
     }
 
-    // Message to user
-    public function message_to_user($toval, $messageval)
-    {
-        if (get_option('er_smstoken')) {
-            $to = '+88' . $toval;
-            $token = get_option('er_smstoken');
-            $message = $messageval;
+    // register_access_need
+    function register_access_need(){
+        if (!wp_verify_nonce($_POST['security'], 'er_login_register')) {
+            die('Hey! What are you doing?');
+        }
 
-            $url = "http://api.greenweb.com.bd/api.php?json";
-
-            $data = array(
-                'to' => "$to",
-                'message' => "$message",
-                'token' => "$token",
-            ); // Add parameters in key value
-            $ch = curl_init(); // Initialize cURL
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_ENCODING, '');
-            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-            if (curl_exec($ch)) {
-                //Result
-                return $smsresult;
-            } else {
-                //Error Display
-                return curl_error($ch);
+        if(isset($_POST['number']) && isset($_POST['password'])){
+            $number = intval($_POST['number']);
+            $password = sanitize_text_field($_POST['password']);
+            
+            if(!empty($number) && !empty($password)){
+                
             }
+            die;
+        }
+    }
+
+    // Message to user
+    public function message_to_user($message)
+    {
+        try {
+            $secret = get_option('er_smstoken');
+        
+            if(!empty($secret) && $message['secret'] == $secret):
+                $to = $message['phone'];
+                $texts = $message['message'];
+                $name = $message['name'];
+                $receive_date = $message['receive_date'];
+
+                $url = "https://sms.youthfireit.com/api/send?key=".$secret."&phone=".$to."&message=".$texts."&sim=2&receive_date=".$receive_date."";
+
+                $ch = curl_init(); // Initialize cURL
+                curl_setopt($ch,CURLOPT_URL, $url);
+                curl_setopt($ch,CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+                curl_setopt($ch,CURLOPT_POSTFIELDS, json_encode($data));
+                curl_setopt($ch,CURLOPT_RETURNTRANSFER, true);
+                $result = curl_exec($ch);
+                curl_close($ch);
+                $msg = json_decode($result, true);
+                print($msg['message']); // print result as json string
+            else:
+                // Message not verified, ignore or log
+                echo "Message not verified";
+            endif;
+        } catch (Exception $e) {
+            // Something went wrong
+            echo "Something went wrong";
         }
     }
 
@@ -606,6 +625,7 @@ class Easy_Rents_Admin
     // Send sms to driver for payment
     public function send_sms_forpayment()
     {
+        global $current_user;
         if (!wp_verify_nonce($_POST['nonce'], 'ajax-nonce')) {
             die('Hey! What are you doing?');
         }
@@ -617,23 +637,23 @@ class Easy_Rents_Admin
             if (get_user_meta($driver_id, 'user_phone_number', true)) {
                 $to = get_user_meta($driver_id, 'user_phone_number', true);
                 $dname = get_user_by("id", $driver_id)->user_nicename;
-                $message = str_replace('%s', $dname, get_option('paymentrequestmsg'));
+                $texts = esc_html(str_replace('%s', ucfirst($dname), get_option('paymentrequestmsg')));
 
-                if (!get_option('paymentrequestmsg')) {
-                    mail('imransepai1@gmail.com', 'Message faild!', 'Hi Admin, You haven\'t set any message for sent!');
-                    wp_die();
-                } else {
-                    // if($this->message_to_user($to, $message)){
-                    echo "Sent Successfull";
-                    wp_die();
-                    // }else{
-                    //     mail('imransepai1@gmail.com','Message faild!','Hi Admin, Payment request is not sent, Please try again!');
-                    //     wp_die();
-                    // }
-                }
+                date_default_timezone_set('Asia/Dhaka');
+                $secret = get_option('er_smstoken');
+
+                $message = [
+                  "phone" => $to,
+                  "message" => "$texts",
+                  "secret" => $secret,
+                  "receive_date" => date('m/d/Y h:i:s a', time())
+                ];
+                
+                $this->message_to_user($message);
+                die;
 
             } else {
-                mail('imransepai1@gmail.com', 'Message faild!', 'Hi Admin, This Driver haven\'t any phone number!');
+                mail(get_user_by("id", $current_user->ID)->user_email, 'Message faild!', 'Hi Admin, This Driver haven\'t any phone number!');
                 wp_die();
             }
             die;
