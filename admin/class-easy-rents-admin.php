@@ -127,6 +127,36 @@ class Easy_Rents_Admin
         }
     }
 
+    //er_reset_user_password
+    function er_reset_user_password(){
+        if (!wp_verify_nonce($_POST['security'], 'er_login_register')) {
+            die('Hey! What are you doing?');
+        }
+        if(isset($_POST['number']) && isset($_POST['newpass']) && isset($_POST['cpass'])){
+            $number = intval($_POST['number']);
+            $newpass = sanitize_text_field($_POST['newpass']);
+            $cpass = sanitize_text_field($_POST['cpass']);
+
+            $user = get_user_by('login', $number);
+
+            if($user){
+
+                $user_id = $user->ID;
+                $user_data = wp_set_password($newpass, $user_id);
+                if ( is_wp_error( $user_data ) ) {
+                    // There was an error; possibly this user doesn't exist.
+                    echo wp_json_encode(array('faild' => 'faild'));
+                    die;
+                } else {
+                    // Success!
+                    echo wp_json_encode(array('success' => 'Password is updated!'));
+                    die;
+                }
+
+            }
+            die;
+        }
+    }
 
     // Login processing
     function er_user_login_process(){
@@ -178,16 +208,16 @@ class Easy_Rents_Admin
             $number = intval($_POST['phone']);
             $user = get_user_by('login', $number);
 
-            if(!empty($user)){
-                echo wp_json_encode(array("exist" => "This user is already exist!"));
-            }else{
+            if(!$user){
                 echo wp_json_encode(array("approve" => "Ok"));
+            }else{
+                echo wp_json_encode(array("exist" => "This user is already exist!"));
             }
             die;
         }
     }
 
-    // register_access_need
+    // registeration as a user
     function register_access_need(){
         if (!wp_verify_nonce($_POST['security'], 'er_login_register')) {
             die('Hey! What are you doing?');
@@ -280,6 +310,10 @@ class Easy_Rents_Admin
         add_settings_field('erprofile_settings', 'Settings', array($this, 'er_profile_settings_cb'), 'er-settings', 'er_settings_section');
         register_setting('er_settings_section', 'erprofile_settings');
 
+        // Profile settings
+        add_settings_field('access_page', 'Access Form', array($this, 'er_access_page_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'access_page');
+
         // Set commission %
         add_settings_field('job_commission', 'Commissions Percents', array($this, 'er_job_commission_cb'), 'er-settings', 'er_settings_section');
         register_setting('er_settings_section', 'job_commission');
@@ -299,6 +333,10 @@ class Easy_Rents_Admin
         // Payment request message
         add_settings_field('paymentrequestmsg', 'Payment Request Message', array($this, 'er_paymentrequestmsg_cb'), 'er-settings', 'er_settings_section');
         register_setting('er_settings_section', 'paymentrequestmsg');
+
+        // OTP Configure
+        add_settings_field('firebaseconfig', 'Firebase Config', array($this, 'er_firebaseconfig_cb'), 'er-settings', 'er_settings_section');
+        register_setting('er_settings_section', 'firebaseconfig');
     }
 
     //Disabled wp backend access
@@ -329,6 +367,23 @@ class Easy_Rents_Admin
         } else {
             return admin_url();
         }
+    }
+
+    // Logout redirects
+    function er_logout_redirects($user_id){
+        // Get the user object.
+        $user = get_userdata( $user_id );
+        // Get all the user roles as an array.
+        $user_roles = $user->roles;
+        
+        if (in_array('administrator', $user->roles)) {
+            // redirect them to the default place
+            wp_redirect( home_url('/wp-login.php') );
+        }else{
+            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
+        }
+        
+        exit();
     }
 
     // Add new trip page calback
@@ -400,6 +455,22 @@ class Easy_Rents_Admin
     }
 
     // Profile settings
+    public function er_access_page_cb()
+    {
+        global $wp_query;
+        $args = array(
+            'post_type' => 'page',
+            'post_status' => 'publish',
+            'name' => 'access_page',
+            'selected' => get_option('access_page'),
+            'show_option_none' => '',
+            'show_option_no_change' => 'Select Page',
+            'option_none_value' => '',
+        );
+        wp_dropdown_pages($args);
+        echo '<br>';
+    }
+    // Profile settings
     public function er_profile_settings_cb()
     {
         global $wp_query;
@@ -440,7 +511,12 @@ class Easy_Rents_Admin
     // er_paymentrequestmsg_cb
     public function er_paymentrequestmsg_cb()
     {
-        echo '<textarea name="paymentrequestmsg" type="text" placeholder="Payment Request Message" cols="50" rows="2">' . get_option('paymentrequestmsg') . '</textarea>';
+        echo '<textarea name="paymentrequestmsg" type="text" placeholder="Payment Request Message" cols="50" rows="2">' . get_option('paymentrequestmsg') . '</textarea><br><h3>OTP <hr></h3>';
+    }
+    // er_firebaseconfig_cb
+    public function er_firebaseconfig_cb()
+    {
+        echo '<textarea name="firebaseconfig" type="text" placeholder="Firebase SDK snippet" cols="50" rows="10">' . get_option('firebaseconfig') . '</textarea>';
     }
 
     //er_settings_cb
@@ -865,7 +941,7 @@ class Easy_Rents_Admin
 					</td>
 				</tr>
 				<?php
-$i++;
+                $i++;
             }
         }
     }

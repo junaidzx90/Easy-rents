@@ -164,6 +164,8 @@ class Easy_Rents {
 		$this->loader->add_action( 'init', $plugin_admin, 'disable_backend_access' );
 		// Redirect after login
 		$this->loader->add_action( 'login_redirect', $plugin_admin, 'er_login_redirects', 10, 3 );
+		// Logout redirects
+		$this->loader->add_action('wp_logout', $plugin_admin, 'er_logout_redirects', 10, 3);
 		
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'easy_rents_setup' );
 		$this->loader->add_action( 'admin_menu', $plugin_admin, 'er_page_settings_register' );
@@ -210,6 +212,9 @@ class Easy_Rents {
 		// er_user_login_process
 		$this->loader->add_action("wp_ajax_er_user_login_process", $plugin_admin, "er_user_login_process");
 		$this->loader->add_action("wp_ajax_nopriv_er_user_login_process", $plugin_admin, "er_user_login_process");
+		// er_reset_user_password
+		$this->loader->add_action("wp_ajax_er_reset_user_password", $plugin_admin, "er_reset_user_password");
+		$this->loader->add_action("wp_ajax_nopriv_er_reset_user_password", $plugin_admin, "er_reset_user_password");
 	}
 
 	/**

@@ -303,7 +303,7 @@ class Easy_Rents_Public
     public function job_post_delete($post_id)
     {
         global $wpdb, $wp_query;
-        delete_post_meta($post_id, 'er_job_info');
+        $wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_trips WHERE post_id = $post_id");
         $wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE post_id = $post_id");
     }
 
@@ -585,7 +585,8 @@ class Easy_Rents_Public
         if (!is_user_logged_in()) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_login_register.php';
         } else {
-            echo 'Please Login to see';
+            wp_safe_redirect(home_url('/' . Easy_Rents_Public::get_post_slug(get_option('profile_page', true))));
+            exit();
         }
     }
 
