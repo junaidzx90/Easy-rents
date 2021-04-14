@@ -3,8 +3,17 @@
     <div class="smartphone-ermenu-trigger"></div>
     <header class="avatar">
         <img style="width: 100px" src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" />
-        <h2 class="username"><?php echo __($current_user->user_nicename,'easy-rents') ?> <i class="fa fa-check-circle verified" aria-hidden="true"></i></h2>
-        <progress id="profile__ratings" value="32" max="100"> 32% </progress>
+        <h2 class="username"><?php echo __($current_user->display_name,'easy-rents'); ?>
+            <?php
+                $userStatus = get_user_by( 'id', $current_user->ID );
+                if($userStatus->user_status > 0){
+                    echo '<i class="fa fa-check-circle verified" aria-hidden="true"></i>';
+                }else{
+                    echo '<i class="fas fa-times-circle unverified"></i>';
+                }
+            ?>
+        </h2>
+        <progress id="profile__ratings" value="100" max="100"></progress>
         <span class="profile-ratings">100%</span>
     </header>
     <ul>
@@ -37,7 +46,7 @@
                 <a href="<?php echo home_url(Easy_Rents_Public::get_post_slug(get_option( 'profile_payment', true ))) ?>"><span class=" <?php echo ($page == 'payment')?'eractivecolor':'' ?>">Payments</span>
                 <?php
                 global $wp_query,$current_user,$wpdb;
-                $paymentstatus = $wpdb->query("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 3 AND payment = 0");
+                $paymentstatus = $wpdb->query("SELECT * FROM {$wpdb->prefix}easy_rents_applications WHERE driver_id = {$current_user->ID} AND status = 3 AND payment < 1");
                 if($paymentstatus){
                     echo '<span class="notification">'.intval($paymentstatus).'</span>';
                 }

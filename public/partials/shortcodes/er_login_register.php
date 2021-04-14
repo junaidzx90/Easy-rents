@@ -23,58 +23,29 @@ $firebase = <<<EOT
     firebase.initializeApp(firebaseConfig);
   EOT;
 ?>
-<?php
-function log_the_user_in() {
-    if ( ! empty( $_POST['user_login'] ) && ! empty( $_POST['user_password'] ) ) {
- 
-        if ( is_numeric( $_POST['user_login'] ) ) {
-            // check user by phone number
-            global $wpdb;
-            $tbl_usermeta = $wpdb->prefix.'usermeta';
-            $user_id = $wpdb->get_var( $wpdb->prepare( "SELECT user_id FROM $tbl_usermeta WHERE meta_key=%s AND meta_value=%s", 'user_phone', $_POST['user_login'] ) );
-
-            $user = get_user_by( 'ID', $user_id );
-        } else {
-            return new WP_Error('wrong_credentials', 'Invalid credentials.');
-        }
-
-        if ( ! $user ) {
-            return new WP_Error('wrong_credentials', 'Invalid credentials.');
-        }
-
-        // check the user's login with their password.
-        if ( ! wp_check_password( $_POST['user_password'], $user->user_pass, $user->ID ) ) {
-            return new WP_Error('wrong_credentials', 'Invalid credentials.');
-        }
-
-        wp_clear_auth_cookie();
-        wp_set_current_user($user->ID);
-        wp_set_auth_cookie($user->ID);
-
-        wp_redirect(get_bloginfo('url'));
-        exit;
-    } else {
-        return new WP_Error('empty', 'Both fields are required.');
-    }
-}
-?>
 
 <div class="signupform" id="signupform">
     
     <div class="form">
         <ul class="tab-group">
-            <li class="tab active"><a href="#login">Log In</a></li>
-            <li class="tab"><a href="#signup">Sign Up</a></li>
+            <li class="tab active"><a href="#login"><?php if(isset($_GET['forgot']) && $_GET['forgot'] == 'true') echo __('Reset','easy-rents'); else echo __('Log In','easy-rents')?></a></li>
+            <?php 
+            if(isset($_GET['forgot']) && $_GET['forgot'] == 'true'){
+                echo '<li class="tab"><a onclick=history.back();>Login</a></li>';
+            }else{
+                echo '<li class="tab"><a href="#signup">Sign Up</a></li>';
+            }
+            ?>
         </ul>
 
         <div class="tab-content">
-            
             <div id="login">
                 <h3 class="logintitle">
                     <?php if(isset($_GET['forgot']) && $_GET['forgot'] == 'true') echo __('Reset Password','easy-rents'); else echo __('Welcome Back!','easy-rents')?></h3>
                 <?php
                     if(isset($_GET['forgot']) && $_GET['forgot'] == 'true'){
                         ?>
+                            
                             <form action="/" method="post" class="forgot-form">
                                 <div class="field-wrap">
                                     <label>
@@ -105,7 +76,7 @@ function log_the_user_in() {
                                     <label>
                                         Password<span class="req">*</span>
                                     </label>
-                                    <input class="login-pass" type="password" required autocomplete="off" />
+                                    <input class="login-pass pass" type="password" required autocomplete="off" />
                                     <span class="showpass">👁</span>
                                 </div>
 
@@ -120,9 +91,22 @@ function log_the_user_in() {
             </div>
 
             <div id="signup">
+           
                 <h3 class="signuptitle">Sign Up for Free</h3>
 
                 <form action="/" method="post" class="signup-form">
+
+                    <div class="field-wrap radiobtns">
+                        <p>
+                            <input type="radio" id="test1" name="radio-group" value="customer" checked>
+                            <label for="test1">Customer</label>
+                        </p>
+                        <p>
+                            <input type="radio" id="test2" name="radio-group" value="driver">
+                            <label for="test2">Driver</label>
+                        </p>
+                    </div>
+
                     <div class="field-wrap">
                         <label>
                             Phone Number<span class="req">*</span>
@@ -134,7 +118,7 @@ function log_the_user_in() {
                         <label>
                             Set A Password<span class="req">*</span>
                         </label>
-                        <input id="number" class="signup-pass" type="password" required autocomplete="off" />
+                        <input class="signup-pass pass" type="password" required autocomplete="off" />
                         <span class="showpass">👁</span>
                     </div>
                     

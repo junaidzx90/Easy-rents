@@ -30,11 +30,11 @@ $page = 'settings';
                     </div>
                     <div class="form-contril">
                         <label for="uphone">User Phone</label>
-                        <input id="uphone" type="text" value="" placeholder="+880">
+                        <input id="uphone" type="text" value="" placeholder="+880" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
                     </div>
                     <div class="form-contril">
                         <label for="ubkash">bKash Number</label>
-                        <input id="ubkash" type="number" value="" placeholder="Your personal bkash number">
+                        <input id="ubkash" type="text" value="" placeholder="Your personal bkash number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
                     </div>
                     <div class="div nidcardadd">
                         <h5>Add NID Card</h5>
@@ -77,7 +77,7 @@ $page = 'settings';
                         <div class="addingContents">
                             <div class="form-row multi-inps">
                                 <div class="form-contril">
-                                    <label for="carnumber">Car Number</label>
+                                    <label for="carnumber">Number</label>
                                     <input id="carnumber" type="text" value="" placeholder="Car Number">
                                 </div>
                                 <div class="form-contril">

@@ -501,7 +501,9 @@ button.submit-button:hover{
     background: #4a4e57;
 }
 /* Account settings */
-
+.unverified{
+    color: red !important;
+}
 @media screen and (max-width: 900px) and (min-width: 400px) {
     body {
         padding-left: 90px;

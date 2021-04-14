@@ -201,9 +201,15 @@ class Easy_Rents {
 		$this->loader->add_action("wp_ajax_delete_easy_rents_location", $plugin_admin, "delete_easy_rents_location");
 		$this->loader->add_action("wp_ajax_nopriv_delete_easy_rents_location", $plugin_admin, "delete_easy_rents_location");
 
+		// check_register_user_existing
+		$this->loader->add_action("wp_ajax_check_register_user_existing", $plugin_admin, "check_register_user_existing");
+		$this->loader->add_action("wp_ajax_nopriv_check_register_user_existing", $plugin_admin, "check_register_user_existing");
 		// register access
 		$this->loader->add_action("wp_ajax_register_access_need", $plugin_admin, "register_access_need");
 		$this->loader->add_action("wp_ajax_nopriv_register_access_need", $plugin_admin, "register_access_need");
+		// er_user_login_process
+		$this->loader->add_action("wp_ajax_er_user_login_process", $plugin_admin, "er_user_login_process");
+		$this->loader->add_action("wp_ajax_nopriv_er_user_login_process", $plugin_admin, "er_user_login_process");
 	}
 
 	/**

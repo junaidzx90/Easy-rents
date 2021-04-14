@@ -102,10 +102,10 @@ class Easy_Rents_Admin
     {
         if (is_admin()) {
             global $wpdb, $wp_query;
-            $billpay = $wpdb->query("SELECT COUNT(payment) FROM {$wpdb->prefix}easy_rents_applications WHERE payment = 1");
+            $billpay = $wpdb->query("SELECT COUNT(payment) FROM {$wpdb->prefix}easy_rents_applications WHERE status = 3 AND payment < 1");
             $bubble = sprintf(
                 ' <span class="paymentstatus"><span class="count">%d</span></span>',
-                42//bubble contents
+                $billpay//bubble contents
             );
 
             add_menu_page( //Main menu register
@@ -127,18 +127,96 @@ class Easy_Rents_Admin
         }
     }
 
+
+    // Login processing
+    function er_user_login_process(){
+        if (!wp_verify_nonce($_POST['security'], 'er_login_register')) {
+            die('Hey! What are you doing?');
+        }
+        if(isset($_POST['phone']) && isset($_POST['pass'])){
+            $number = intval($_POST['phone']);
+            $password = sanitize_text_field($_POST['pass']);
+
+            if ( is_numeric( $number ) ) {
+                $user = get_user_by( 'login', $number );
+            } else {
+                echo wp_json_encode(array("error" => 'Invalid credentials.'));
+                die;
+            }
+    
+            if ( ! $user ) {
+                echo wp_json_encode(array("error" => 'Invalid credentials.'));
+                die;
+            }
+    
+            // check the user's login with their password.
+            if ( ! wp_check_password( $password, $user->user_pass, $user->ID ) ) {
+                echo wp_json_encode(array("error" => 'Invalid credentials.'));
+                die;
+            }
+            
+            wp_clear_auth_cookie();
+            wp_set_current_user($user->ID);
+            wp_set_auth_cookie($user->ID);
+    
+            if(current_user_can('administrator')){
+                $url = home_url('/wp-admin');
+            }else{
+                $url = home_url('/' . Easy_Rents_Public::get_post_slug(get_option('profile_page', true)));
+            }
+            echo wp_json_encode(array("success" => esc_url($url) ));
+            die;
+        }
+    }
+
+    // check_register_user_existing
+    function check_register_user_existing(){
+        if (!wp_verify_nonce($_POST['security'], 'er_login_register')) {
+            die('Hey! What are you doing?');
+        }
+        if(isset($_POST['phone'])){
+            $number = intval($_POST['phone']);
+            $user = get_user_by('login', $number);
+
+            if(!empty($user)){
+                echo wp_json_encode(array("exist" => "This user is already exist!"));
+            }else{
+                echo wp_json_encode(array("approve" => "Ok"));
+            }
+            die;
+        }
+    }
+
     // register_access_need
     function register_access_need(){
         if (!wp_verify_nonce($_POST['security'], 'er_login_register')) {
             die('Hey! What are you doing?');
         }
 
-        if(isset($_POST['number']) && isset($_POST['password'])){
-            $number = intval($_POST['number']);
+        if(isset($_POST['phone']) && isset($_POST['password']) && isset($_POST['accountType'])){
+            $number = intval($_POST['phone']);
             $password = sanitize_text_field($_POST['password']);
+            $accountType = sanitize_text_field($_POST['accountType']);
+            $role = "";
+            if($accountType == 'driver'){
+                $role = 'driver';
+            }
+            if($accountType == 'customer'){
+                $role = 'customer';
+            }
             
-            if(!empty($number) && !empty($password)){
+            if(!empty($number) && !empty($password) && !empty($role)){
+                $userdata = array(
+                    'user_login'    =>  $number,
+                    'display_name'  => 'Unknown',
+                    'user_pass'     =>  $password,
+                    'role'          => $role,
+                    'show_admin_bar_front' => false
+                ); 
                 
+                $user_id = wp_insert_user( $userdata );
+                echo $user_id;
+                die;
             }
             die;
         }
@@ -512,7 +590,7 @@ class Easy_Rents_Admin
                 if (!$driver_id) {
                     print_r('N/A');
                 }else{
-                    $drivername = get_user_by('id', $driver_id)->user_nicename;
+                    $drivername = get_user_by('id', $driver_id)->display_name;
                     echo '<span style="text-transform:capitalize;" class="drivername">' . $drivername . '</sapan>';
 
                     if ($job_info->net_price > 0) {
@@ -636,7 +714,7 @@ class Easy_Rents_Admin
 
             if (get_user_meta($driver_id, 'user_phone_number', true)) {
                 $to = get_user_meta($driver_id, 'user_phone_number', true);
-                $dname = get_user_by("id", $driver_id)->user_nicename;
+                $dname = get_user_by("id", $driver_id)->display_name;
                 $texts = esc_html(str_replace('%s', ucfirst($dname), get_option('paymentrequestmsg')));
 
                 date_default_timezone_set('Asia/Dhaka');
