@@ -39,6 +39,16 @@ define( 'EASY_RENTS_VERSION', '1.0.0' );
 define( 'ER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ER_URL', plugin_dir_url( __FILE__ ) );
 
+// include update manager
+update_manager();
+function update_manager(){
+	if(file_exists(plugin_dir_path( __FILE__ ) . 'includes/update_manager/plugin-update-checker.php')){
+		require_once plugin_dir_path( __FILE__ ) . 'includes/update_manager/plugin-update-checker.php';
+		$update = Puc_v4p10_Factory::buildUpdateChecker( 'https://updates.easeare.com/plugins/easy-rents/controller.json', __FILE__ );
+	}
+	return $update;
+}
+
 /**
  * The code that runs during plugin activation.
  * This action is documented in includes/class-easy-rents-activator.php
