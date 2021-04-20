@@ -77,6 +77,8 @@ class Easy_Rents_Public
         add_shortcode('er_profile_settings', array($this, 'er_profile_settings'));
         // er_login_register
         add_shortcode('er_access_form', array($this, 'er_login_register'));
+        // addjob_form
+        add_shortcode('addjob_form', array($this, 'er_addjob_form'));
 
     }
 
@@ -542,6 +544,10 @@ class Easy_Rents_Public
     // Profile page
     public function er_profile_page($atts)
     {
+        if(current_user_can( 'administrator' )){
+            print_r("Sorry as a admin you can't see this page!");
+            die;
+        }
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_dashboard.php';
         } else {
@@ -552,6 +558,10 @@ class Easy_Rents_Public
     // er_profile_trips
     public function er_profile_trips($atts)
     {
+        if(current_user_can( 'administrator' )){
+            print_r("Sorry as a admin you can't see this page!");
+            die;
+        }
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_mytrips.php';
         } else {
@@ -562,6 +572,10 @@ class Easy_Rents_Public
     // er_payment_page
     public function er_payment_page($atts)
     {
+        if(current_user_can( 'administrator' )){
+            print_r("Sorry as a admin you can't see this page!");
+            die;
+        }
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_payment.php';
         } else {
@@ -572,6 +586,10 @@ class Easy_Rents_Public
     // er_profile_settings
     public function er_profile_settings($atts)
     {
+        if(current_user_can( 'administrator' )){
+            print_r("Sorry as a admin you can't see this page!");
+            die;
+        }
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_profile_settings.php';
         } else {
@@ -585,8 +603,19 @@ class Easy_Rents_Public
         if (!is_user_logged_in()) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_login_register.php';
         } else {
+            if(current_user_can( 'administrator' )){
+                print_r("Sorry as a admin you can't see this page!");
+                die;
+            }
             wp_safe_redirect(home_url('/' . Easy_Rents_Public::get_post_slug(get_option('profile_page', true))));
             exit();
+        }
+    }
+    // er_register / login page
+    public function er_addjob_form($atts)
+    {
+        if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
+            require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_add_job_shorcode.php';
         }
     }
 

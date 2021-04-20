@@ -15,6 +15,15 @@ div#er_jobs_section {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    padding: 50px 0px;
+}
+.er_sidebar {
+    width: 30%;
+    display: flex;
+    justify-content: flex-start;
+}
+.er_sidebar .widget-area, .er_sidebar aside{
+    width: 100% !important;
 }
 #trips_section{
     margin-top: 50px;
@@ -22,11 +31,10 @@ div#er_jobs_section {
 .er_jobs_content {
     width: 100%;
 }
-
 .er_jobItem {
     position: relative;
     margin: 5px;
-    width: 31.9%;
+    width: 25%;
     display: inline-block;
     background: #fff;
     padding: 10px;
@@ -72,11 +80,10 @@ span.jobapply a {
 
 .erjobitemimg {
     width: 100%;
-    height: fit-content;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    overflow: hidden;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
 }
 
 .erjobitemimg img {
@@ -100,12 +107,9 @@ main#main {
     background: #b1eac5;
     color: green;
 }
-.single_page_job {
-    width: 65%;
-}
 
 .single_page_job {
-    width: 65%;
+    width: 70%;
     margin-top: 0px !important;
     border-top: none !important;
     border-style: none !important;
@@ -114,7 +118,10 @@ main#main {
 .single_page_job h1 {
     margin-top: 0px;
 }
-
+.locations ul {
+    padding-left: 25px;
+    margin-bottom: 12px;
+}
 .locations ul,
 h4 {
     list-style: none;
@@ -136,11 +143,11 @@ h4 {
     max-width: 33%;
     overflow: hidden;
 }
-
 .er_jobimg {
     margin-bottom: 10px;
+    height: 150px;
+    overflow: hidden;
 }
-
 .jobinfoitem h4 {
     margin: 0px !important;
 }
@@ -178,7 +185,6 @@ button.jobapply,
     justify-content: center;
     margin: 30px 0px;
 }
-
 a.page-numbers{
     border: 1px solid var(--ermain);
     min-width: 20px;

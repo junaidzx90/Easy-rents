@@ -46,10 +46,10 @@
                                 <div class="er_jobItem">
                                     <span class="erjobstatus"><?php 
                                     if(!empty($myapplication)){
-                                        echo __('অপেক্ষমান','easy-rents');
+                                        _e('অপেক্ষমান','easy-rents');
                                     }
                                     if(get_post()->post_author == $current_user->ID){
-                                        echo __('আমার ট্রিপ','easy-rents');
+                                        _e('আমার ট্রিপ','easy-rents');
                                     } 
                                     ?></span>
                                     <a href="<?php echo the_permalink(  ); ?>">
@@ -60,12 +60,7 @@
                                             if ( ! empty( $product_terms ) ) {
                                                 if ( ! is_wp_error( $product_terms ) ) {
                                                     foreach( $product_terms as $term ) {
-                                                        echo '<div class="erjobitemimg">';
-                                                        if(!empty(get_term_meta( $term->term_id, 'term_image', true )) || get_term_meta( $term->term_id, 'term_image', true ) != 0){
-                                                            echo '<img width="150" src="'.get_term_meta( $term->term_id, 'term_image', true ).'" alt="'.esc_url( get_term_link( $term->slug, 'truckstype' ) ).'">';
-                                                        }else{
-                                                            echo '<img width="150" src="'.ER_PATH.'public/images/truck.PNG" alt="">';
-                                                        }
+                                                        echo '<div class="erjobitemimg" style="background-image: url('.((!empty(get_term_meta( $term->term_id, 'term_image', true )) || get_term_meta( $term->term_id, 'term_image', true ) != 0) ? get_term_meta( $term->term_id, 'term_image', true ) : '').')">';
                                                         echo '</div>';
                                                     }
                                                 }
@@ -79,25 +74,27 @@
                                             <div class="_jobitem">
                                                 <span class="er_location">
                                                     <i class="fas fa-arrow-alt-circle-up"></i> 
-                                                    <?php echo __(substr($tripinfo->location_1,0,29),'easy-rents'); ?>
+                                                    <?php $arr = explode(',', $tripinfo->location_1);
+                                                    _e( $arr[0].','.$arr[1],'easy-rents'); ?>
                                                 </span>
                                             </div>
                                             
                                             <div class="_jobitem">
                                                 <span class="er_location">
-                                                    <i class="fas fa-arrow-alt-circle-down"></i> 
-                                                    <?php echo __(substr($tripinfo->unload_loc,0,29),'easy-rents'); ?>
+                                                    <i class="fas fa-arrow-alt-circle-down"></i>
+                                                    <?php $arr = explode(',', $tripinfo->unload_loc);
+                                                    _e( $arr[0].','.$arr[1],'easy-rents'); ?>
                                                 </span>
                                             </div>
                                             <div class="_jobitem">
                                                 <span class="er_time">
                                                 <i class="far fa-clock"></i>
-                                                <?php echo __($tripinfo->load_time,'easy-rents'); ?>
+                                                <?php _e($tripinfo->load_time,'easy-rents'); ?>
                                                 </span>
                                             </div>
                                             <div class="_jobitem">
                                                 <span class="er_weight">
-                                                <i class="fa fa-balance-scale" aria-hidden="true"></i> <?php echo __($tripinfo->weight,'easy-rents'); ?> টন
+                                                <i class="fa fa-balance-scale" aria-hidden="true"></i> <?php _e($tripinfo->weight,'easy-rents'); ?> টন
                                                 </span>
                                             </div>
                                             <div class="_jobitem">
