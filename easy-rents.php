@@ -9,14 +9,14 @@ ob_start();
  * that starts the plugin.
  *
  * @link              example.com
- * @since             1.0.0
+ * @since             0.1
  * @package           Easy_Rents
  *
  * @wordpress-plugin
  * Plugin Name:       Easy Rents
  * Plugin URI:        example.com/easy-rents
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           1.0.0
+ * Version:           0.1
  * Author:            Junayed
  * Author URI:        example.com
  * License:           GPL-2.0+
@@ -32,10 +32,10 @@ if ( ! defined( 'WPINC' ) ) {
 
 /**
  * Currently plugin version.
- * Start at version 1.0.0 and use SemVer - https://semver.org
+ * Start at version 0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'EASY_RENTS_VERSION', '1.0.0' );
+define( 'EASY_RENTS_VERSION', '0.1' );
 define( 'ER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ER_URL', plugin_dir_url( __FILE__ ) );
 
@@ -83,7 +83,7 @@ require plugin_dir_path( __FILE__ ) . 'includes/class-easy-rents.php';
  * then kicking off the plugin from this point in the file does
  * not affect the page life cycle.
  *
- * @since    1.0.0
+ * @since    0.1
  */
 function run_easy_rents() {
 
