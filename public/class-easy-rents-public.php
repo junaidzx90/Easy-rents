@@ -137,7 +137,7 @@ class Easy_Rents_Public
 
     }
 
-    public function er_prelocation_input($id,$placeholder, $classes = ''){
+    static public function er_prelocation_input($id,$placeholder, $classes = ''){
     ?>
 		<div class="input-group locationgroup">
 			<select style="height:50px" class="erdivision <?php echo $classes; ?>">
@@ -289,7 +289,7 @@ class Easy_Rents_Public
     /**
      * Get post slug by id
      */
-    public function get_post_slug($post_id)
+    static public function get_post_slug($post_id)
     {
         global $wpdb;
         if ($slug = $wpdb->get_var("SELECT post_name FROM {$wpdb->prefix}posts WHERE ID = $post_id")) {
@@ -527,7 +527,7 @@ class Easy_Rents_Public
     /**
      * Webclass multiple role check
      */
-    public function er_role_check($roles = array())
+    static public function er_role_check($roles = array())
     {
         global $current_user;
         $allowed_user = $roles;
@@ -545,7 +545,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_dashboard.php';
         } else {
-            echo 'Please Login to see';
+            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -555,7 +555,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_mytrips.php';
         } else {
-            echo 'Please Login to see';
+            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -565,7 +565,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_payment.php';
         } else {
-            echo 'Please Login to see';
+            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -575,7 +575,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_profile_settings.php';
         } else {
-            echo 'Please Login to see';
+            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
         }
     }
 

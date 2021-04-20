@@ -1,5 +1,4 @@
 <?php
-ob_start();
 wp_enqueue_style( 'er_login_register' );
 wp_enqueue_script( 'er_login_register' );
 wp_localize_script( "er_login_register", "er_login_register", array(

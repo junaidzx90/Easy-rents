@@ -58,7 +58,7 @@ class Easy_Rents_Admin
         add_filter('manage_jobs_posts_columns', array($this, 'wp_list_table_columnname'));
 
         // Set custom column in job table
-        if ($_GET['post_type'] == 'jobs') {
+        if (isset($_GET['post_type']) && $_GET['post_type'] == 'jobs') {
             $this->jobs_list_table_css();
         }
     }
@@ -666,8 +666,13 @@ class Easy_Rents_Admin
                 if (!$driver_id) {
                     print_r('N/A');
                 }else{
-                    $drivername = get_user_by('id', $driver_id)->display_name;
-                    echo '<span style="text-transform:capitalize;" class="drivername">' . $drivername . '</sapan>';
+
+                    if(get_user_by('id', $driver_id)){
+                        $drivername = get_user_by('id', $driver_id)->display_name;
+
+                        echo '<span style="text-transform:capitalize;" class="drivername">' . $drivername . '</sapan>';
+                    }
+                    
 
                     if ($job_info->net_price > 0) {
                         $paybill = $job_info->price - $job_info->net_price;
@@ -700,17 +705,19 @@ class Easy_Rents_Admin
             
             $job_info = $wpdb->get_row("SELECT tr.*,ap.* FROM {$wpdb->prefix}easy_rents_trips tr, {$wpdb->prefix}easy_rents_applications ap WHERE tr.post_id = ap.post_id AND tr.post_id = {$post_ID} ORDER BY ap.ID ASC");
 
-            if ( $job_info->job_status == 'running' && $job_info->status == 0) {
-                echo '<span title="New" class="status_circle" style="background-color:#cccccc"></span>';
-            }
-            if ( $job_info->job_status == 'running' && $job_info->status == 1) {
-                echo '<span title="Pending" class="status_circle" style="background-color:#0280d2"></span>';
-            }
-            if ( $job_info->job_status == 'inprogress' && $job_info->status >= 2) {
-                echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
-            }
-            if ( $job_info->job_status == 'ends' && $job_info->status == 3) {
-                echo '<span title="End" class="status_circle" style="background-color:gray"></span>';
+            if($job_info){
+                if ( $job_info->job_status == 'running' && $job_info->status == 0) {
+                    echo '<span title="New" class="status_circle" style="background-color:#cccccc"></span>';
+                }
+                if ( $job_info->job_status == 'running' && $job_info->status == 1) {
+                    echo '<span title="Pending" class="status_circle" style="background-color:#0280d2"></span>';
+                }
+                if ( $job_info->job_status == 'inprogress' && $job_info->status >= 2) {
+                    echo '<span title="Inprogress" class="status_circle" style="background-color:#13d202"></span>';
+                }
+                if ( $job_info->job_status == 'ends' && $job_info->status == 3) {
+                    echo '<span title="End" class="status_circle" style="background-color:gray"></span>';
+                }
             }
         }
     }

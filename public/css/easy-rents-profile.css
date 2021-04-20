@@ -5,7 +5,13 @@ body {
     color: #fff;
     padding-left: 240px;
 }
-
+.content-area{
+    padding-right: 0px;
+}
+div#content-wrap {
+    width: 100%;
+    margin: 0;
+}
 #boxed-wrapper {
     overflow: unset;
 }

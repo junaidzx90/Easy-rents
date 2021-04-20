@@ -45,7 +45,7 @@ wp_localize_script( 'easy-rents-locations', "locations_ajaxurl", array(
             <form action="" method="post">
                 <input type="submit" name="searchfilter" value="☭">
                 &nbsp;
-                <input type="text" class="filterItems" name="filterItems" placeholder="Select division" value="<?php echo $_POST['filterItems']; ?>">
+                <input type="text" class="filterItems" name="filterItems" placeholder="Select division" value="<?php echo isset($_POST['filterItems'])? $_POST['filterItems']:''; ?>">
         </form>
     </div>
 </div>

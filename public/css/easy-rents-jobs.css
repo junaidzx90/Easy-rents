@@ -16,19 +16,11 @@ div#er_jobs_section {
     flex-direction: row;
     justify-content: space-between;
 }
-
-.er_sidebar {
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    min-width: 280px;
-    padding: 20px 5px;
-    background-color: #fff;
-    height: fit-content;
+#trips_section{
+    margin-top: 50px;
 }
-
 .er_jobs_content {
     width: 100%;
-    margin-right: 20px;
 }
 
 .er_jobItem {
@@ -184,11 +176,41 @@ button.jobapply,
 .pagination {
     display: flex;
     justify-content: center;
+    margin: 30px 0px;
 }
+
+a.page-numbers{
+    border: 1px solid var(--ermain);
+    min-width: 20px;
+    display: inline-block;
+    text-align: center;
+    line-height: 20px;
+    color: var(--ermain);
+    border-radius: 3px;
+    margin-right: 3px;
+    padding: 3px 10px;
+}
+a.page-numbers:hover{
+    background-color: var(--ermain);
+    transition: .3s;
+    color: #fff;
+}
+span.page-numbers.current {
+    border: 1px solid var(--ermain);
+    background: var(--ermain);
+    min-width: 20px;
+    display: inline-block;
+    text-align: center;
+    line-height: 20px;
+    color: #fff;
+    border-radius: 3px;
+    margin-right: 3px;
+    padding: 3px 10px;
+}
+
 .bidbtn {
     margin-top: 15px;
 }
-
 .bidbtn:hover,
 button.jobapply:hover {
     opacity: 1;
