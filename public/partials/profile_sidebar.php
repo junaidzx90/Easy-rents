@@ -1,3 +1,4 @@
+<?php $public_ins = new Easy_Rents_Public(); ?>
 <?php global $current_user; ?>
 <nav class="ermenu" tabindex="0">
     <div class="smartphone-ermenu-trigger"></div>
@@ -5,16 +6,25 @@
         <img style="width: 100px" src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" />
         <h2 class="username"><?php echo __($current_user->display_name,'easy-rents'); ?>
             <?php
+            if (is_user_logged_in() && $public_ins->er_role_check(['driver'])){
                 $userStatus = get_user_by( 'id', $current_user->ID );
                 if($userStatus->user_status > 0){
                     echo '<i class="fa fa-check-circle verified" aria-hidden="true"></i>';
                 }else{
                     echo '<i class="fas fa-times-circle unverified"></i>';
                 }
+            }
             ?>
         </h2>
-        <progress id="profile__ratings" value="100" max="100"></progress>
-        <span class="profile-ratings">100%</span>
+        <?php
+        if (is_user_logged_in() && $public_ins->er_role_check(['driver'])){
+            ?>
+                <progress id="profile__ratings" value="100" max="100"></progress>
+                <span class="profile-ratings">100%</span>
+            <?php
+        }
+        ?>
+        
     </header>
     <ul>
         <li tabindex="0" class="listitem <?php echo ($page == 'dashboard')?'eractive':'' ?>">

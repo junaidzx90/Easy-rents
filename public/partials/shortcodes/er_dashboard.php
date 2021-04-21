@@ -16,6 +16,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
     'security' => wp_create_nonce( 'er_profile' )
 ));
 ?>
+<?php $public_ins = new Easy_Rents_Public(); ?>
 <?php global $wpdb,$current_user,$wp_query; ?>
 <section>
     <div id="er_profileMain">
@@ -30,6 +31,14 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
 
                 <a class="logout" href="<?php echo wp_logout_url(); ?>"><i class="fas fa-sign-out-alt"></i> Log Out</a>
             </div>
+            <?php
+            if (is_user_logged_in() && $public_ins->er_role_check(['driver'])){
+                $userStatus = get_user_by( 'id', $current_user->ID );
+                if($userStatus->user_status == 0){
+                    echo '<div class="warning">Hi '.$userStatus->display_name.', Your account needs to active for work here.</div>';
+                }
+            }
+            ?>
 
             <div id="pending" class="tabelem">
                 <?php

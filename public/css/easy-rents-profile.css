@@ -406,8 +406,25 @@ span.backbtn {
 .update__form {
     padding: 22px;
     color: rgb(51, 51, 51);
-    width: 60%;
+    min-width: 60%;
 }
+.noticeboard {
+    width: 35%;
+    float: right;
+    padding: 20px;
+    background: #fff;
+    color: #757575;
+    margin-top: 48px;
+    height: fit-content;
+    text-align: center;
+    font-style: italic;
+    font-size: 18px;
+    border-radius: 5px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 48px;
+}
+
 .filebtn {
     display: flex;
     justify-content: space-between;
@@ -431,6 +448,13 @@ span.backbtn {
     border-color: #ababab;
     background: #ffffff;
 }
+
+.nidphoto {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+
 .nidphoto label,.truckImg label{
     position: relative;
     z-index: 0;
@@ -502,15 +526,47 @@ button.submit-button:hover{
     justify-content: space-between;
 }
 .truckshow {
-    height: 100px;
+    height: 110px;
     width: 50%;
     background: #4a4e57;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+.update__form .form-contril {
+    margin-bottom: 10px;
+}
+progress#profile__ratings {
+    display: inline-block;
+}
+span.info {
+    color: #3a98b7;
+}
+span.dangerInfo {
+    color: red;
 }
 /* Account settings */
 .unverified{
     color: red !important;
 }
-@media screen and (max-width: 900px) and (min-width: 400px) {
+.warning {
+    width: 95%;
+    min-height: 50px;
+    padding: 10px;
+    line-height: 30px;
+    background: #ffea92;
+    border-radius: 5px;
+    color: #23282d;
+    margin: 0 auto;
+    margin-top: 20px;
+}
+.profile__settingsDetails input, .profile__settingsDetails select {
+    border: 1px solid #888888 !important;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+@media screen and (max-width: 980px) and (min-width: 280px) {
     body {
         padding-left: 90px;
     }
@@ -529,9 +585,13 @@ button.submit-button:hover{
     .ermenu .avatar img {
         width: 60px;
     }
+    span.profile-ratings {
+        margin-top: 8px;
+        display: block;
+    }
 
     .ermenu .avatar h2 {
-        opacity: 0;
+        display: none;
         position: absolute;
         top: 50%;
         left: 100px;
@@ -544,8 +604,11 @@ button.submit-button:hover{
     }
 
     .ermenu .avatar:hover h2 {
-        opacity: 1;
+        display: block;
         transform: translate3d(0px, -50%, 0);
+    }
+    progress#profile__ratings {
+        display: none;
     }
 
     .ermenu ul li {
@@ -592,6 +655,14 @@ button.submit-button:hover{
     .ermenu ul li:hover span {
         opacity: 1;
         transform: translate3d(0px, -50%, 0);
+    }
+
+    .locationgroup,.multi-inps{
+        flex-direction: column;
+    }
+    .locationgroup select{
+        width: 100%; 
+        margin-bottom: 5px;
     }
 }
 
@@ -662,5 +733,35 @@ button.submit-button:hover{
     .jobitem table tbody tr {
         display: flex;
         flex-direction: column;
+    }
+    .noticeboard{
+        display: none;
+    }
+    .helper{
+        display: none;
+    }
+
+
+    .jobitem {
+        width: auto;
+    }
+
+    .jobitem table {
+        width: 100%;
+    }
+
+    .jobitem table thead {
+        display: none;
+    }
+
+    .jobitem table tbody tr {
+        display: flex;
+        flex-direction: column;
+    }
+    .noticeboard{
+        display: none;
+    }
+    .helper{
+        display: none;
     }
 }
