@@ -16,7 +16,7 @@ ob_start();
  * Plugin Name:       Easy Rents
  * Plugin URI:        example.com/easy-rents
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           0.1
+ * Version:           0.2
  * Author:            Junayed
  * Author URI:        example.com
  * License:           GPL-2.0+
