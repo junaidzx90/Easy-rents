@@ -112,12 +112,19 @@ main .helper span {
     margin: 0 auto;
 }
 
-.ermenu .avatar img {
+.ermenu .avatar .img {
     width: 100px;
     border-radius: 50%;
     overflow: hidden;
-    border: 4px solid #ffea92;
-    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2);
+    border: 4px solid var(--ermain);
+    box-shadow: 0 0 0 4px rgb(255 255 255 / 20%);
+    height: 100px;
+    margin: 0 auto;
+    background-image: url(https://lh3.googleusercontent.com/proxy/4OgnjMEbQelGekOQCuy2Glqeh65ZaOiIDupxoeKHczvUHzsUhWirm2e4osYxODAjJH8L_UIZF9fDR26jIOwg8OuJZJNIe5p_UcWXcgofJ_2yNLvbAialnPkfDl_RE2VujxwSIM6_14d3-PPgdAylHw);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-color: #fff;
 }
 
 .ermenu .avatar h2 {
@@ -455,7 +462,7 @@ span.backbtn {
     background-size: cover;
 }
 
-.nidphoto label,.truckImg label{
+.nidphoto label,.truckImg label,.avatardiv label{
     position: relative;
     z-index: 0;
     display: inline-block;
@@ -468,7 +475,7 @@ span.backbtn {
     font-size: 12px;
 }
 
-#nidfront,
+#nidfront,#avatar,
 #nidback,#truckImg {
     display: inline-block;
     position: absolute;
@@ -546,6 +553,22 @@ span.dangerInfo {
     color: red;
 }
 /* Account settings */
+.form-contril.username {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+}
+.avatardiv {
+    margin: 0 auto;
+    padding: 4px 0px;
+    border-top: 2px solid #00bfff;
+    border-bottom: 2px solid #00bfff;
+}
+.avatardiv label {
+    padding-left: 50px;
+    padding-right: 50px;
+    margin-bottom: 0px;
+}
 .unverified{
     color: red !important;
 }
@@ -564,6 +587,36 @@ span.dangerInfo {
     border: 1px solid #888888 !important;
     margin-top: 0px;
     margin-bottom: 0px;
+}
+.locationgroup input:valid {
+    background: transparent;
+}
+button.hasrefercode {
+    height: fit-content;
+    align-self: center;
+}
+.form-contril.referCode {
+    display: flex;
+    justify-content: space-between;
+}
+.refer_inp {
+    display: none;
+    width: 60%;
+}
+span.warn {
+    float: left;
+    line-height: 49px;
+    color: red;
+    display: none;
+}
+input#reffer {
+    width: 70%;
+    float: right;
+}
+.referCode{
+    background-color: #fff;
+    padding: 5px;
+    border-radius: 5px;
 }
 
 @media screen and (max-width: 980px) and (min-width: 280px) {

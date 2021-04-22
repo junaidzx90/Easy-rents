@@ -50,7 +50,6 @@ class Easy_Rents_Public
      */
     public function __construct($plugin_name = '', $version = '')
     {
-
         $this->plugin_name = $plugin_name;
         $this->version = $version;
 
@@ -79,6 +78,8 @@ class Easy_Rents_Public
         add_shortcode('er_access_form', array($this, 'er_login_register'));
         // addjob_form
         add_shortcode('addjob_form', array($this, 'er_addjob_form'));
+        // my_trucks_list
+        add_shortcode('my_trucks_list', array($this, 'my_trucks_list'));
 
     }
 
@@ -123,7 +124,7 @@ class Easy_Rents_Public
     public function enqueue_scripts()
     {
         // Profile script
-        wp_register_script('er_profile_script', plugin_dir_url(__FILE__) . 'js/easy-rents-profile.js', array('jquery'), $this->version, true);
+        wp_register_script('er_profile_script', plugin_dir_url(__FILE__) . 'js/easy-rents-profile.js', array('jquery'), microtime(), true);
         // addjob script
         wp_register_script('er_jobs_script', plugin_dir_url(__FILE__) . 'js/easy-rents-jobs.js', array('jquery'), microtime(), true);
         // er_login_register
@@ -139,10 +140,10 @@ class Easy_Rents_Public
 
     }
 
-    static public function er_prelocation_input($id,$placeholder, $classes = ''){
+    static public function er_prelocation_input($id,$placeholder, $classes = '', $required = ''){
     ?>
 		<div class="input-group locationgroup">
-			<select style="height:50px" class="erdivision <?php echo $classes; ?>">
+			<select <?php echo $required; ?> style="height:50px" class="erdivision <?php echo $classes; ?>">
 				<option value="-1">বিভাগ</option>
                 <?php
                     global $wpdb;
@@ -156,15 +157,15 @@ class Easy_Rents_Public
                 ?>
 			</select>
 			
-			<select style="height:50px" class="erdistrict <?php echo $classes; ?>">
+			<select <?php echo $required; ?> style="height:50px" class="erdistrict <?php echo $classes; ?>">
 				<option value="-1">জেলা</option>
 			</select>
 
-			<select style="height:50px" class="erp_station <?php echo $classes; ?>">
+			<select <?php echo $required; ?> style="height:50px" class="erp_station <?php echo $classes; ?>">
 				<option value="-1">থানা</option>
 			</select>
             
-			<input class='locationinput <?php echo $classes; ?>' id="<?php echo $id; ?>" type="text" Placeholder="<?php echo $placeholder; ?>" value="">
+			<input <?php echo $required; ?> class='locationinput <?php echo $classes; ?>' id="<?php echo $id; ?>" type="text" Placeholder="<?php echo $placeholder; ?>" value="">
 			
 		</div>
 	<?php
@@ -272,7 +273,7 @@ class Easy_Rents_Public
                 $newtrip = $wpdb->insert($tbl, array('user_id' => $current_user->ID, 'post_id'=> $post_id, 'location_1' => $location_1,'location_2' => $location_2,'location_3' => $location_3, 'unload_loc' => $unload_location, 'goods_type' => $goods_type, 'weight' => $goods_weight, 'laborer' => $er_labore, 'er_goodssizes' => $er_goodssizes, 'load_time' => $datetime, 'job_status' => 'running','create_at' => date('d.m.Y H:i:s', time() + 3 * 60 * 60)), array('%d', '%d', '%s', '%s', '%s', '%s', '%s', '%d', '%d','%d', '%s', '%s', '%s'));
                 
                 if($newtrip){
-                    $slug = Easy_Rents_Public::get_post_slug(get_option('trips_page', true));
+                    $slug = $this->get_post_slug(get_option('trips_page', true));
                     $redirect_page = home_url('/' . $slug);
 
                     echo json_encode(array('redirect' => $redirect_page));
@@ -451,20 +452,30 @@ class Easy_Rents_Public
                     $tm = time();
                     if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 2, apply_date = $tm WHERE driver_id = $driver_id AND customer_id = $current_user->ID AND ID = $offer_id")) {
 
-
                         if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_trips SET job_status = 'inprogress' WHERE post_id = $post_id")) {
 
                             $wpdb->query("DELETE FROM {$wpdb->prefix}easy_rents_applications WHERE  customer_id = $current_user->ID AND post_id = $post_id AND status = 1");
 
-                            if (get_user_meta($driver_id, 'user_phone_number', true)) {
-                                $to = get_user_meta($driver_id, 'user_phone_number', true);
-                                $dname = get_user_by("id", $driver_id)->user_nicename;
-                                $message = str_replace('%s', $dname, get_option('acceptjobmsg'));
+                            $user = get_user_by( 'id', $driver_id );
 
-                                // if(Easy_Rents_Admin::message_to_user($to, $message)){
-                                echo " ";
-                                wp_die();
-                                // }
+                            if ($user) {
+                                $to = $user->user_login;
+                                $dname = $user->display_name;
+                                $texts = str_replace('%s', $dname, get_option('acceptjobmsg'));
+                                date_default_timezone_set('Asia/Dhaka');
+                                $secret = get_option('er_smstoken');
+
+                                $message = [
+                                    "phone" => $to,
+                                    "message" => "$texts",
+                                    "secret" => $secret,
+                                    "receive_date" => date('m/d/Y h:i:s a', time())
+                                ];
+
+                                if(Easy_Rents_Admin::message_to_user($message)){
+                                    echo " ";
+                                    wp_die();
+                                }
                             }
 
                             die;
@@ -506,16 +517,25 @@ class Easy_Rents_Public
                 if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_applications SET status = 3, finished_date = now() WHERE customer_id = $current_user->ID AND driver_id = $driver_id AND ID = $offer_id")) {
 
                     if ($wpdb->query("UPDATE {$wpdb->prefix}easy_rents_trips SET job_status = 'ends' WHERE post_id = $post_id")) {
+                        $user = get_user_by( 'id', $driver_id );
                         // SENT SMS TO DRIVER
-                        if (get_user_meta($driver_id, 'user_phone_number', true)) {
-                            $to = get_user_meta($driver_id, 'user_phone_number', true);
-                            $dname = get_user_by("id", $driver_id)->user_nicename;
-                            $message = str_replace('%s', $dname, get_option('jobconfirmationmsg'));
+                        if ($user) {
+                            $to = $user->user_login;
+                            $dname = $user->display_name;
+                            $texts = str_replace('%s', $dname, get_option('jobconfirmationmsg'));
+                            $secret = get_option('er_smstoken');
 
-                            // if(Easy_Rents_Admin::message_to_user($to, $message)){
-                            echo " ";
-                            wp_die();
-                            // }
+                            $message = [
+                                "phone" => $to,
+                                "message" => "$texts",
+                                "secret" => $secret,
+                                "receive_date" => date('m/d/Y h:i:s a', time())
+                            ];
+
+                            if(Easy_Rents_Admin::message_to_user($message)){
+                                echo " ";
+                                wp_die();
+                            }
                         }
                         echo " ";
                         wp_die();
@@ -551,7 +571,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_dashboard.php';
         } else {
-            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
+            wp_redirect( home_url('/' . $this->get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -565,7 +585,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_mytrips.php';
         } else {
-            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
+            wp_redirect( home_url('/' . $this->get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -579,7 +599,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_payment.php';
         } else {
-            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
+            wp_redirect( home_url('/' . $this->get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -593,7 +613,7 @@ class Easy_Rents_Public
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_profile_settings.php';
         } else {
-            wp_redirect( home_url('/' . Easy_Rents_Public::get_post_slug(get_option('access_page', true))) );
+            wp_redirect( home_url('/' . $this->get_post_slug(get_option('access_page', true))) );
         }
     }
 
@@ -607,7 +627,7 @@ class Easy_Rents_Public
                 print_r("Sorry as a admin you can't see this page!");
                 die;
             }
-            wp_safe_redirect(home_url('/' . Easy_Rents_Public::get_post_slug(get_option('profile_page', true))));
+            wp_safe_redirect(home_url('/' . $this->get_post_slug(get_option('profile_page', true))));
             exit();
         }
     }
@@ -616,6 +636,13 @@ class Easy_Rents_Public
     {
         if (is_user_logged_in() && $this->er_role_check(['customer', 'driver'])) {
             require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_add_job_shorcode.php';
+        }
+    }
+    // er_register / login page
+    public function er_my_trucks_list($atts)
+    {
+        if (is_user_logged_in() && $this->er_role_check(['driver'])) {
+            require_once plugin_dir_path(__FILE__) . 'partials/shortcodes/er_my_trucks_list.php';
         }
     }
 

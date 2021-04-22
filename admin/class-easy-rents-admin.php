@@ -689,7 +689,7 @@ class Easy_Rents_Admin
                         if ($job_info->payment == 1) {
                             echo '<span title="Paid"> ☑<span>';
                         } else {
-                            echo '<span title="Unpaid"> ⛔<span>';
+                            echo '<span title="Unpaid"> 🚫<span>';
                         }
                     }
                     
@@ -794,10 +794,11 @@ class Easy_Rents_Admin
         if (isset($_POST['driver_id']) && isset($_POST['amount'])) {
             $driver_id = intval($_POST['driver_id']);
             $amount = intval($_POST['amount']);
+            $user = get_user_by( 'id', $driver_id );
 
-            if (get_user_meta($driver_id, 'user_phone_number', true)) {
-                $to = get_user_meta($driver_id, 'user_phone_number', true);
-                $dname = get_user_by("id", $driver_id)->display_name;
+            if ($user->user_login) {
+                $to = $user->user_login;
+                $dname = $user->display_name;
                 $texts = esc_html(str_replace('%s', ucfirst($dname), get_option('paymentrequestmsg')));
 
                 date_default_timezone_set('Asia/Dhaka');

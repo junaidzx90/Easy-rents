@@ -61,13 +61,15 @@ wp_localize_script( 'easy-rents-payments', "payment_ajaxurl", array(
 
                                     // Only active/ running job
                                 if($job_info->job_status == 'ends'){
-                                    $driverName = get_user_by( 'id', $payment->driver_id )->user_nicename;
-                                    $user_number = get_user_meta( $payment->driver_id, 'user_phone_number', true );
+                                    $user = get_user_by( 'id', $payment->driver_id );
+                                    $driverName = $user->display_name;
+
+                                    $user_number = $user->user_login;
 
                                     if($payment->payment == 1){
                                         $paymentStatus = "<span style='color:#65bc7b'>Paid&nbsp;☑</span><br><small>".$payment->transaction_num."</small>"; 
                                     }elseif($payment->payment == 0){
-                                        $paymentStatus = "<span style='color:#ca4a1f'>Unpaid&nbsp;⛔</span>"; 
+                                        $paymentStatus = "<span style='color:#ca4a1f'>Unpaid&nbsp;🚫</span>"; 
                                     }elseif($payment->payment == 2){
                                         if($payment->payment_date != 0){
                                             $applytime = '/ '.Easy_Rents_Public::time_elapsed_string($payment->payment_date);
