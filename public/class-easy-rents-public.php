@@ -124,6 +124,8 @@ class Easy_Rents_Public
     public function enqueue_scripts()
     {
         // Profile script
+        wp_register_script('jquery.form.min', plugin_dir_url(__FILE__) . 'js/jquery.form.min.js', array('jquery'), $this->version, true);
+
         wp_register_script('er_profile_script', plugin_dir_url(__FILE__) . 'js/easy-rents-profile.js', array('jquery'), microtime(), true);
         // addjob script
         wp_register_script('er_jobs_script', plugin_dir_url(__FILE__) . 'js/easy-rents-jobs.js', array('jquery'), microtime(), true);

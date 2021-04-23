@@ -308,9 +308,10 @@ function er_transform(elem,target) {
 		$('#avatar').on('change', function () {
 			imagechange($(this), this, $('.avatarImg'));
 			if ($(this).val() == "") {
+				
 				$('.avatarImg').css(
 					"background-image",
-					"url(https://lh3.googleusercontent.com/proxy/4OgnjMEbQelGekOQCuy2Glqeh65ZaOiIDupxoeKHczvUHzsUhWirm2e4osYxODAjJH8L_UIZF9fDR26jIOwg8OuJZJNIe5p_UcWXcgofJ_2yNLvbAialnPkfDl_RE2VujxwSIM6_14d3-PPgdAylHw)"
+					"url("+$('.avatarImg').attr('data-default')+")"
 				);
 			}
 		});
@@ -362,6 +363,13 @@ function er_transform(elem,target) {
 		$('select').each(function () {
 			$(this).children('option').first().val("");
 		});
+
+		// Updating Locations
+		$('.add__adressess').children('div').each(function () {
+			$(this).children('input').on('click', function () {
+				$(this).hide().next('.locationgroup').addClass('show');
+			});
+		})
 
 		// NOTICEBOARD TEXTS
 		noticableinfo();

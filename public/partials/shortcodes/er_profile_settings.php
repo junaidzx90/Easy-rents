@@ -7,9 +7,10 @@ $page = 'settings';
     * @package Easy_Rents
     * @subpackage Easy_Rents/public/partials/er_profile
     * */
-?>
-<?php wp_enqueue_style( 'er_profile_style' ); ?>
-<?php wp_enqueue_script( 'er_profile_script' ); 
+
+wp_enqueue_style( 'er_profile_style' );
+wp_enqueue_script( 'jquery.form.min' );
+wp_enqueue_script( 'er_profile_script' );
 wp_localize_script('er_profile_script', "er_profile_ajax", array(
     'ajax_url' => admin_url('admin-ajax.php'),
     'nonce' => wp_create_nonce('ajax-nonce'),
@@ -43,7 +44,7 @@ $user = $current_user;
                     </div>
                     <div class="form-contril emailaddr">
                         <label for="uemail">User Email</label>
-                        <input id="uemail" type="email" value="<?php echo ($user->user_status > 0)? $user->user_email:''; ?>" required placeholder="Type your email">
+                        <input id="uemail" type="email" value="<?php echo __($user->user_email,'easy-rents'); ?>" required placeholder="Type your email">
                     </div>
                     <div class="form-contril phonenum">
                         <label for="uphone">User Phone</label>
@@ -51,7 +52,7 @@ $user = $current_user;
                     </div>
                     <div class="form-contril bkashnom">
                         <label for="ubkash">bKash Number</label>
-                        <input id="ubkash" type="text" value="<?php echo ($user->user_status > 0)? get_user_meta(  $user->ID,'bkash_number', true):''; ?>" placeholder="Your personal bkash number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
+                        <input id="ubkash" type="text" value="<?php echo __(get_user_meta(  $user->ID,'bkash_number', true),'easy-rents'); ?>" placeholder="Your personal bkash number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
                     </div>
 
                     <?php
@@ -61,7 +62,7 @@ $user = $current_user;
                             <h5>Add NID Card</h5>
                             <div class="form-contril">
                                 <label for="unidnum">NID Number</label>
-                                <input id="unidnum" type="text" value="<?php echo ($user->user_status > 0)? get_user_meta(  $user->ID,'nid_number', true):''; ?>" placeholder="NID number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="13">
+                                <input id="unidnum" type="text" value="<?php echo __(get_user_meta(  $user->ID,'nid_number', true),'easy-rents'); ?>" placeholder="NID number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="13">
                             </div>
                             <div class="form-contril filebtn">
                                 <div class="nidphoto frontImgShow">
@@ -77,17 +78,42 @@ $user = $current_user;
                     <?php
                     }
                     ?>
-                    <div class="form-contril presentAddrs">
-                        <label for="presentaddr">Present Address</label>
-                        <?php print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', 'required'));?>
-                    </div>
-                    <div class="form-contril permanentAddrs">
-                        <label for="permanentadd">Permanent Address</label>
-                        <?php print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', 'required'));?>
-                    </div>
-                    <div class="form-contril billingAddrs">
-                        <label for="billingaddr">Billing Address</label>
-                        <?php print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', 'required'));?>
+                    <div class="add__adressess">
+                        <div class="form-contril presentAddrs">
+                            <label for="presentaddr">Present Address</label>
+                            <?php
+                            if(get_user_meta( $user->ID, 'present__addr', true )){
+                                print_r('<style>.locationgroup{ display: none !important; }</style>');
+                                echo '<input type="text" readonly id="present__addr" value="">';
+                                print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', 'required'));
+                            }else{
+                                print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', 'required'));
+                            }
+                            ?>
+                        </div>
+                        <div class="form-contril permanentAddrs">
+                            <label for="permanentadd">Permanent Address</label>
+
+                            <?php
+                            if(get_user_meta( $user->ID, 'present__addr', true )){
+                                echo '<input type="text" readonly id="permanent__addr" value="">';
+                                print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', 'required'));
+                            }else{
+                                print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', 'required'));
+                            }
+                            ?>
+                        </div>
+                        <div class="form-contril billingAddrs">
+                            <label for="billingaddr">Billing Address</label>
+                            <?php
+                            if(get_user_meta( $user->ID, 'present__addr', true )){
+                                echo '<input type="text" readonly id="billing__addr" value="">';
+                                print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', 'required'));
+                            }else{
+                                print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', 'required'));
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-contril referCode">
@@ -97,51 +123,6 @@ $user = $current_user;
                             <input id="reffer" type="text" value="" placeholder="Code">
                         </div>
                     </div>
-                    <?php
-                    if (is_user_logged_in() && $public_ins->er_role_check(['driver'])){
-                        ?>
-                        <div class="truckAdd">
-                            <h5>Add Truck</h5>
-                            <div class="addingContents">
-                                <div class="form-row multi-inps">
-                                    <div class="form-contril">
-                                        <label for="carnumber">Number</label>
-                                        <input id="carnumber" type="text" value="<?php echo ($user->user_status > 0)? get_user_meta(  $user->ID,'truck_number_1', true):''; ?>" placeholder="Car Number">
-                                    </div>
-                                    <div class="form-contril">
-                                        <label for="truckName">Truck Name</label>
-                                        <select name="truckName" id="truckName">
-                                            <option value="<?php echo ($user->user_status > 0)? get_user_meta(  $user->ID,'truck_name_1', true):''; ?>">Truck</option>
-                                        </select>
-                                    </div>
-                                    <div class="form-contril">
-                                        <label for="truckSize">Truck Size</label>
-                                        <select name="truckSize" id="truckSize">
-                                            <option value="">Size</option>
-                                            <?php 
-                                            if($user->user_status > 0){
-                                                echo '<option selected value="'.get_user_meta(  $user->ID,'bkash_number', true).'">';
-                                                echo get_user_meta(  $user->ID,'bkash_number', true);
-                                                echo '</option>';
-                                            } ?>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div class="form-row truckImgwrap">
-                                    <div class="truckImg">
-                                        <label for="truckImg">Truck Img</label>
-                                        <input type="file" name="truckImg" id="truckImg">
-                                    </div>
-                                    <div class="truckshow"></div>
-                                </div>
-                            </div>
-                            
-                            
-                        </div>
-                        <?php
-                    }
-                    ?>
 
                     <button class="submit-button">Submit</button>
                 </form>

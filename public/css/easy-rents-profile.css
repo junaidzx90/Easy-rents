@@ -120,7 +120,7 @@ main .helper span {
     box-shadow: 0 0 0 4px rgb(255 255 255 / 20%);
     height: 100px;
     margin: 0 auto;
-    background-image: url(https://lh3.googleusercontent.com/proxy/4OgnjMEbQelGekOQCuy2Glqeh65ZaOiIDupxoeKHczvUHzsUhWirm2e4osYxODAjJH8L_UIZF9fDR26jIOwg8OuJZJNIe5p_UcWXcgofJ_2yNLvbAialnPkfDl_RE2VujxwSIM6_14d3-PPgdAylHw);
+    background-image: url('../images/avatar.png');
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -441,6 +441,9 @@ span.backbtn {
 .locationgroup {
     display: flex;
     justify-content: space-between;
+}
+.show{
+    display: flex !important;
 }
 .locationgroup select {
     margin-right: 3px;

@@ -3,8 +3,9 @@
 <nav class="ermenu" tabindex="0">
     <div class="smartphone-ermenu-trigger"></div>
     <header class="avatar">
-        <div class="img avatarImg"></div>
-        <!-- <img style="width: 100px" src="https://i.pinimg.com/originals/be/ac/96/beac96b8e13d2198fd4bb1d5ef56cdcf.jpg" /> -->
+
+        <div data-default="<?php echo ER_URL.'/public/images/avatar.png' ?>" class="img avatarImg"></div>
+        
         <h2 class="username"><?php echo __($current_user->display_name,'easy-rents'); ?>
             <?php
             if (is_user_logged_in() && $public_ins->er_role_check(['driver'])){
