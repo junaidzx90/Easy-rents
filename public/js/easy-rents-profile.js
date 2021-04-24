@@ -316,6 +316,11 @@ function er_transform(elem,target) {
 			}
 		});
 
+		$('#resubmit-nid').on('click', function (e) {
+			e.preventDefault();
+			$(this).parent('.nidwarn').hide().next('.nidcardadd').addClass('d-block');
+		})
+
 		// FRON SIDE NID
 		$('#nidfront').on('change', function () {
 			imagechange($(this), this, $('.frontImgShow'));
@@ -345,20 +350,6 @@ function er_transform(elem,target) {
 				);
 			}
 		});
-
-
-		$('.hasrefercode').on('click', function (e) {
-			e.preventDefault();
-			$(this).next('.refer_inp').toggle(() => {
-				if ($('.hasrefercode').text() == "I have Refer Code") {
-					$('.hasrefercode').text("No Code");
-				} else {
-					$('#reffer').val("");
-					$('.hasrefercode').text("I have Refer Code");
-				}
-			});
-		});
-
 		// Remove -1 default value from all select inputs
 		$('select').each(function () {
 			$(this).children('option').first().val("");
@@ -418,6 +409,96 @@ function er_transform(elem,target) {
 				$('.noticeboard').html('Once submitted it can be held for a maximum of 24 hours, If valid-- submission will be accepted!');
 			});
 		}
+
+		$('.hasrefercode').on('click', function (e) {
+			e.preventDefault();
+			$(this).next('.refer_inp').toggle(() => {
+				if ($('.hasrefercode').text() == "I have a (Refer Code)") {
+					$('.hasrefercode').text("No Code");
+					$('.refer_inp .warn').text('').fadeOut();
+				} else {
+					$('#reffer').val("");
+					$('.hasrefercode').text("I have a (Refer Code)");
+				}
+			});
+		});
+
+		// Check refer code validity
+		$('#reffer').blur(function () {
+			let code = $(this).val();
+			if (code != "") {
+				$.ajax({
+					type: "post",
+					url: er_profile_ajax.ajax_url,
+					data: {
+						action: 'er_refer_code_check',
+						code: code
+					},
+					dataType: 'json',
+					success: function (response) {
+						if (response.success) {
+							$('.refer_inp .warn').text('').fadeOut();
+						}
+						if (response.error) {
+							$('#reffer').val("");
+							$('.refer_inp .warn').text(response.error).fadeIn();
+						}
+					}
+				});
+			}
+		});
+
+		// Profile updates
+		$('#profile__update_form').on('submit', function (e) {
+			e.preventDefault();
+
+			let presentAddrs = {
+				'erdivision' : $('.presentAddrs').children('.locationgroup').children('.erdivision').val(),
+				'erdistrict' : $('.presentAddrs').children('.locationgroup').children('.erdistrict').val(),
+				'erp_station' : $('.presentAddrs').children('.locationgroup').children('.erp_station').val(),
+				'handwriting' : $('#presentaddr').val()
+			}
+
+			let permanentAddrs = {
+				'erdivision' : $('.permanentAddrs').children('.locationgroup').children('.erdivision').val(),
+				'erdistrict' : $('.permanentAddrs').children('.locationgroup').children('.erdistrict').val(),
+				'erp_station' : $('.permanentAddrs').children('.locationgroup').children('.erp_station').val(),
+				'handwriting' : $('#permanentadd').val()
+			}
+			
+			let billingAddrs = {
+				'erdivision' : $('.billingAddrs').children('.locationgroup').children('.erdivision').val(),
+				'erdistrict' : $('.billingAddrs').children('.locationgroup').children('.erdistrict').val(),
+				'erp_station' : $('.billingAddrs').children('.locationgroup').children('.erp_station').val(),
+				'handwriting' : $('#billingaddr').val()
+			}
+			
+
+			$(this).ajaxSubmit({
+				method: "post",
+				url: er_profile_ajax.ajax_url,
+				data: {
+					action: 'update_user_info',
+					nonce: er_profile_ajax.nonce,
+					presentAddrs: presentAddrs,
+					permanentAddrs: permanentAddrs,
+					billingAddrs: billingAddrs,
+				},
+				dataType: 'json',
+				beforeSend: () => {
+					$('.submit-button').prop('disabled',true).text("Updating...");
+				},
+				success: function (response) {
+					if (response.success) {
+						$('.submit-button').text("Submit").removeAttr('disabled');
+						$('.noticeboard').text("Successfully Updated!");
+					}
+					if (response.error) {
+						$('.noticeboard').text("Something Problem, Try again!");
+					}
+				}
+			});
+		});
 	}
 
 	

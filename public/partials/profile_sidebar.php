@@ -3,8 +3,8 @@
 <nav class="ermenu" tabindex="0">
     <div class="smartphone-ermenu-trigger"></div>
     <header class="avatar">
-
-        <div data-default="<?php echo ER_URL.'/public/images/avatar.png' ?>" class="img avatarImg"></div>
+    
+        <div data-default="<?php echo get_user_meta( $current_user->ID, 'user_avatar', true )? get_user_meta( $current_user->ID, 'user_avatar', true ) : ER_URL.'/public/images/avatar.png'; ?>" class="img avatarImg" style="background-image: url(<?php echo get_user_meta( $current_user->ID, 'user_avatar', true )? get_user_meta( $current_user->ID, 'user_avatar', true ) : ER_URL.'/public/images/avatar.png'; ?>);"></div>
         
         <h2 class="username"><?php echo __($current_user->display_name,'easy-rents'); ?>
             <?php

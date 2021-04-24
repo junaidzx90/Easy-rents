@@ -31,52 +31,103 @@ $user = $current_user;
 
         <div class="profile__settingsDetails">
             <div class="update__form">
-                <form action="" method="post" enctype="multipart/form-data">
+                <form id="profile__update_form" method="post" enctype="multipart/form-data">
                     <div class="form-contril username">
                         <div class="uname">
                             <label for="uname">User Name </label>
-                            <input id="uname" type="text" required value="<?php echo __($user->display_name, 'easy-rents'); ?>" placeholder="Type your name">
+                            <input id="uname" name="uname" type="text"  value="<?php echo __($user->display_name, 'easy-rents'); ?>" placeholder="Type your name">
                         </div>
                         <div class="avatardiv">
                             <label for="avatar">Avatar</label>
-                            <input type="file" name="" id="avatar">
+                            <input type="file" name="avatar" name="" id="avatar">
                         </div>
                     </div>
                     <div class="form-contril emailaddr">
                         <label for="uemail">User Email</label>
-                        <input id="uemail" type="email" value="<?php echo __($user->user_email,'easy-rents'); ?>" required placeholder="Type your email">
+                        <input id="uemail" name="email" type="email" value="<?php echo __($user->user_email,'easy-rents'); ?>"  placeholder="Type your email">
                     </div>
                     <div class="form-contril phonenum">
                         <label for="uphone">User Phone</label>
-                        <input id="uphone" type="text" disabled readonly placeholder="+880<?php echo __($user->user_login, 'easy-rents'); ?>" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
+                        <input id="uphone" name="uphone" type="text" disabled readonly placeholder="+880<?php echo __($user->user_login, 'easy-rents'); ?>"  autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
                     </div>
                     <div class="form-contril bkashnom">
                         <label for="ubkash">bKash Number</label>
-                        <input id="ubkash" type="text" value="<?php echo __(get_user_meta(  $user->ID,'bkash_number', true),'easy-rents'); ?>" placeholder="Your personal bkash number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
+                        <input id="ubkash" name="ubkash" type="text" value="<?php echo __(get_user_meta(  $user->ID,'bkash_number', true),'easy-rents'); ?>" placeholder="Your personal bkash number"  autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="10">
                     </div>
 
                     <?php
+                    // {NID CARD}
                     if (is_user_logged_in() && $public_ins->er_role_check(['driver'])) {
-                    ?>
-                        <div class="div nidcardadd">
-                            <h5>Add NID Card</h5>
-                            <div class="form-contril">
-                                <label for="unidnum">NID Number</label>
-                                <input id="unidnum" type="text" value="<?php echo __(get_user_meta(  $user->ID,'nid_number', true),'easy-rents'); ?>" placeholder="NID number" required autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="13">
-                            </div>
-                            <div class="form-contril filebtn">
-                                <div class="nidphoto frontImgShow">
-                                    <label for="nidfront">Front Side</label>
-                                    <input type="file" required name="nidfront" id="nidfront">
+
+                        if(get_user_meta($current_user->ID, 'user_nid_front', true) && empty(get_user_meta('id_verified'))){
+                            ?>
+                                <style>.nidcardadd{ display: none !important; }</style>
+                                <div class="warning nidwarn">Your Request Currently pending!
                                 </div>
-                                <div class="nidphoto backImgShow">
-                                    <label for="nidback">Back Side</label>
-                                    <input type="file" required name="nidback" id="nidback">
+                            <?php
+                        }
+
+                        // Checking Verified
+                        if(!get_user_meta($current_user->ID, 'user_nid_front', true) && empty(get_user_meta('id_verified')) ){
+                            ?>
+                            <div class="div nidcardadd">
+                                <h5>Add NID Card</h5>
+                                <div class="form-contril">
+                                    <label for="unidnum">NID Number</label>
+                                    <input id="unidnum" name="nidnumber" type="text" value="<?php echo __(get_user_meta(  $user->ID,'nid_number', true),'easy-rents'); ?>" placeholder="NID number"  autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="13">
+                                </div>
+                                <div class="form-contril filebtn">
+                                    <div class="nidphoto frontImgShow">
+                                        <label for="nidfront">Front Side</label>
+                                        <input type="file"  name="nidfront" id="nidfront">
+                                    </div>
+                                    <div class="nidphoto backImgShow">
+                                        <label for="nidback">Back Side</label>
+                                        <input type="file"  name="nidback" id="nidback">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    <?php
+                            <?php
+                        }
+                        
+                        if(!empty(get_user_meta('id_verified')) && get_user_meta('id_verified') == 'verified' ){
+
+                            ?>
+                            <div class="warning verified">NID Card is Verified ✅
+                            </div>
+                            <?php
+                    
+                        }
+                        
+                        if(!empty(get_user_meta('id_verified')) && get_user_meta('id_verified') == 'unverified' ){
+                            ?>
+                            <style>.nidcardadd{ display: none !important; }</style>
+                            <div class="warning nidwarn">NID Card is not Activate. Please Re-Submit Valid NID Information.
+                                <button id="resubmit-nid">Upload</button>
+                            </div>
+
+                            <div class="div nidcardadd">
+                                <h5>Add NID Card</h5>
+                                <div class="form-contril">
+                                    <label for="unidnum">NID Number</label>
+                                    <input id="unidnum" name="nidnumber" type="text" value="<?php echo __(get_user_meta(  $user->ID,'nid_number', true),'easy-rents'); ?>" placeholder="NID number"  autocomplete="off" oninput="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="13">
+                                </div>
+                                <div class="form-contril filebtn">
+                                    <div class="nidphoto frontImgShow">
+                                        <label for="nidfront">Front Side</label>
+                                        <input type="file"  name="nidfront" id="nidfront">
+                                    </div>
+                                    <div class="nidphoto backImgShow">
+                                        <label for="nidback">Back Side</label>
+                                        <input type="file"  name="nidback" id="nidback">
+                                    </div>
+                                </div>
+                            </div>
+                            <?php
+                        }
+
                     }
+
                     ?>
                     <div class="add__adressess">
                         <div class="form-contril presentAddrs">
@@ -84,10 +135,18 @@ $user = $current_user;
                             <?php
                             if(get_user_meta( $user->ID, 'present__addr', true )){
                                 print_r('<style>.locationgroup{ display: none !important; }</style>');
-                                echo '<input type="text" readonly id="present__addr" value="">';
-                                print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', 'required'));
+
+                                if(get_user_meta( $user->ID, 'present__addr', true )){
+                                    $present__addr = "";
+                                    foreach(get_user_meta( $user->ID, 'present__addr', true ) as $addr){
+                                        $present__addr .= $addr.', ';
+                                    }
+                                }
+
+                                echo '<input type="text" readonly id="present__addr" value="'.substr($present__addr,0,-2).'">';
+                                print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', ''));
                             }else{
-                                print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', 'required'));
+                                print_r($public_ins->er_prelocation_input('presentaddr', 'স্থানের নাম', 'presentaddr', ''));
                             }
                             ?>
                         </div>
@@ -95,35 +154,53 @@ $user = $current_user;
                             <label for="permanentadd">Permanent Address</label>
 
                             <?php
-                            if(get_user_meta( $user->ID, 'present__addr', true )){
-                                echo '<input type="text" readonly id="permanent__addr" value="">';
-                                print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', 'required'));
+                            if(get_user_meta( $user->ID, 'permanent__addr', true )){
+                                if(get_user_meta( $user->ID, 'permanent__addr', true )){
+                                    $permanent__addr = "";
+                                    foreach(get_user_meta( $user->ID, 'permanent__addr', true ) as $addr){
+                                        $permanent__addr .= $addr.', ';
+                                    }
+                                }
+
+                                echo '<input type="text" readonly id="permanent__addr" value="'.substr($permanent__addr,0,-2).'">';
+                                print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', ''));
                             }else{
-                                print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', 'required'));
+                                print_r($public_ins->er_prelocation_input('permanentadd', 'স্থানের নাম', 'permanentadd', ''));
                             }
                             ?>
                         </div>
                         <div class="form-contril billingAddrs">
                             <label for="billingaddr">Billing Address</label>
                             <?php
-                            if(get_user_meta( $user->ID, 'present__addr', true )){
-                                echo '<input type="text" readonly id="billing__addr" value="">';
-                                print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', 'required'));
+                            if(get_user_meta( $user->ID, 'billing__addr', true )){
+                                if(get_user_meta( $user->ID, 'billing__addr', true )){
+                                    $billing__addr = "";
+                                    foreach(get_user_meta( $user->ID, 'billing__addr', true ) as $addr){
+                                        $billing__addr .= $addr.', ';
+                                    }
+                                }
+                                echo '<input type="text" readonly id="billing__addr" value="'.substr($billing__addr,0,-2).'">';
+                                print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', ''));
                             }else{
-                                print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', 'required'));
+                                print_r($public_ins->er_prelocation_input('billingaddr', 'স্থানের নাম', 'billingaddr', ''));
                             }
                             ?>
                         </div>
                     </div>
 
-                    <div class="form-contril referCode">
-                        <button class="hasrefercode">I have Refer Code</button>
-                        <div class="refer_inp">
-                            <span class="warn">Invalid Code</span>
-                            <input id="reffer" type="text" value="" placeholder="Code">
+                    <?php
+                    if(!get_user_meta($current_user->ID, 'refer_code', true)){
+                        ?>
+                        <div class="form-contril referCode">
+                            <button class="hasrefercode">I have a (Refer Code)</button>
+                            <div class="refer_inp">
+                                <span class="warn">Invalid Code</span>
+                                <input id="reffer" type="text" name="refer_code" placeholder="Code">
+                            </div>
                         </div>
-                    </div>
-
+                        <?php
+                    }
+                    ?>
                     <button class="submit-button">Submit</button>
                 </form>
             </div>

@@ -263,6 +263,12 @@ class Easy_Rents {
 		//Create Job
 		$this->loader->add_action("wp_ajax_er_create_job", $plugin_public, "er_create_job");
 		$this->loader->add_action("wp_ajax_nopriv_er_create_job", $plugin_public, "er_create_job");
+		//Update user info
+		$this->loader->add_action("wp_ajax_update_user_info", $plugin_public, "update_user_info");
+		$this->loader->add_action("wp_ajax_nopriv_update_user_info", $plugin_public, "update_user_info");
+		//Refer code check
+		$this->loader->add_action("wp_ajax_er_refer_code_check", $plugin_public, "er_refer_code_check");
+		$this->loader->add_action("wp_ajax_nopriv_er_refer_code_check", $plugin_public, "er_refer_code_check");
 	}
 
 	/**

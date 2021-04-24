@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'EASY_RENTS_VERSION', '0.1' );
+define( 'EASY_RENTS_VERSION', '0.2' );
 define( 'ER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ER_URL', plugin_dir_url( __FILE__ ) );
 

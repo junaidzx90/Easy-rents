@@ -142,6 +142,154 @@ class Easy_Rents_Public
 
     }
 
+    // Refer code check
+    function er_refer_code_check(){
+        global $wpdb;
+        if(isset($_POST['code'])){
+            $code = $_POST['code'];
+
+            $results = $wpdb->get_var("SELECT ID FROM {$wpdb->prefix}easy_rents_refer_codes WHERE refer_code = '$code'");
+
+            if($results){
+                echo wp_json_encode( array('success' => "Success") );
+                die;
+            }else{
+                echo wp_json_encode( array('error' => "Invalid Refer Code!") );
+                die;
+            }
+        }
+        
+        die;
+    }
+
+    // User info updates
+    public function update_user_info(){
+        check_ajax_referer('ajax-nonce', 'nonce');
+
+        global $current_user;
+        $user_id = $current_user->ID;
+
+        $user_name = $_POST['uname'];
+        $avatar = $_FILES['avatar'];
+        $email = $_POST['email'];
+        $ubkash = $_POST['ubkash'];
+        $nidnumber = $_POST['nidnumber'];
+        $nidfront = $_FILES['nidfront'];
+        $nidback = $_FILES['nidback'];
+        $refer_code = $_POST['refer_code'];
+
+        $presentAddrs = $_POST['presentAddrs'];
+        $permanentAddrs = $_POST['permanentAddrs'];
+        $billingAddrs = $_POST['billingAddrs'];
+
+        $user_data = wp_update_user( array( 'ID' => $user_id, 'user_email' => $email, 'display_name' => ucfirst($user_name) ) );
+
+        if(!empty($avatar)){
+            $user_data = $this->er_upload_user_files($avatar,'user_avatar');
+        }
+        if(!empty($nidfront)){
+            $user_data = $this->er_upload_user_files($nidfront,'user_nid_front');
+        }
+        if(!empty($nidback)){
+            $user_data = $this->er_upload_user_files($nidback,'user_nid_back');
+        }
+
+        if(!empty($refer_code)){
+            $user_data = update_user_meta( $user_id,'refer_code', $refer_code);
+        }
+
+        $user_data = update_user_meta( $user_id, 'bkash_number', $ubkash );
+        $user_data = update_user_meta( $user_id, 'nid_number', $nidnumber );
+
+        $allow_presentAddrs = true;
+        foreach($presentAddrs as $add){
+            if($add == ''){
+                $allow_presentAddrs = false;
+            }
+        }
+        if( $allow_presentAddrs == true ){
+            $user_data = update_user_meta( $user_id, 'present__addr', $presentAddrs );
+        }
+
+        $allow_permanentAddrs = true;
+        foreach($permanentAddrs as $add){
+            if($add == ''){
+                $allow_permanentAddrs = false;
+            }
+        }
+        if( $allow_permanentAddrs == true ){
+            $user_data = update_user_meta( $user_id, 'permanent__addr', $permanentAddrs );
+        }
+
+        $allow_billingAddrs = true;
+        foreach($billingAddrs as $add){
+            if($add == ''){
+                $allow_billingAddrs = false;
+            }
+        }
+        if( $allow_billingAddrs ){
+            $user_data = update_user_meta( $user_id, 'billing__addr', $billingAddrs );
+        }
+
+        if ( is_wp_error( $user_data ) ) {
+            // There was an error; possibly this user doesn't exist.
+            echo wp_json_encode( array('error' => 'Error.') );
+            die;
+        } else {
+            // Success!
+            echo wp_json_encode( array('success' => 'User profile updated.') );
+            die;
+        }
+        
+        die;
+    }
+
+    // upload_avatar
+    function er_upload_user_files($file, $name){
+        global $current_user;
+
+        if(!empty($file)){
+
+            $upload_dir   = wp_upload_dir();
+        
+            $original_file = $file['name'];
+            $extens = strtolower(pathinfo($original_file,PATHINFO_EXTENSION));
+
+            $fileName = $current_user->user_login.'_'.$name;
+
+            if ( ! empty( $upload_dir['path'] ) ) {
+                $file_path = $upload_dir['path'].'/easy-rents/'.$current_user->user_login;
+                if ( ! file_exists( $file_path ) ) {
+                    wp_mkdir_p( $file_path );
+                }
+        
+                $temp_name = $file['tmp_name'];
+                $targetPath = $file_path.'/'.$fileName.'.'.$extens;
+
+                if(is_uploaded_file($temp_name)) {
+                    if(move_uploaded_file($temp_name,$targetPath)) {
+                        $file_url = $upload_dir['url'].'/easy-rents/'.$current_user->user_login.'/'.$fileName.'.'.$extens;
+
+                        // Check nid_front current nid_front has or not
+                        $check_has = get_user_meta($current_user->ID, $name, true);
+                        
+                        if(!empty($check_has) || $check_has != 0){
+                            update_user_meta($current_user->ID, $name, $file_url);
+
+                            return $result = wp_json_encode(array("success" =>"updated"));
+                        }else{
+                            add_user_meta($current_user->ID, $name, $file_url);
+                            
+                            return $result = wp_json_encode(array("success" =>"inserted"));
+                        }
+                    }
+                }
+            }
+        }else{
+            return $result = wp_json_encode(array("error" =>"Select your photo!"));
+        }
+    }
+
     static public function er_prelocation_input($id,$placeholder, $classes = '', $required = ''){
     ?>
 		<div class="input-group locationgroup">
