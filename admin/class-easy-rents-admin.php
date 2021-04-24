@@ -636,9 +636,11 @@ class Easy_Rents_Admin
     // CREATE WP LIST TABLE COLUMN FOR STATUS
     public function wp_list_table_columnname($defaults)
     {
+        unset($defaults['date']);
         $defaults['erprice_status'] = 'Price';
         $defaults['erdriver_status'] = 'Driver/Payment';
         $defaults['erpost_status'] = 'Status';
+        $defaults['date'] = 'Date';
         return $defaults;
     }
     public function wp_list_table_column_view($column_name, $post_ID)
@@ -903,7 +905,7 @@ class Easy_Rents_Admin
     {
         global $wpdb;
 
-        $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+        $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC LIMIT 20");
 
         if ($locations) {
             $i = 1;
@@ -925,14 +927,21 @@ class Easy_Rents_Admin
     }
 
     // Location table default values
-    public function erLocationsList($filter = '')
+    public function erLocationsList($filter = '', $limit = 20)
     {
         global $wpdb;
 
+        if($limit == 'all'){
+            $limit = 999999;
+        }
+        if($limit == 'default'){
+            $limit = 0;
+        }
+
         if ($filter != '') {
-            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE division = '$filter' ORDER BY ID DESC");
+            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations WHERE division = '$filter' ORDER BY ID DESC LIMIT $limit");
         } else {
-            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC");
+            $locations = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}easy_rents_prelocations ORDER BY ID DESC LIMIT $limit");
         }
 
         if ($locations) {

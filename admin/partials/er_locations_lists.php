@@ -40,12 +40,21 @@ wp_localize_script( 'easy-rents-locations', "locations_ajaxurl", array(
         </form>
     </div>
 
+    <div class="sorts">
+        <form action="" method="post">
+            <button name="all">Show All</button>
+        </form>
+        <form action="" method="post">
+            <button name="default">Default</button>
+        </form>
+    </div>
+
     <div class="filter_search">
         <h3 class="searchttl">বিভাগ সার্চ করুণ</h3>
-            <form action="" method="post">
-                <input type="submit" name="searchfilter" value="☭">
-                &nbsp;
-                <input type="text" class="filterItems" name="filterItems" placeholder="Select division" value="<?php echo isset($_POST['filterItems'])? $_POST['filterItems']:''; ?>">
+        <form action="" method="post">
+            <input type="submit" name="searchfilter" value="☭">
+            &nbsp;
+            <input type="text" class="filterItems" name="filterItems" placeholder="Select division" value="<?php echo isset($_POST['filterItems'])? $_POST['filterItems']:''; ?>">
         </form>
     </div>
 </div>
@@ -67,12 +76,19 @@ wp_localize_script( 'easy-rents-locations', "locations_ajaxurl", array(
             if(isset($_POST['searchfilter'])){
                 if(isset($_POST['filterItems']) && $_POST['filterItems'] !== ''){
                     $filter = sanitize_text_field( $_POST['filterItems'] );
-                    echo Easy_Rents_Admin::erLocationsList($filter);
+                    echo Easy_Rents_Admin::erLocationsList($filter,'');
                 }else{
                     echo Easy_Rents_Admin::erLocationsList();
                 }
             }else{
                 echo Easy_Rents_Admin::erLocationsList();
+            }
+
+            if(isset($_POST['all'])){
+                echo Easy_Rents_Admin::erLocationsList('', 'all');
+            }
+            if(isset($_POST['default'])){
+                echo Easy_Rents_Admin::erLocationsList('', 'default');
             }
             ?>
         </tbody>

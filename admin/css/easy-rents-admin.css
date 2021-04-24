@@ -2,6 +2,15 @@
     display: flex;
     justify-content: space-between;
 }
+.sorts {
+    justify-content: space-between;
+    width: 200px;
+    align-self: flex-end;
+}
+
+.sorts form {
+    display: inline-block;
+}
 .filter_search form{
     display: flex;
 }
