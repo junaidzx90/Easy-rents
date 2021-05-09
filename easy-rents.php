@@ -16,7 +16,7 @@ ob_start();
  * Plugin Name:       Easy Rents
  * Plugin URI:        example.com/easy-rents
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           0.2
+ * Version:           0.3
  * Author:            Junayed
  * Author URI:        example.com
  * License:           GPL-2.0+
@@ -35,7 +35,7 @@ if ( ! defined( 'WPINC' ) ) {
  * Start at version 0.1 and use SemVer - https://semver.org
  * Rename this for your plugin and update it as you release new versions.
  */
-define( 'EASY_RENTS_VERSION', '0.2' );
+define( 'EASY_RENTS_VERSION', '0.3' );
 define( 'ER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'ER_URL', plugin_dir_url( __FILE__ ) );
 
