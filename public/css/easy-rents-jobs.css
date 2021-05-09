@@ -252,9 +252,22 @@ h5.pricetitle {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 5px 7px 17px -12px #000;
+    height: fit-content;
 }
 .bidelem table{
     width: 100%;
+}
+.bidelem form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#myprice {
+    min-width: 100% !important;
+}
+input.bidbtn {
+    margin-top: 14px;
 }
 .bidelem table td span {
     color: var(--ermain);

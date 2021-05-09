@@ -85,12 +85,12 @@ if(have_posts()){
                             </tr>
                             <tr>
                                 <td>
-                                    <span class="parcents"><?php echo get_option('job_commission'); ?></span>% = <span class="commrate">0</span>টাকা
+                                    <span class="parcents"><?php echo get_option('job_commission'); ?></span>% = <span class="commrate">0</span> টাকা
                             </td>
                                 <td>
-                                + <span class="myrate">0</span>টাকা
+                                + <span class="myrate">0</span> টাকা
                                 </td>
-                                <td>= <span class="sumwithcomm">0</span>টাকা</td>
+                                <td>= <span class="sumwithcomm">0</span> টাকা</td>
                             </tr>
                             </tbody>
                         </table>

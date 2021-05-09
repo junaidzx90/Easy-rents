@@ -75,7 +75,7 @@
                                                 <span class="er_location">
                                                     <i class="fas fa-arrow-alt-circle-up"></i> 
                                                     <?php $arr = explode(',', $tripinfo->location_1);
-                                                    _e( $arr[0].','.$arr[1],'easy-rents'); ?>
+                                                    _e( count($arr) > 1?$arr[0].','.$arr[1]:$arr[0],'easy-rents'); ?>
                                                 </span>
                                             </div>
                                             
@@ -83,7 +83,7 @@
                                                 <span class="er_location">
                                                     <i class="fas fa-arrow-alt-circle-down"></i>
                                                     <?php $arr = explode(',', $tripinfo->unload_loc);
-                                                    _e( $arr[0].','.$arr[1],'easy-rents'); ?>
+                                                    _e( count($arr) > 1?$arr[0].','.$arr[1]:$arr[0],'easy-rents'); ?>
                                                 </span>
                                             </div>
                                             <div class="_jobitem">

@@ -176,6 +176,7 @@ main .helper span {
 .jobitem table {
     background: #fff;
     color: #292929;
+    margin-bottom: 0px;
 }
 
 td,

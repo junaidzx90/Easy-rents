@@ -35,7 +35,7 @@ wp_localize_script( "er_profile_script", "er_profile_ajax", array(
             if (is_user_logged_in() && $public_ins->er_role_check(['driver'])){
                 $userStatus = get_user_by( 'id', $current_user->ID );
                 if($userStatus->user_status == 0){
-                    echo '<div class="warning">Hi '.$userStatus->display_name.', Your account needs to active for work here.</div>';
+                    echo '<div class="warning">Hey '.$userStatus->display_name.', Your account needs to be active for work here.</div>';
                 }
             }
             ?>
